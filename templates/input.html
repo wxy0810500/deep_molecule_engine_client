@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deep Molecule Engine</title>
+</head>
+<body>
+    <div class="con">
+        <h4>&emsp;文本输入：</h4>
+        <form action="search/" method="post">
+			{% csrf_token %}
+            <textarea name="q-smiles">
+            </textarea>
+            <input type="submit" value="Submit" />
+        </form>
+        <h4>&emsp;文件上传：</h4>
+        <form enctype="multipart/form-data" action="upload/" method="post">
+			{% csrf_token %}
+            <input type="file" name="f-smiles"/>
+            <br />
+            <input type="submit" value="upload" />
+        </form>
+    </div>
+</body>
+<style>
+.con {
+    background-color:#f4f4f4;
+    width: 1000px;
+    margin: 0 auto;
+    height: 100%;
+    overflow: auto;
+}
+textarea {
+    height: 100%;
+    width: 1000px;
+}
+
+input[type="file"] {
+    padding-left: 50px;
+}
+input[type="submit"] {
+    padding: 15px 30px;
+    margin-top: 30px;
+    margin-left: 50px;
+}
+
+html {
+    height: 100%;
+}
+body {
+    height: 100%;
+}
+</style>
+</html>
