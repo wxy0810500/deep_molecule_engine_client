@@ -15,10 +15,10 @@ import argparse, os
 # os.environ['MP_NUM_THREADS=1'] = 1
 
 
-dme_server_host = "192.168.16.186"
+dme_server_host = "172.17.10.209"
 dme_server_port = 6000
 
-SMILES_SEPARATOR_RX = ' |!|.|;|\t'
+SMILES_SEPARATOR_RX = ' |!|,|;|\t'
 
 
 def index(request):
@@ -28,23 +28,32 @@ def index(request):
 def smiles(request):
     ctx = {}
     if request.POST:
-        smiles = request.POST['q-smiles']
-        if smiles is not None:
-            smilesList = re.split(SMILES_SEPARATOR_RX, smiles)
+        inputSmiles = request.POST['q-smiles']
+        if inputSmiles is not None:
+            smilesList = re.split(SMILES_SEPARATOR_RX, inputSmiles.strip())
+            # smilesStr = ' '.join(smilesList)
             # --- make client ---#
             client = DME_client()
+            print('Total %d samples collected' % len(smilesList))
+            for smiles in smilesList:
+                print(smiles)
             client_worker = client.make_worker(dme_server_host, dme_server_port, time_out=10)
             results, err_codes, task_time, server_info = client.do_task(client_worker, smilesList)
             smilesRlt = ''
             for SMILES, result, err_code in zip(smilesList, results, err_codes):
-                smilesRlt += '%d, %s, %s <br>' % (err_code, result, SMILES)
-
-            rlt = 'All done, time = %0.2fs<br>Server_info = %s<br>%s' % (task_time, server_info, smilesRlt)
+                smilesRlt += '%d, %s, %s\n' % (err_code, result, SMILES)
+            time = 'All done, time = %0.2fs'% task_time
+            info = 'Server_info = %s'% server_info
+            rlt = smilesRlt
             # smilesRet = '\n'.join(smileslist)
             # rlt = 'All done, time = %0.2fs\nServer_info = %s\n%s' % (10, 'server_info', smilesRet)
     else:
         rlt = "invalid http method"
-    ctx['rlt'] = rlt
+        time = ''
+        info = ''
+    ctx['time'] = time
+    ctx['info'] = info
+    ctx['ret'] = rlt
     return render(request, "result.html", ctx)
 
 
@@ -64,14 +73,12 @@ def upload(request):
         if uploadFile is None:
             return HttpResponse("no files for upload!")
         smiles = handle_uploaded_file(uploadFile)
-        pds.read_excel()
         smileslist = re.split(SMILES_SEPARATOR_RX, smiles)
 
         #--- make client ---#
         client = DME_client()
         client_worker = client.make_worker(dme_server_host, dme_server_port, time_out=10)
         results, err_codes, task_time, server_info = client.do_task(client_worker, smileslist)
-
         rows = ([err_code, result, SMILES]
                 for SMILES, result, err_code in zip(smileslist, results, err_codes))
         # rows = ([10, 'true', str(t_smiles)] for t_smiles in smileslist)
