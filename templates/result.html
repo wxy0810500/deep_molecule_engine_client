@@ -5,10 +5,17 @@
     <title>Deep Molecule Engine</title>
 </head>
 <body>
-    {{info}}
+    <
+    {% load django_tables2 %}
+    {% for table in retTables %}
+    <div class="results">
+        <div class="modelType">{{ table.modelType }}</div>
+        <div class="time">{{table.time}}</div>
+        <div class="info">{{table.info}}</div>
+        <br>
+        <div class="table">{% render_table table.tables %}</div>
+    </div>
     <br>
-    {{time}}
-    <br>
-    <pre>{{ret}}</pre>
+    {% endfor %}
 </body>
 </html>

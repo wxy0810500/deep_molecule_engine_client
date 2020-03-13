@@ -8,20 +8,26 @@ All rights reserved
 __author__ = 'dawei.leng'
 __version__ = '1.0.0'
 
-import time, os
+import os
+import time
+
 import thriftpy2 as thriftpy
 from thriftpy2.rpc import make_client
+from typing import Mapping
 
 here = os.path.abspath(os.path.dirname(__file__))
 thrift_file = os.path.join(here, 'DME_service.thrift')
+
+
 # thrift_file = 'DME_service.thrift'
 
-class DME_client:
+class DMEClient:
+
     def __init__(self,
-                 thrift_file=thrift_file,
+                 thriftFile=thrift_file,
                  ):
-        self.thrift_file = thrift_file
-        self.thriftdef   = thriftpy.load(self.thrift_file, module_name="DME_thrift")
+        self.thriftFile = thriftFile
+        self.thriftDef = thriftpy.load(self.thriftFile, module_name="DME_thrift")
 
     def make_worker(self, server_host, server_port, time_out=3):
         """
@@ -30,13 +36,13 @@ class DME_client:
         :param time_out: seconds
         :return:
         """
-        client_worker = make_client(self.thriftdef.DME, server_host, server_port, timeout=time_out*1000)
+        client_worker = make_client(self.thriftDef.DME, server_host, server_port, timeout=time_out * 1000)
         return client_worker
 
-    def do_task(self, client_worker, SMILES_list):
+    def do_task(self, client_worker, SMILES_dict: Mapping):
         """
         :param client_worker: a client worker instance returned by self.make_client
-        :param SMILES_list:
+        :param SMILES_dict: {sample_id, smiles}:
         :return: results,  list of string, predicted results, can be labeled or just numeric
                  err_codes, list of int
                  task_time, time cost for the task
@@ -44,24 +50,17 @@ class DME_client:
         """
         server_inputs = []
         task = 'classification'
-        for i, SMILES in enumerate(SMILES_list):
-            sample_id = 'sample_%d' % i
-            one_input = self.thriftdef.DME_input(sample_id, SMILES, task)
+        for i, SMILES in SMILES_dict.items():
+            sample_id = str(i)
+            one_input = self.thriftDef.DME_input(sample_id, SMILES, task)
             server_inputs.append(one_input)
 
         time0 = time.time()
         predicted_results = client_worker.DME_predict(server_inputs)
         task_time = time.time() - time0
 
-        #--- restore the order ---#
-        results, err_codes = [], []
-        result_dict = {}
-        for record in predicted_results:
-            result_dict[record.sample_id] = [record.result, record.err_code, record.version]
-        for record in server_inputs:
-            results.append(result_dict[record.sample_id][0])
-            err_codes.append(result_dict[record.sample_id][1])
+        # --- restore the order ---#
+        predicted_results.sort(key=lambda retRecord: retRecord.sample_id)
         server_info = predicted_results[0].version
 
-        return results, err_codes, task_time, server_info
-
+        return task_time, server_info, predicted_results

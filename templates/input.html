@@ -7,17 +7,16 @@
 <body>
     <div class="con">
         <h4>&emsp;文本输入：</h4>
-        <form action="search/" method="post">
+        <form action="{% url 'inputText' %}" method="post">
 			{% csrf_token %}
-            <textarea name="q-smiles">
-            </textarea>
+            {{textForm}}
             <input type="submit" value="Submit" />
         </form>
         <h4>&emsp;文件上传：</h4>
-        <form enctype="multipart/form-data" action="upload/" method="post">
+        <form enctype="multipart/form-data" action="{% url 'uploadFile' %}" method="post">
 			{% csrf_token %}
-            <input type="file" name="f-smiles"/>
-            <br />
+            {{fileForm}}
+            <br>
             <input type="submit" value="upload" />
         </form>
     </div>

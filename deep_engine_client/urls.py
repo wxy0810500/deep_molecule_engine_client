@@ -13,12 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from deep_engine_client import search
+from django.contrib import admin
+
+from deep_engine_client import view
 from django.urls import path
 
 urlpatterns = [
-    path(r'', search.index),
-    path(r'search/', search.smiles),
-    path(r'upload/', search.upload)
-    # path('admin/', admin.site.urls),
+    path(r'', view.index),
+    path(r'prediction/text', view.inputText, name="inputText"),
+    path(r'prediction/file', view.uploadFile, name="uploadFile"),
+    path(r'admin/', admin.site.urls),
 ]
