@@ -12,6 +12,7 @@
             {{textForm}}
             <input type="submit" value="Submit" />
         </form>
+        <hr>
         <h4>&emsp;文件上传：</h4>
         <form enctype="multipart/form-data" action="{% url 'uploadFile' %}" method="post">
 			{% csrf_token %}
@@ -25,17 +26,19 @@
 .con {
     background-color:#f4f4f4;
     width: 1000px;
-    margin: 0 auto;
+    margin: auto;
     height: 100%;
     overflow: auto;
 }
+
 textarea {
     height: 100%;
-    width: 1000px;
+    width: 90%;
+    margin-left: 5%;
 }
 
 input[type="file"] {
-    padding-left: 50px;
+    padding-left: 5%;
 }
 input[type="submit"] {
     padding: 15px 30px;
