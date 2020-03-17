@@ -5,17 +5,36 @@
     <title>Deep Molecule Engine</title>
 </head>
 <body>
-    <
     {% load django_tables2 %}
     {% for table in retTables %}
     <div class="results">
-        <div class="modelType">{{ table.modelType }}</div>
-        <div class="time">{{table.time}}</div>
-        <div class="info">{{table.info}}</div>
-        <br>
-        <div class="table">{% render_table table.tables %}</div>
+        <h3>{{ table.modelType }}</h3>
+        <h4>{{table.time}}</h4>
+        <h4>server info</h4>
+        <p>{{table.info}}</p>
+        <div class="table">
+        <h4>results</h4>
+            {% render_table table.tables %}
+        </div>
     </div>
-    <br>
+    <hr>
     {% endfor %}
 </body>
+<style>
+table
+{
+    border-collapse:collapse;
+}
+table, th, td {
+    border:1px solid black;
+}
+th, td
+{
+    text-align:left;
+}
+div.results
+{
+    margin-left:200px;
+}
+</style>
 </html>

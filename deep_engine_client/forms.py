@@ -1,7 +1,8 @@
 from django import forms
 
 # format  ((value1, name1), (value1, name1))
-modelChoices = (('normal', 'normal1'), ('normal', 'normal2'))
+modelChoices = (('3CL_unique_4v4', '3CL_unique_4v4'),
+                ('AntivirusPhe-v3-100nm-7305_4v4', 'AntivirusPhe-v3-100nm-7305_4v4'))
 
 
 class ModelChoicesForm(forms.Form):

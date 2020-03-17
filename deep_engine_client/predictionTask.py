@@ -5,7 +5,8 @@ default_dme_server_host = "172.17.10.209"
 default_dme_conn_timeout = 10
 
 modelTypeAndPortDict = {
-    "normal": 6000,
+    "3CL_unique_4v4":6000,
+    "AntivirusPhe-v3-100nm-7305_4v4": 6001,
 }
 
 
