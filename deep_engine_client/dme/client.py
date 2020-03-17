@@ -62,5 +62,22 @@ class DMEClient:
         # --- restore the order ---#
         predicted_results.sort(key=lambda retRecord: retRecord.sample_id)
         server_info = predicted_results[0].version
+        # predicted_results: List[
+        #       {string sample_id,
+        #        string result,
+        #        i64 err_code,
+        #        string version}]
+        #
+        # | Errcode      | Explanation  | Action   |
+        # | -----------  | ------------ | -------- |
+        # | 1            | Exception raised when input queue if full |  Try later |
+        # | 2            | Exception raised when invalid SMILES encountered | Check input |
+        # | 3            | Exception raised when maximum time reached for the prediction task | Reduce the input size |
+        # | 1000         | Exception raised when unknown error raised | Report to algorithm developers |
+        # results 格式
+        # errcode为0时：
+        # "active" 是服务返回的标签；//用户关心
+        # “1”     是模型返回的类别；
+        # ”0.6089“是模型返回的预测打分 //用户关心
 
         return task_time, server_info, predicted_results

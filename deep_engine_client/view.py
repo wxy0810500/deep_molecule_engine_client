@@ -11,7 +11,8 @@ from zipfile import ZipFile
 import re
 
 
-SMILES_SEPARATOR_RX = ' |!|,|;|\t'
+SMILES_SEPARATOR_RX = ' |!|,|;|\t|\n'
+MAX_SMILES_LEN: int = 150
 
 
 def index(request):
@@ -21,26 +22,29 @@ def index(request):
 def inputText(request):
     if request.POST:
         form = TextInputForm(request.POST)
-        if form.is_valid():
-            inputSmiles = form.cleaned_data['t_smiles']
-            modelTypes = form.cleaned_data['modelTypes']
-            if inputSmiles is not None:
-                smilesList = re.split(SMILES_SEPARATOR_RX, inputSmiles.strip())
-                preRet = predictSmiles(modelTypes, smilesList)
-                ctx = []
-                for modelType, preRetRecord in preRet.items():
-                    modelCtx = {'modelType': modelType,
-                                'time': 'time = %0.2fs' % preRetRecord.taskTime,
-                                'info': preRetRecord.serverInfo}
-                    rlt = [{"err_code": preRetUnit.err_code, "result": preRetUnit.result, "SMILES": preRetUnit.smiles}
-                           for preRetUnit in preRetRecord.preResults]
-                    modelCtx['tables'] = SmilesResultTable(rlt)
-                    ctx.append(modelCtx)
-                return render(request, "result.html", {"retTables": ctx})
-            else:
-                return HttpResponse("input smiles are empty!")
-        else:
+        if not form.is_valid():
             return HttpResponse("input data is invalid")
+
+        inputSmiles = form.cleaned_data['t_smiles']
+        modelTypes = form.cleaned_data['modelTypes']
+        if inputSmiles is None:
+            return HttpResponse("input smiles are empty!")
+
+        smilesList = re.split(SMILES_SEPARATOR_RX, inputSmiles.strip())
+        smilesList = [smiles for smiles in smilesList if len(smiles) < MAX_SMILES_LEN]
+        preRet = predictSmiles(modelTypes, smilesList)
+        ctx = []
+        for modelType, preRetRecord in preRet.items():
+            modelCtx = {'modelType': modelType,
+                        'time': 'time = %0.2fs' % preRetRecord.taskTime}
+            rlt = [{"id": preRetUnit.sampleId,
+                    "label": preRetUnit.label,
+                    "ratings": preRetUnit.ratings,
+                    "smiles": preRetUnit.smiles}
+                   for preRetUnit in preRetRecord.preResults]
+            modelCtx['tables'] = SmilesResultTable(rlt)
+            ctx.append(modelCtx)
+        return render(request, "result.html", {"retTables": ctx})
     else:
         return HttpResponse("invalid http method")
 
@@ -60,8 +64,8 @@ def uploadFile(request):
         outputZip = ZipFile(outputZipIO, "a")
 
         for modelType, preRetRecord in preRet.items():
-            csvContent = 'modelType:%s\nAll done, time = %0.2fs\nServer_info = %s\nerr_code, result, smiles\n%s' \
-                         % (modelType, preRetRecord.taskTime, preRetRecord.serverInfo,
+            csvContent = 'modelType:%s\nAll done, time = %0.2fs\nerr_code, result, smiles\n%s' \
+                         % (modelType, preRetRecord.taskTime,
                             "\n".join(["{},{},{}".format(preRetUnit.err_code, preRetUnit.result, preRetUnit.smiles)
                                        for preRetUnit in preRetRecord.preResults])
                             )
