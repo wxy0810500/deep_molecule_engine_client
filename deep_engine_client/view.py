@@ -34,14 +34,16 @@ def inputText(request):
         smilesList = [smiles for smiles in smilesList if len(smiles) < MAX_SMILES_LEN]
         preRet = predictSmiles(modelTypes, smilesList)
         ctx = []
+        sid = 0
         for modelType, preRetRecord in preRet.items():
             modelCtx = {'modelType': modelType,
                         'time': 'time = %0.2fs' % preRetRecord.taskTime}
-            rlt = [{"id": preRetUnit.sampleId,
+
+            rlt = [{"id": sid + 1,
+                    "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
                     "label": preRetUnit.label,
-                    "ratings": preRetUnit.ratings,
                     "smiles": preRetUnit.smiles}
-                   for preRetUnit in preRetRecord.preResults]
+                   for sid, preRetUnit in enumerate(preRetRecord.preResults)]
             modelCtx['tables'] = SmilesResultTable(rlt)
             ctx.append(modelCtx)
         return render(request, "result.html", {"retTables": ctx})
@@ -64,9 +66,9 @@ def uploadFile(request):
         outputZip = ZipFile(outputZipIO, "a")
 
         for modelType, preRetRecord in preRet.items():
-            csvContent = 'modelType:%s\nAll done, time = %0.2fs\nerr_code, result, smiles\n%s' \
+            csvContent = 'modelType:%s\n time = %0.2fs\n score, label, smiles\n%s' \
                          % (modelType, preRetRecord.taskTime,
-                            "\n".join(["{},{},{}".format(preRetUnit.err_code, preRetUnit.result, preRetUnit.smiles)
+                            "\n".join(["%0.4f,%s,%s" % (preRetUnit.score, preRetUnit.label, preRetUnit.smiles)
                                        for preRetUnit in preRetRecord.preResults])
                             )
             outputZip.writestr("{}.csv".format(modelType), csvContent)

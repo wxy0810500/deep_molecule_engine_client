@@ -10,20 +10,20 @@ class SmilesResultTable(tables.Table):
             "class": "c-id"
         }
     })
+    score = tables.Column(orderable=False, verbose_name="active score", attrs={
+        "th": {
+            "class": "c-score"
+        },
+        "td": {
+            "class": "c-score"
+        }
+    })
     label = tables.Column(orderable=False, attrs={
         "th": {
             "class": "c-label"
         },
         "td": {
             "class": "c-label"
-        }
-    })
-    ratings = tables.Column(orderable=False, verbose_name="Predicted ratings", attrs={
-        "th": {
-            "class": "c-ratings"
-        },
-        "td": {
-            "class": "c-ratings"
         }
     })
     smiles = tables.Column(orderable=False, attrs={
