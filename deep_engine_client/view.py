@@ -11,12 +11,17 @@ from zipfile import ZipFile
 import re
 
 
-SMILES_SEPARATOR_RX = ' |!|,|;|\t|\n'
+SMILES_SEPARATOR_RX = ' |!|,|;|\t|\n|\r\n'
 MAX_SMILES_LEN: int = 150
 
 
 def index(request):
     return render(request, "input.html", {"textForm": TextInputForm(), "fileForm": FileUploadForm()})
+
+
+def filterInputSmiles(smiles: str):
+    smilesList = re.split(SMILES_SEPARATOR_RX, smiles.strip())
+    return [smiles for smiles in smilesList if (MAX_SMILES_LEN > len(smiles) > 0)]
 
 
 def inputText(request):
@@ -30,8 +35,7 @@ def inputText(request):
         if inputSmiles is None:
             return HttpResponse("input smiles are empty!")
 
-        smilesList = re.split(SMILES_SEPARATOR_RX, inputSmiles.strip())
-        smilesList = [smiles for smiles in smilesList if len(smiles) < MAX_SMILES_LEN]
+        smilesList = filterInputSmiles(inputSmiles)
         preRet = predictSmiles(modelTypes, smilesList)
         ctx = []
         sid = 0
@@ -58,7 +62,7 @@ def uploadFile(request):
             return HttpResponse("no files for upload or no model types selected")
         smiles = handle_uploaded_file(request.FILES['f_smiles'])
         modelTypes = form.cleaned_data['modelTypes']
-        smilesList = re.split(SMILES_SEPARATOR_RX, smiles)
+        smilesList = filterInputSmiles(smiles)
 
         preRet = predictSmiles(modelTypes, smilesList)
         # 每个文件写入到一个csv中，最终写入zip中

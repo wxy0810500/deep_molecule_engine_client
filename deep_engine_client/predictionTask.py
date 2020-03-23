@@ -107,6 +107,7 @@ def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
 def predictOnce(client: DMEClient, port: int, smilesDict: dict):
     worker = client.make_worker(default_dme_server_host, port, default_dme_conn_timeout)
     task_time, server_info, predicted_results = client.do_task(worker, smilesDict)
+    print(predicted_results)
     retUnitList = []
     againDict = {}
     # 根据err_code分别处理
