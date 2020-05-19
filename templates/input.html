@@ -6,20 +6,75 @@
 </head>
 <body>
     <div class="con">
-        <h4>&emsp;文本输入：</h4>
-        <form action="{% url 'inputText' %}" method="post">
-			{% csrf_token %}
-            {{textForm}}
+        <nav class="crumbs">
+            <ul class="service-type-items">
+                <li class="service-type-item"><a href="{% url 'prediction' sType='ligand'%}">ligand based model</a></li>
+                <li class="service-type-item"><a href="{% url 'prediction' sType='structure'%}">structure based model</a></li>
+{#                <li class="service-type-item"><a href="1">network model</a></li>#}
+                <li class="service-type-item"><a href="{% url 'search'%}">advanced search</a></li>
+            </ul>
+        </nav>
+        <h1> GHDDI's Free AI Virtual Screening Service for COVID-19 </h1>
+        <h4> Please enter the SMILES of your compound, one per line </h4>
+        <form action="{% url 'inputSmilesOrNames' sType=serviceType%}" method="post">
+            {% csrf_token %}
+            {{ inputForm }}
             <input type="submit" value="Submit" />
         </form>
         <hr>
-        <h4>&emsp;文件上传：</h4>
-        <form enctype="multipart/form-data" action="{% url 'uploadFile' %}" method="post">
+
+
+        {% if predictionType == 'structure' %}
+        <h4> Please upload the pdb file </h4>
+        <form enctype="multipart/form-data" action="{% url 'pdbFile' %}" method="post">
 			{% csrf_token %}
-            {{fileForm}}
+            {{ pdbFileForm }}
             <br>
             <input type="submit" value="upload" />
         </form>
+        {% endif %}
+        <hr>
+
+        <h2>Model Documentation</h2>
+
+        <h3> A. Ligand based AI models</h3>
+
+        <t1>We have tried different training sets containing different virus species and their targets to build target specific or phenotype based classification AI models using GHDDI self-developed HAG-net deep learning system. We only selected models showing 5-fold cross-validation AUC>0.8 as qualification for further predictive practice and the results are ensemble predictions. Viral targets, including RDRP, Helicase, 3C-like protease of 2019nCoV showing relatively higher between species conservation are prioritized in this effort.  We use these models to predict different bioactivities of approved or investigational stage drug molecules (~12K) in GHDDI stock as part of the drug repurposing effort. As we are constantly improving our algorithm and expand our training data, the results will be updated periodically. </t1>
+
+
+        <h4>A.1 Heterogeneous antiviral AI model</h4>
+
+        <t1>Training Data: Using heterogeneous records of antiviral bioactivity data including target based and phenotype based records from various species and in vitro assays, a total of 76247 compounds with 37332 active and 38915 inactive molecules (EC50 <=100nM for at least one viral species as active).
+            Performance (5-fold cross-validation): AUC avg. = 0.94</t1>
+
+        <h4>A.2 Phenotypic antiviral AI model</h4>
+        <t1>Training Data: Using heterogeneous records of antiviral bioactivity data of phenotype based records from various species and in vitro assays, a total of 7305 compounds with 3751 active and 3554 inactive molecules (EC50 <=100nM for at least one viral species as active).
+        Performance (5-fold cross-validation): AUC avg. = 0.90 </t1>
+
+
+        <h4>A.3 RNA-dependent RNA polymerase AI model</h4>
+        <t1>Training Data: Using heterogeneous records of RNA-dependent RNA polymerase related bioactivity data from various species and in vitro assays, a total of 583 compounds with 60 active and 517 inactive molecules (IC50 <=100nM as active).
+        Performance (5-fold cross-validation): AUC avg. = 0.898 </t1>
+
+
+        <h4>A.4 Helicase AI model</h4>
+        <t1>Training Data: Using heterogeneous records of Helicase related bioactivity data from various species and in vitro assays, a total of 788 compounds with 42 active and 746 inactive molecules (IC50 <=100nM as active).
+        Performance (5-fold cross-validation): AUC avg. = 0.868</t1>
+
+        <h4>A.5 3C-like protease AI model</h4>
+        <t1>Training Data: Using heterogeneous records of 3C-like protease related bioactivity data from various species and in vitro assays, a total of 457 compounds with 58 active and 399 inactive molecules (IC50 <=100nM as active).
+        Performance (5-fold cross-validation): AUC avg. = 0.832</t1>
+
+        <h4>B. Structure based (none-docking) AI model</h4>
+        <t1>The structure based AI model was constructed based on GHDDI developed HAG-net. The model was trained based on all existing drug targets 3D information and their related biochemical data for up to 2 million molecules. The model is universal for all targets with 3D structures. The model performance is evaluated using DUD.E set with average AUC of 0.98 and true negative internal benchmark set with average AUC of 0.8. Given a target 3D structure, the center coordinate(x, y, z) of the binding pocket, and screening library SMILES list as input, we are able to screen all 10K compounds in 4 minutes, which is exponentially faster than traditional docking screening methods. This is a beta testing version of this model, the results will be constantly updated after every model upgrade. The sample prediction results for various targets of nCoV-SARS-2 are listed below.</t1>
+
+        <h4>B.1 RNA-dependent RNA polymerase(RDRP) (NTP binding site)</h4>
+
+        <h4>B.2 Helicase (NTP binding site)</h4>
+
+        <h4>B.3 3C-like protease (catalytic site)</h4>
+
+        <h4>B.4 Papain-like protease (catalytic site)</h4>
     </div>
 </body>
 <style>
@@ -29,6 +84,21 @@
     margin: auto;
     height: 100%;
     overflow: auto;
+}
+.con t1 {
+    margin-left: 2%;
+}
+.con h4 {
+    margin-left: 2%;
+}
+.con h3 {
+    margin-left: 2%;
+}
+.con h1 {
+    margin-left: 1%;
+}
+.con h2 {
+    margin-left: 1%;
 }
 
 textarea {

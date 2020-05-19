@@ -1,4 +1,4 @@
-from deep_engine_client.dme.client import DMEClient
+from deep_engine_client.thrift.client import DMEClient
 from typing import Sequence, List, Dict, Union
 from .sysConfig import SERVER_CONFIG_DICT
 from time import sleep
@@ -11,7 +11,7 @@ modelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort")
 
 class PredictedRetUnit:
 
-    def __init__(self, sampleId, label, classIdx: int, score: str, smiles: str):
+    def __init__(self, sampleId, label, classIdx, score: float, smiles: str):
         self.sampleId = sampleId
         # results 格式 inactive-0-0.7889
         # errcode为0时：
@@ -19,8 +19,8 @@ class PredictedRetUnit:
         # “1”     是模型返回的类别；classIdx //排序依据
         # ”0.6089“是模型返回的预测打分 //用户关心
         self.label = label
-        self.classIdx = classIdx
-        self.score = score
+        self.classIdx = 0 if (classIdx is None or classIdx == 'None') else int(classIdx)
+        self.score = score if self.classIdx != 0 else 1.0 - score
         self.smiles = smiles
 
     @classmethod
@@ -31,7 +31,7 @@ class PredictedRetUnit:
         # “1”     是模型返回的类别；
         # ”0.6089“是模型返回的预测打分 //用户关心
         label, classIdx, score = result.split('-')
-        return cls(sampleId, label, int(classIdx), float(score), smiles)
+        return cls(sampleId, label, classIdx, float(score), smiles)
 
     __error_unit_score: float = -1.0
     queue_full_unit_label: str = "input queue is full, try later"
@@ -54,22 +54,15 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def sortPredictedRetUnitListByActiveScore(unitList: List[PredictedRetUnit]):
-    for unit in unitList:
-        if unit.classIdx == 0:
-            unit.score = 1.0 - unit.score
-    return sorted(unitList, key=lambda x: x.score, reverse=True)
-
-
 def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
         -> Union[Dict[str, PredictionTaskRet], None]:
     if modelTypes is None or len(modelTypes) == 0:
         return defaultRet
     portModelTypeDict = {}
     for modelType in modelTypes:
-        port = modelTypeAndPortDict.get(modelType, None)
-        if port is not None:
-            portModelTypeDict[port] = modelType
+        data = modelTypeAndPortDict.get(modelType, None)
+        if data is not None and data[1] != 0:
+            portModelTypeDict[data[1]] = data[0]
     if len(portModelTypeDict) > 0:
         # --- make client ---#
         client = DMEClient()
@@ -80,7 +73,7 @@ def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
             smilesDict[i] = smiles
 
         # do tasks one by one
-        for port, modelType in portModelTypeDict.items():
+        for port, modelName in portModelTypeDict.items():
             task_time, server_info, retUnitList, againDict = predictOnce(client, port, smilesDict)
 
             # again的 再处理一次 处理5次，若还不行，则放弃处理
@@ -96,9 +89,10 @@ def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
                 for sampleId, smiles in againDict.items():
                     retUnitList.append(PredictedRetUnit.errorOne(sampleId,
                                                                  PredictedRetUnit.queue_full_unit_label, smiles))
-            # sort_by_active_score
-            modelRet = PredictionTaskRet(task_time, server_info, sortPredictedRetUnitListByActiveScore(retUnitList))
-            ret[modelType] = modelRet
+            # sort result
+            retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
+            modelRet = PredictionTaskRet(task_time, server_info, retUnitList)
+            ret[modelName] = modelRet
         return ret
     else:
         return defaultRet

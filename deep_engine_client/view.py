@@ -1,30 +1,58 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.http import StreamingHttpResponse
 from .tables import SmilesResultTable
 from .predictionTask import predictSmiles
 from .forms import *
+from .sysConfig import *
 from io import BytesIO
 from zipfile import ZipFile
 import re
 
+SMILES_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
+MAX_SMILES_LEN: int = 500
 
-SMILES_SEPARATOR_RX = ' |!|,|;|\t|\n|\r\n'
-MAX_SMILES_LEN: int = 150
+
+def tempRoot(request):
+    return redirect('/covid19')
 
 
 def index(request):
-    return render(request, "input.html", {"textForm": TextInputForm(), "fileForm": FileUploadForm()})
+    return predictIndex(request)
+
+
+INPUT_TEMPLATE_FORMS = {
+    PREDICTION_TYPE_LIGAND: {
+        'inputForm': LigandModelChoicesForm(),
+        'serviceType': SERVICE_TYPE_PREDICTION
+    },
+    PREDICTION_TYPE_STRUCTURE: {
+        'inputForm': StructureModelChoicesForm(),
+        'pdbFileForm': StructurePdbFileUploadForm(),
+        'serviceType': SERVICE_TYPE_PREDICTION
+    },
+    SERVICE_TYPE_SEARCH: {
+        'inputForm': TextInputForm(),
+        'serviceType': SERVICE_TYPE_SEARCH
+    }
+}
+
+
+def predictIndex(request, sType: str):
+    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
 
 
 def filterInputSmiles(smiles: str):
     smilesList = re.split(SMILES_SEPARATOR_RX, smiles.strip())
-    return [smiles for smiles in smilesList if (MAX_SMILES_LEN > len(smiles) > 0)]
+    return [smiles.strip() for smiles in smilesList if (MAX_SMILES_LEN > len(smiles) > 0)]
 
 
-def inputText(request):
+def inputSmilesOrNames(request):
+    pass
+
+
+def processInputSmiles(request, mCategory: str):
     if request.POST:
         form = TextInputForm(request.POST)
         if not form.is_valid():
@@ -36,16 +64,16 @@ def inputText(request):
             return HttpResponse("input smiles are empty!")
 
         smilesList = filterInputSmiles(inputSmiles)
-        preRet = predictSmiles(modelTypes, smilesList)
+        preRet = predictSmiles(modelTypes, smilesList, None)
+        if preRet is None:
+            return HttpResponse("We will support these model types as soon as possible!")
         ctx = []
-        sid = 0
         for modelType, preRetRecord in preRet.items():
             modelCtx = {'modelType': modelType,
                         'time': 'time = %0.2fs' % preRetRecord.taskTime}
 
             rlt = [{"id": sid + 1,
                     "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
-                    "label": preRetUnit.label,
                     "smiles": preRetUnit.smiles}
                    for sid, preRetUnit in enumerate(preRetRecord.preResults)]
             modelCtx['tables'] = SmilesResultTable(rlt)
@@ -57,7 +85,7 @@ def inputText(request):
 
 def uploadFile(request):
     if request.method == 'POST':
-        form = FileUploadForm(request.POST, request.FILES)
+        form = StructurePdbFileUploadForm(request.POST, request.FILES)
         if not form.is_valid():
             return HttpResponse("no files for upload or no model types selected")
         smiles = handle_uploaded_file(request.FILES['f_smiles'])
@@ -70,9 +98,9 @@ def uploadFile(request):
         outputZip = ZipFile(outputZipIO, "a")
 
         for modelType, preRetRecord in preRet.items():
-            csvContent = 'modelType:%s\n time = %0.2fs\n score, label, smiles\n%s' \
+            csvContent = 'modelType:%s\n time = %0.2fs\n score, smiles\n%s' \
                          % (modelType, preRetRecord.taskTime,
-                            "\n".join(["%0.4f,%s,%s" % (preRetUnit.score, preRetUnit.label, preRetUnit.smiles)
+                            "\n".join(["%0.4f,%s" % (preRetUnit.score, preRetUnit.smiles)
                                        for preRetUnit in preRetRecord.preResults])
                             )
             outputZip.writestr("{}.csv".format(modelType), csvContent)
@@ -105,5 +133,3 @@ def file_iterator(file, chunk_size=512):
                 yield c
             else:
                 break
-
-

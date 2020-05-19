@@ -1,29 +1,41 @@
 from django import forms
 from .sysConfig import SERVER_CONFIG_DICT
 
-
 # format  ((value1, name1), (value1, name1))
-modelChoices = tuple([(key, key) for key in SERVER_CONFIG_DICT.get("modelAndPort").keys()])
+ligandModelChoices = tuple([(model, data[0]) for model, data in
+                            SERVER_CONFIG_DICT.get("modelAndPort").get("ligand").items()])
+structureModelChoices = tuple([(model, data[0]) for model, data in
+                               SERVER_CONFIG_DICT.get("modelAndPort").get("structure").items()])
 
 
-class ModelChoicesForm(forms.Form):
+class TextInputForm(forms.form):
+    t_smiles = forms.CharField(widget=forms.Textarea, label="", max_length=2000)
+    t_names = forms.CharField(widget=forms.Textarea, label="", max_length=2000)
 
+
+class LigandModelChoicesForm(TextInputForm):
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
                                            required=True,
-                                           choices=modelChoices)
+                                           choices=ligandModelChoices)
+
+    field_order = ['t_smiles', 't_names', 'modelTypes']
 
 
-class TextInputForm(ModelChoicesForm):
+class StructureModelChoicesForm(TextInputForm):
+    modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+                                           label="",
+                                           required=True,
+                                           choices=structureModelChoices)
 
-    t_smiles = forms.CharField(widget=forms.Textarea, label="", required=True,
-                               max_length=2000)
-
-    field_order = ['t_smiles', 'modelTypes']
+    field_order = ['t_smiles', 't_names', 'modelTypes']
 
 
-class FileUploadForm(ModelChoicesForm):
-
+class StructurePdbFileUploadForm(forms.form):
     f_smiles = forms.FileField(widget=forms.FileInput, label="", required=True)
+    modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+                                           label="",
+                                           required=True,
+                                           choices=structureModelChoices)
 
     field_order = ['f_smiles', 'modelTypes']

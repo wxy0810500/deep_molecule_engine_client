@@ -16,11 +16,25 @@ Including another URLconf
 from django.contrib import admin
 
 from deep_engine_client import view
-from django.urls import path
+from django.urls import path, include
+
+BASE_URL = r'covid19/'
+PREDICTION_BASE_URL = r'prediction/'
+SEARCH_BASE_URL = r'search/'
 
 urlpatterns = [
-    path(r'', view.index),
-    path(r'prediction/text', view.inputText, name="inputText"),
-    path(r'prediction/file', view.uploadFile, name="uploadFile"),
-    path(r'admin/', admin.site.urls),
+    path(r'', view.tempRoot),
+    path(BASE_URL, include([
+        path(r'', view.index),
+        path(r'admin/', admin.site.urls),
+        path(PREDICTION_BASE_URL, include([
+            path(r'', view.predictIndex, name="prediction"),
+            path(r'prediction/ligand/smiles', view.inputSmilesOrNames, name="inputSmilesOrNames"),
+            # path(r'prediction/file', view.uploadFile, name="uploadFile"),
+            path(r'prediction/structure/pdbFile', view.uploadFile, name="pdbFile"),
+            path(r'prediction/structure/smiles', view.inputStructureSmiles, name="structureSmilesForm")
+            ])
+        )
+        ])
+    )
 ]

@@ -39,20 +39,20 @@ class DMEClient:
         client_worker = make_client(self.thriftDef.DME, server_host, server_port, timeout=time_out * 1000)
         return client_worker
 
-    def do_task(self, client_worker, SMILES_dict: Mapping):
+    def do_task(self, client_worker, task: str, SMILES_dict: Mapping, pdbContent: bytes):
         """
         :param client_worker: a client worker instance returned by self.make_client
         :param SMILES_dict: {sample_id, smiles}:
+        :@param task: lbvs, sbvs
         :return: results,  list of string, predicted results, can be labeled or just numeric
                  err_codes, list of int
                  task_time, time cost for the task
                  server_info, server information, string
         """
         server_inputs = []
-        task = 'classification'
         for i, SMILES in SMILES_dict.items():
             sample_id = str(i)
-            one_input = self.thriftDef.DME_input(sample_id, SMILES, task)
+            one_input = self.thriftDef.DME_input(sample_id, SMILES, task, pdbContent)
             server_inputs.append(one_input)
 
         time0 = time.time()

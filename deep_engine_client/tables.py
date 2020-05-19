@@ -10,7 +10,7 @@ class SmilesResultTable(tables.Table):
             "class": "c-id"
         }
     })
-    score = tables.Column(orderable=False, verbose_name="active score", attrs={
+    score = tables.Column(orderable=False, verbose_name="Score", attrs={
         "th": {
             "class": "c-score"
         },
@@ -18,15 +18,15 @@ class SmilesResultTable(tables.Table):
             "class": "c-score"
         }
     })
-    label = tables.Column(orderable=False, attrs={
-        "th": {
-            "class": "c-label"
-        },
-        "td": {
-            "class": "c-label"
-        }
-    })
-    smiles = tables.Column(orderable=False, attrs={
+    # label = tables.Column(orderable=False, attrs={
+    #     "th": {
+    #         "class": "c-label"
+    #     },
+    #     "td": {
+    #         "class": "c-label"
+    #     }
+    # })
+    smiles = tables.Column(orderable=False, verbose_name="Smiles", attrs={
         "th": {
             "class": "c-smiles"
         },
