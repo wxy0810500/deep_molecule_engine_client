@@ -10,8 +10,21 @@ from io import BytesIO
 from zipfile import ZipFile
 import re
 
-SMILES_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
-MAX_SMILES_LEN: int = 500
+INPUT_TEMPLATE_FORMS = {
+    PREDICTION_TYPE_LIGAND: {
+        'inputForm': LigandModelChoicesForm(),
+        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}'
+    },
+    PREDICTION_TYPE_STRUCTURE: {
+        'inputForm': StructureModelChoicesForm(),
+        'pdbFileForm': StructurePdbFileUploadForm(),
+        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}'
+    },
+    SERVICE_TYPE_SEARCH: {
+        'inputForm': TextInputForm(),
+        'actionURL': SERVICE_TYPE_SEARCH
+    }
+}
 
 
 def tempRoot(request):
@@ -19,37 +32,36 @@ def tempRoot(request):
 
 
 def index(request):
-    return predictIndex(request)
+    return predictionIndex(request, PREDICTION_TYPE_LIGAND)
 
 
-INPUT_TEMPLATE_FORMS = {
-    PREDICTION_TYPE_LIGAND: {
-        'inputForm': LigandModelChoicesForm(),
-        'serviceType': SERVICE_TYPE_PREDICTION
-    },
-    PREDICTION_TYPE_STRUCTURE: {
-        'inputForm': StructureModelChoicesForm(),
-        'pdbFileForm': StructurePdbFileUploadForm(),
-        'serviceType': SERVICE_TYPE_PREDICTION
-    },
-    SERVICE_TYPE_SEARCH: {
-        'inputForm': TextInputForm(),
-        'serviceType': SERVICE_TYPE_SEARCH
-    }
-}
+def searchIndex(request):
+    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(SERVICE_TYPE_SEARCH))
 
 
-def predictIndex(request, sType: str):
+def predictionIndex(request, sType: str):
     return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
+
+
+SMILES_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
+MAX_SMILES_LEN: int = 500
+
+
+def predict(request, sType: str):
+    return HttpResponse("do prediction")
+
+
+def predictWithFile(request, sType:str):
+    return HttpResponse("do prediction with file")
+
+
+def advancedSearch(request):
+    return HttpResponse("advancedSearch")
 
 
 def filterInputSmiles(smiles: str):
     smilesList = re.split(SMILES_SEPARATOR_RX, smiles.strip())
     return [smiles.strip() for smiles in smilesList if (MAX_SMILES_LEN > len(smiles) > 0)]
-
-
-def inputSmilesOrNames(request):
-    pass
 
 
 def processInputSmiles(request, mCategory: str):

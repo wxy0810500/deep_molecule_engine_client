@@ -19,22 +19,23 @@ from deep_engine_client import view
 from django.urls import path, include
 
 BASE_URL = r'covid19/'
-PREDICTION_BASE_URL = r'prediction/'
-SEARCH_BASE_URL = r'search/'
-
+PREDICTION_BASE_URL = r'service/prediction/<sType>/'
+SEARCH_BASE_URL = r'service/search/'
 urlpatterns = [
     path(r'', view.tempRoot),
     path(BASE_URL, include([
         path(r'', view.index),
         path(r'admin/', admin.site.urls),
         path(PREDICTION_BASE_URL, include([
-            path(r'', view.predictIndex, name="prediction"),
-            path(r'prediction/ligand/smiles', view.inputSmilesOrNames, name="inputSmilesOrNames"),
-            # path(r'prediction/file', view.uploadFile, name="uploadFile"),
-            path(r'prediction/structure/pdbFile', view.uploadFile, name="pdbFile"),
-            path(r'prediction/structure/smiles', view.inputStructureSmiles, name="structureSmilesForm")
+            path(r"", view.predictionIndex, name="service_prediction"),
+            path(r"submit/", view.predict, name="action_prediction"),
+            path(r"file/", view.predictWithFile, name="action_prediction_file")
             ])
-        )
+        ),
+        path(SEARCH_BASE_URL, include([
+            path(r"", view.searchIndex, name='service_search'),
+            path(r"submit/", view.advancedSearch, name='action_search')
+        ]))
         ])
     )
 ]

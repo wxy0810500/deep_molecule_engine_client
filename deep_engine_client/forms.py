@@ -8,7 +8,7 @@ structureModelChoices = tuple([(model, data[0]) for model, data in
                                SERVER_CONFIG_DICT.get("modelAndPort").get("structure").items()])
 
 
-class TextInputForm(forms.form):
+class TextInputForm(forms.Form):
     t_smiles = forms.CharField(widget=forms.Textarea, label="", max_length=2000)
     t_names = forms.CharField(widget=forms.Textarea, label="", max_length=2000)
 
@@ -31,7 +31,7 @@ class StructureModelChoicesForm(TextInputForm):
     field_order = ['t_smiles', 't_names', 'modelTypes']
 
 
-class StructurePdbFileUploadForm(forms.form):
+class StructurePdbFileUploadForm(forms.Form):
     f_smiles = forms.FileField(widget=forms.FileInput, label="", required=True)
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
