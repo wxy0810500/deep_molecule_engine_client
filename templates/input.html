@@ -7,32 +7,35 @@
 <body>
     <nav class="crumbs">
             <ul class="service-type-items">
-                <li class="service-type-item"><a href="{% url 'service_prediction' sType='ligand'%}">ligand based model</a></li>
-                <li class="service-type-item"><a href="{% url 'service_prediction' sType='structure'%}">structure based model</a></li>
-                <li class="service-type-item"><a href="{% url 'service_prediction' sType='network'%}">network model</a></li>
-                <li class="service-type-item"><a href="{% url 'service_search'%}">advanced search</a></li>
+                <li class="service-type-item"><a href="{% url 'prediction_index' sType='ligand'%}">ligand based model</a></li>
+                <li class="service-type-item"><a href="{% url 'prediction_index' sType='structure'%}">structure based model</a></li>
+                <li class="service-type-item"><a href="{% url 'prediction_index' sType='network'%}">network model</a></li>
+                <li class="service-type-item"><a href="{% url 'search_index'%}">advanced search</a></li>
             </ul>
         </nav>
     <div class="con">
 
         <h1> GHDDI's Free AI Virtual Screening Service for COVID-19 </h1>
-        <h4> Please enter the SMILES of your compound, one per line </h4>
-        <form action="submit/" method="post">
+        <h4> Please select and enter the SMILES or NAMES of your compound, one per line </h4>
+        <form  enctype="multipart/form-data" action="submit/" method="post">
             {% csrf_token %}
             {{ inputForm }}
-            <input type="submit" value="Submit" />
+            {% if pdbFileForm is not None %}
+                <br>
+            <h4> Please upload the pdb file </h4>
+                {{ pdbFileForm }}
+                <br>
+            {% endif %}
+            <input type="submit" value="submit" />
         </form>
 
-        {% if pdbFileForm is not None %}
-        <hr>
-        <h4> Please upload the pdb file </h4>
-        <form enctype="multipart/form-data" action="file/" method="post">
-			{% csrf_token %}
-            {{ pdbFileForm }}
-            <br>
-            <input type="submit" value="upload" />
-        </form>
-        {% endif %}
+{##}
+{#        <form enctype="multipart/form-data" action="file/" method="post">#}
+{#			{% csrf_token %}#}
+{##}
+{#            <br>#}
+{#            <input type="submit" value="upload" />#}
+{#        </form>#}
         <hr>
 
         <h2>Model Documentation</h2>

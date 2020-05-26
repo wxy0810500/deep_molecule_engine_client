@@ -15,19 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 
-from deep_engine_client import views
-from django.urls import path, include
+from . import views
+from django.urls import path
 
-BASE_URL = r'covid19/'
-PREDICTION_BASE_URL = r'service/prediction/<str:sType>/'
-SEARCH_BASE_URL = r'service/search/'
+
 urlpatterns = [
-    path(r'', views.tempRoot),
-    path(BASE_URL, include([
-        path(r'', views.index),
-        path(r'admin/', admin.site.urls),
-        path(PREDICTION_BASE_URL, include('prediction.urls')),
-        path(SEARCH_BASE_URL, include('search.urls'))
-        ])
-    )
+    path(r"", views.searchIndex, name='search_index'),
+    path(r"submit/", views.advancedSearch, name='search_submit')
 ]

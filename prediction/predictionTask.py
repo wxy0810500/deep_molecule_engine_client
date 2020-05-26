@@ -1,12 +1,14 @@
-from deep_engine_client.thrift.client import DMEClient
+from .thrift.client import DMEClient
 from typing import Sequence, List, Dict, Union
-from .sysConfig import SERVER_CONFIG_DICT
+from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 from time import sleep
+from .exception import PredictionException
 
 default_dme_server_host = SERVER_CONFIG_DICT.get("host")
 default_dme_conn_timeout = SERVER_CONFIG_DICT.get("timeout")
 
-modelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort")
+LigandModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('ligand')
+StructureModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('structure')
 
 
 class PredictedRetUnit:
@@ -54,13 +56,12 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
-        -> Union[Dict[str, PredictionTaskRet], None]:
+def predictLigand(modelTypes: Sequence, smilesList) -> Dict[str, PredictionTaskRet]:
     if modelTypes is None or len(modelTypes) == 0:
-        return defaultRet
+        raise PredictionException('We will support these model types as soon as possible!')
     portModelTypeDict = {}
     for modelType in modelTypes:
-        data = modelTypeAndPortDict.get(modelType, None)
+        data = LigandModelTypeAndPortDict.get(modelType, None)
         if data is not None and data[1] != 0:
             portModelTypeDict[data[1]] = data[0]
     if len(portModelTypeDict) > 0:
@@ -95,7 +96,7 @@ def predictSmiles(modelTypes: Sequence, smilesList, defaultRet=None) \
             ret[modelName] = modelRet
         return ret
     else:
-        return defaultRet
+        raise PredictionException('We will support these model types as soon as possible!')
 
 
 def predictOnce(client: DMEClient, port: int, smilesDict: dict):
