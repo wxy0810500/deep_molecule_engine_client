@@ -20,14 +20,14 @@ from django.urls import path, include
 
 BASE_URL = r'covid19/'
 PREDICTION_BASE_URL = r'service/prediction/<str:sType>/'
-SEARCH_BASE_URL = r'service/search/'
+SEARCH_BASE_URL = r'service/advancedSearch/'
 urlpatterns = [
     path(r'', views.tempRoot),
     path(BASE_URL, include([
         path(r'', views.index),
         path(r'admin/', admin.site.urls),
         path(PREDICTION_BASE_URL, include('prediction.urls')),
-        path(SEARCH_BASE_URL, include('search.urls'))
+        path(SEARCH_BASE_URL, include('advancedSearch.urls'))
         ])
     )
 ]

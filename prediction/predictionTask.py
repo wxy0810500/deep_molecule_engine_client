@@ -10,6 +10,8 @@ default_dme_conn_timeout = SERVER_CONFIG_DICT.get("timeout")
 LigandModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('ligand')
 StructureModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('structure')
 
+PREDICTION_TASK_TYPE = ""
+
 
 class PredictedRetUnit:
 
@@ -75,13 +77,13 @@ def predictLigand(modelTypes: Sequence, smilesList) -> Dict[str, PredictionTaskR
 
         # do tasks one by one
         for port, modelName in portModelTypeDict.items():
-            task_time, server_info, retUnitList, againDict = predictOnce(client, port, smilesDict)
+            task_time, server_info, retUnitList, againDict = predictOnce(client, port, smilesDict, None)
 
             # again的 再处理一次 处理5次，若还不行，则放弃处理
             times = 1
             while len(againDict) > 0 and times <= 5:
                 sleep(2)
-                a_task_time, a_server_info, a_retUnitList, againDict = predictOnce(client, port, smilesDict)
+                a_task_time, a_server_info, a_retUnitList, againDict = predictOnce(client, port, smilesDict, None)
                 if len(a_retUnitList) > 0:
                     retUnitList.extend(a_retUnitList)
                 times += 1
@@ -99,9 +101,9 @@ def predictLigand(modelTypes: Sequence, smilesList) -> Dict[str, PredictionTaskR
         raise PredictionException('We will support these model types as soon as possible!')
 
 
-def predictOnce(client: DMEClient, port: int, smilesDict: dict):
+def predictOnce(client: DMEClient, port: int, task, smilesDict: dict, aux_data):
     worker = client.make_worker(default_dme_server_host, port, default_dme_conn_timeout)
-    task_time, server_info, predicted_results = client.do_task(worker, smilesDict)
+    task_time, server_info, predicted_results = client.do_task(worker, smilesDict, aux_data)
     print(predicted_results)
     retUnitList = []
     againDict = {}

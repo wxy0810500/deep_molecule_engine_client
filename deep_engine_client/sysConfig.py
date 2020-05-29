@@ -13,5 +13,5 @@ with open(os.path.join(CUSTOM_CONFIG_URL, 'server_config.json'), 'r') as f:
 
 PREDICTION_TYPE_LIGAND = "ligand"
 PREDICTION_TYPE_STRUCTURE = "structure"
-SERVICE_TYPE_SEARCH = "search"
+SERVICE_TYPE_SEARCH = "advancedSearch"
 SERVICE_TYPE_PREDICTION = "prediction"

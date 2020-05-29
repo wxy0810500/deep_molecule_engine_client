@@ -8,5 +8,5 @@ def tempRoot(request):
 
 
 def index(request):
-    return redirect('/covid19/service/prediction/ligand/')
+    return render(request, 'index.html')
 

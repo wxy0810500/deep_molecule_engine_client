@@ -25,21 +25,9 @@
       ]
     },
     "structure": {
-      "B-RNA-dependent-RNA-polymerase": [
-        "B.1 Structure based RNA-dependent RNA polymerase AI model",
-        0
-      ],
-      "B-Helicase": [
-        "B.2 Structure based Helicase AI model",
-        0
-      ],
-      "B-3C-like-protease": [
-        "B.3 Structure based 3C-like protease AI model",
-        0
-      ],
-      "B-Papain-like": [
-        "B.4 Structure based Papain-like protease AI model",
-        0
+      "B-Structure-based-(none-docking)": [
+        "B. Structure based (none-docking) AI model",
+        7005
       ]
     }
   }

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import HttpResponse
 from .tables import PredictionResultTable
 from .predictionTask import predictLigand, PredictionTaskRet
@@ -10,7 +10,7 @@ from io import BytesIO
 from zipfile import ZipFile
 from typing import Dict
 from .exception import *
-import re
+
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
@@ -27,10 +27,6 @@ INPUT_TEMPLATE_FORMS = {
 
 def predictionIndex(request, sType: str):
     return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
-
-
-SMILES_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
-MAX_SMILES_LEN: int = 500
 
 
 def predict(request, sType: str):
@@ -55,7 +51,7 @@ def processLigand(inputForm):
     if 'name' == inputType:
         # query smiles by name
         pass
-    smilesList = filterInputSmiles(inputStr)
+    smilesList = LigandModelChoicesForm.filterInputSmiles(inputStr)
     preRet = predictLigand(modelTypes, smilesList)
 
     return formatRetTable(preRet)
@@ -76,11 +72,6 @@ def formatRetTable(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
-def filterInputSmiles(smiles: str):
-    smilesList = re.split(SMILES_SEPARATOR_RX, smiles.strip())
-    return [smiles.strip() for smiles in smilesList if (MAX_SMILES_LEN > len(smiles) > 0)]
-
-
 def uploadFile(request):
     if request.method == 'POST':
         form = StructurePDBFileForm(request.POST, request.FILES)
@@ -88,7 +79,7 @@ def uploadFile(request):
             return HttpResponse("no files for upload or no model types selected")
         smiles = handle_uploaded_file(request.FILES['f_smiles'])
         modelTypes = form.cleaned_data['modelTypes']
-        smilesList = filterInputSmiles(smiles)
+        smilesList = LigandModelChoicesForm.filterInputSmiles(smiles)
 
         preRet = predictLigand(modelTypes, smilesList)
         # 每个文件写入到一个csv中，最终写入zip中
