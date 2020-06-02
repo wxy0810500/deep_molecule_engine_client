@@ -26,11 +26,28 @@ class PredictionResultTable(tables.Table):
     #         "class": "c-label"
     #     }
     # })
-    smiles = tables.Column(orderable=False, verbose_name="Smiles", attrs={
+    input = tables.Column(orderable=False, verbose_name="Input{name|smiles}", attrs={
         "th": {
-            "class": "c-smiles"
+            "class": "c-input"
         },
         "td": {
-            "class": "c-smiles"
+            "class": "c-input"
         }
     })
+    drugName = tables.Column(orderable=False, verbose_name="drug_name", attrs={
+        "th": {
+            "class": "c-drugName"
+        },
+        "td": {
+            "class": "c-drugName"
+        }
+    })
+    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={
+        "th": {
+            "class": "c-cSmiles"
+        },
+        "td": {
+            "class": "c-cSmiles"
+        }
+    })
+

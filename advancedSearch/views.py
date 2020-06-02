@@ -3,10 +3,11 @@ from django.http import HttpResponse
 from deep_engine_client.forms import TextInputForm
 from deep_engine_client.sysConfig import *
 from smiles.cleanSmiles import cleanSmilesListSimply
-from smiles.searchService import searchDrugReferenceByCleanedSmiles
+from smiles.searchService import *
 from .service import *
 from .tables import SearchResultTable
 import pandas as pd
+from django.http import HttpResponse
 
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
@@ -28,27 +29,12 @@ def advancedSearch(request):
         return HttpResponse('invalid http method')
 
     inputForm = TextInputForm(request.POST)
+    if not inputForm.is_valid():
+        return HttpResponse(status=400)
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
 
-    if TextInputForm.INPUT_TYPE_DRUG_NAME == inputType:
-        inputDrugNameList = TextInputForm.filterInputDrugNames(inputStr)
-        searchDrugReferenceExactByName(inputDrugNameList)
-    else:
-        # smiles
-        inputSmilesList = TextInputForm.filterInputSmiles(inputStr)
-        # clean smiles
-        cleanedSmiles: list[tuple] = cleanSmilesListSimply(inputSmilesList)
-        csDF = pd.DataFrame(data=cleanedSmiles, columns=['input', 'cleaned_smiles', 'scaffolds'])
-        # query drug name
-        drugRefDF = searchDrugReferenceByCleanedSmiles(csDF)
-
-    # filter scaffolds in blacklist
-    validDrugRetDF = filterScaffoldInBlacklist(drugRefDF)
-
-    # query virus info
-    csRetDF = searchBroadSpectrumAntiviralDataByCleanedSmiles(validDrugRetDF)
-    scaffoldsRetDF = searchBroadSpectrumAntiviralDataByScaffolds(validDrugRetDF)
+    csRetDF, scaffoldsRetDF = doAdvancedSearch(inputType, inputStr)
 
     ret = {
         "exactMapTable": SearchResultTable(csRetDF.to_dict(orient='record')),

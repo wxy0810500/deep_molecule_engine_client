@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from .tables import PredictionResultTable
 from .predictionTask import predictLigand, PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
 from io import BytesIO
 from zipfile import ZipFile
-from typing import Dict
-from .exception import *
+from typing import Dict, Union, List
+from deep_engine_client.exception import *
+from smiles.searchService import searchDrugReferenceByTextInputData
 
 
 INPUT_TEMPLATE_FORMS = {
@@ -31,28 +32,30 @@ def predictionIndex(request, sType: str):
 
 def predict(request, sType: str):
     if not request.POST:
-        return HttpResponse("invalid http method")
+        return HttpResponse(status=400)
 
     if PREDICTION_TYPE_LIGAND == sType:
         inputForm = LigandModelChoicesForm(request.POST)
         if not inputForm.is_valid():
-            return HttpResponse("input data is invalid")
+            return HttpResponse(status=400)
         try:
             ctx = processLigand(inputForm)
-        except PredictionException as e:
+        except PredictionCommonException as e:
             return HttpResponse(e.message)
     return render(request, "result.html", {"retTables": ctx})
 
 
-def processLigand(inputForm):
+def processLigand(inputForm: LigandModelChoicesForm):
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
     modelTypes = inputForm.cleaned_data['modelTypes']
-    if 'name' == inputType:
-        # query smiles by name
-        pass
-    smilesList = LigandModelChoicesForm.filterInputSmiles(inputStr)
-    preRet = predictLigand(modelTypes, smilesList)
+
+    drugRefDF = searchDrugReferenceByTextInputData(inputType, inputStr)
+    if drugRefDF is None:
+        raise Http404
+    s = drugRefDF[['input', 'drug_name', 'cleaned_smiles']]
+    smilesDict = drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records')
+    preRet = predictLigand(modelTypes, smilesDict)
 
     return formatRetTable(preRet)
 
@@ -65,7 +68,9 @@ def formatRetTable(preRet: Dict[str, PredictionTaskRet]):
 
         rlt = [{"id": sid + 1,
                 "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
-                "smiles": preRetUnit.smiles}
+                "input": preRetUnit.input,
+                "drugName": preRetUnit.drugName,
+                "cleanedSmiles": preRetUnit.cleanedSmiles}
                for sid, preRetUnit in enumerate(preRetRecord.preResults)]
         modelCtx['tables'] = PredictionResultTable(rlt)
         ctx.append(modelCtx)

@@ -42,7 +42,7 @@ class DMEClient:
     def do_task(self, client_worker, task: str, SMILES_dict: Mapping, aux_data: bytes):
         """
         :param client_worker: a client worker instance returned by self.make_client
-        :param SMILES_dict: {sample_id, smiles}:
+        :param SMILES_dict: {sample_id:{'smiles':SMILES}}:
         :@param task: lbvs, sbvs
         :return: results,  list of string, predicted results, can be labeled or just numeric
                  err_codes, list of int
@@ -50,9 +50,9 @@ class DMEClient:
                  server_info, server information, string
         """
         server_inputs = []
-        for i, SMILES in SMILES_dict.items():
+        for i, smilesInfo in SMILES_dict.items():
             sample_id = str(i)
-            one_input = self.thriftDef.DME_input(sample_id, SMILES, task, aux_data)
+            one_input = self.thriftDef.DME_input(sample_id, smilesInfo['cleaned_smiles'], task, aux_data)
             server_inputs.append(one_input)
 
         time0 = time.time()
