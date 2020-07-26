@@ -1,5 +1,5 @@
 from django import forms
-from .sysConfig import SERVER_CONFIG_DICT
+from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 import re
 from typing import List
 
@@ -17,9 +17,11 @@ class TextInputForm(forms.Form):
     MAX_SMILES_LEN: int = 500
 
     inputType = forms.ChoiceField(widget=forms.RadioSelect, label="", required=True,
-                                  choices=[(INPUT_TYPE_DRUG_NAME, 'drug_name'), (INPUT_TYPE_SMILES, 'smiles')],
-                                  initial=[INPUT_TYPE_SMILES])
-    inputStr = forms.CharField(widget=forms.Textarea, label="", max_length=2000)
+                                  choices=[(INPUT_TYPE_DRUG_NAME, 'DRUG_NAMES'), (INPUT_TYPE_SMILES, 'SMILES')],
+                                  initial=[INPUT_TYPE_SMILES], )
+    inputStr = forms.CharField(widget=forms.Textarea, label="", max_length=2000, required=True,
+                               error_messages={"required": "Please enter the SMILES or "
+                                                           "NAMES of your compound, one per line"})
 
     @classmethod
     def filterInputSmiles(cls, smiles: str) -> List[str]:

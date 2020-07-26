@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)http://127.0.0.1:8000/covid19/service/prediction/ligand/submit/ -->
+<html lang="en">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>{% if pageTitle is not None %}
+               {{ pageTitle }} |
+             {% endif %}
+          GHDDI COVID-19 AI Engine</title>
+       {% load static %}
+        <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
+       <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
+   </head>
+   <body>
+      <div class="result-top">
+            <a href="http://www.ghddi.org">
+                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
+            </a>
+            <span>
+                <a href="{% url 'main' %}">
+                    GHDDI's Free AI Virtual Screening Service for COVID-19
+                </a>
+            </span>
+      </div>
+      <div class="inner results">
+         <button>
+             <a href="{{ backURL }}">
+                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
+             </a>
+         </button>
+         {% block tables %}
+         {% endblock %}
+      </div>
+      <div class="footer">
+        <button>
+             <a href="{{ backURL }}">
+                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
+             </a>
+         </button>
+        <p>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：
+            <a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;">
+                <span>京ICP备16047874号</span>
+            </a>
+        </p>
+      </div>
+   </body>
+</html>

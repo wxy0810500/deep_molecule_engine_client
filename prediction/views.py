@@ -1,27 +1,41 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render
+from django.shortcuts import render, reverse
 from django.http import HttpResponse, Http404
+
+from utils.fileUtils import handle_uploaded_file
 from .tables import PredictionResultTable
-from .predictionTask import predictLigand, PredictionTaskRet
+from .predictionTask import predictLigand, predictStructure, PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
 from io import BytesIO
 from zipfile import ZipFile
-from typing import Dict, Union, List
+from typing import Dict, List
 from deep_engine_client.exception import *
 from smiles.searchService import searchDrugReferenceByTextInputData
 
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
+        'finished': True,
         'inputForm': LigandModelChoicesForm(),
-        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}'
+        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
+        'plStatus': "active",
+        "pageTitle": "Ligand Based",
     },
     PREDICTION_TYPE_STRUCTURE: {
+        'finished': True,
         'inputForm': StructureInputForm(),
         'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
-        'pdbFileForm': StructurePDBFileForm()
+        'pdbFileForm': StructurePDBFileForm(),
+        'psStatus': "active",
+        "pageTitle": "Structure Based",
+    },
+    PREDICTION_TYPE_NETWORK: {
+        'finished': False,
+        'specialClass': "unfinished-model",
+        'pnStatus': "active",
+        "pageTitle": "Network Based",
     }
 }
 
@@ -42,22 +56,24 @@ def predict(request, sType: str):
             ctx = processLigand(inputForm)
         except PredictionCommonException as e:
             return HttpResponse(e.message)
-    return render(request, "result.html", {"retTables": ctx})
-
-
-def processLigand(inputForm: LigandModelChoicesForm):
-    inputType = inputForm.cleaned_data['inputType']
-    inputStr = inputForm.cleaned_data['inputStr']
-    modelTypes = inputForm.cleaned_data['modelTypes']
-
-    drugRefDF = searchDrugReferenceByTextInputData(inputType, inputStr)
-    if drugRefDF is None:
-        raise Http404
-    s = drugRefDF[['input', 'drug_name', 'cleaned_smiles']]
-    smilesDict = drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records')
-    preRet = predictLigand(modelTypes, smilesDict)
-
-    return formatRetTable(preRet)
+    elif PREDICTION_TYPE_STRUCTURE == sType:
+        inputForm = StructureInputForm(request.POST)
+        pdbForm = StructurePDBFileForm(request.POST, request.FILES)
+        if inputForm.is_valid() and pdbForm.is_valid():
+            try:
+                ctx = processStructure(request, inputForm)
+            except PredictionCommonException as e:
+                return HttpResponse(e.message)
+        else:
+            return HttpResponse(status=400)
+    else:
+        return HttpResponse(status=400)
+    return render(request, "preResult.html",
+                  {
+                      "retTables": ctx,
+                      "backURL": reverse('prediction_index', args=[sType]),
+                      "pageTitle": "Prediction Result"
+                  })
 
 
 def formatRetTable(preRet: Dict[str, PredictionTaskRet]):
@@ -77,7 +93,35 @@ def formatRetTable(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
-def uploadFile(request):
+def _getSmilesInfoListFromTextInputForm(inputForm: TextInputForm) -> List[dict]:
+    inputType = inputForm.cleaned_data['inputType']
+    inputStr = inputForm.cleaned_data['inputStr']
+
+    drugRefDF = searchDrugReferenceByTextInputData(inputType, inputStr)
+    return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records')
+
+
+def processLigand(inputForm: LigandModelChoicesForm):
+    smilesInfoList = _getSmilesInfoListFromTextInputForm(inputForm)
+    modelTypes = inputForm.cleaned_data['modelTypes']
+    preRet = predictLigand(modelTypes, smilesInfoList)
+
+    return formatRetTable(preRet)
+
+
+def processStructure(request, inputForm: StructureInputForm):
+    # get smiles
+    smilesInfoList = _getSmilesInfoListFromTextInputForm(inputForm)
+    # get pdbFile
+    pdbContent = handle_uploaded_file(request.FILES['uploadFile'])
+
+    modelTypes = inputForm.cleaned_data['modelTypes']
+    preRet = predictStructure(modelTypes, smilesInfoList, pdbContent)
+
+    return formatRetTable(preRet)
+
+
+def uploadSmilesByFile(request):
     if request.method == 'POST':
         form = StructurePDBFileForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -110,20 +154,3 @@ def uploadFile(request):
         return response
     else:
         return HttpResponse('invalid http method')
-
-
-def handle_uploaded_file(f):
-    ret = []
-    for chunk in f.chunks():
-        ret.append(str(chunk, 'utf-8'))
-    return ','.join(ret)
-
-
-def file_iterator(file, chunk_size=512):
-    with open(file) as f:
-        while True:
-            c = f.read(chunk_size)
-            if c:
-                yield c
-            else:
-                break

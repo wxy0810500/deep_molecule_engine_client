@@ -1,21 +1,18 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from deep_engine_client.forms import TextInputForm
+from django.shortcuts import render, reverse
 from deep_engine_client.sysConfig import *
-from smiles.cleanSmiles import cleanSmilesListSimply
-from smiles.searchService import *
 from .service import *
 from .tables import SearchResultTable
-import pandas as pd
 from django.http import HttpResponse
 
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
     SERVICE_TYPE_SEARCH: {
+        "finished": True,
         'inputForm': TextInputForm(),
         'actionURL': SERVICE_TYPE_SEARCH,
-        'statement': "We have curated over 7000 antiviral compounds and respective virus species available "
-                     "for search based on in vitro viral infection assay results (EC50<=1uM) and in vivo results"
+        'specialClass': "search-page",
+        'sStatus': "active",
+        "pageTitle": "Advanced Search"
     }
 }
 
@@ -38,7 +35,9 @@ def advancedSearch(request):
 
     ret = {
         "exactMapTable": SearchResultTable(csRetDF.to_dict(orient='record')),
-        "scaffoldMapTable": SearchResultTable(scaffoldsRetDF.to_dict(orient='record'))
+        "scaffoldMapTable": SearchResultTable(scaffoldsRetDF.to_dict(orient='record')),
+        "backURL": reverse('search_index'),
+        "pageTitle": "Search Result"
     }
 
     return render(request, 'searchResult.html', ret)

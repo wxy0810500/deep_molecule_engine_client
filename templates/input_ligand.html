@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)http://127.0.0.1:8000/covid19/service/prediction/ligand/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Deep Molecule Engine</title>
+    <link rel="stylesheet" type="text/css" href="public.css">
+    <script type="text/javascript">
+        window.validationForm = function () {
+            // 验证checkbox
+            const container = document.querySelector("#id_modelTypes");
+            const checkboxGroup = container.querySelectorAll("input[type='checkbox']");
+            let selectAtLeastOne = false;
+            for (let i = 0; i < checkboxGroup.length; i++) {
+                if (checkboxGroup[i].checked === true) {
+                    selectAtLeastOne = true;
+                }
+            }
+
+            if (!selectAtLeastOne) {
+                const _warn2 = document.getElementById("warning2");
+                _warn2.style.display = 'block';
+                setTimeout("document.getElementById(\"warning2\").style.display='none'", 3000)
+                return false
+            }
+            // textArea
+            const textArea = document.querySelector('textarea[name="inputStr"]').value
+            if (textArea === "") {
+                const _warn1 = document.getElementById("warning1");
+                _warn1.style.color = "block";
+                setTimeout("document.getElementById(\"warning1\").style.display='none'", 3000)
+                return false
+            }
+
+            return true
+        }
+</script>
+</head>
+
+<body>
+    <div class="top">
+        <div class="header">
+            <img class="" src="./imgs/logo.png" width="150px">
+        </div>
+        <div class="">
+            <h1>GHDDI's Free AI Virtual Screening Service for COVID-19</h1>
+            <nav class="crumbs">
+                <ul class="service-type-items clearfix">
+                    <a href="http://127.0.0.1:8000/covid19/service/prediction/ligand/">
+                        <li class="service-type-item">Ligand Based Engine</li></a>
+                    <a href="http://127.0.0.1:8000/covid19/service/prediction/structure/">
+                        <li class="service-type-item">Structure Based Engine</li></a>
+                    <a href="http://127.0.0.1:8000/covid19/service/prediction/network/">
+                        <li class="service-type-item">Network Based Engine</li></a>
+                    <a href="http://127.0.0.1:8000/covid19/service/advancedSearch/">
+                        <li class="service-type-item">Advanced Search Engine</li></a>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div class="inner">
+        <div class="input-area">
+            <form enctype="multipart/form-data" action="http://127.0.0.1:8000/covid19/service/prediction/ligand/submit/" method="post" onsubmit="return validationForm()">
+                <input type="hidden" name="csrfmiddlewaretoken" value="mqSWKNOmAZy94YGrNjBVyZHPuKuB5aWiT4bTS17Qo3l3x5m3CSFjgtdKJGvWMQmu">
+                <span class="tooltiptext">提示文本</span>
+                <ul id="id_inputType">
+                    <li><label for="id_inputType_0"><input type="radio" name="inputType" value="drugName" required="" id="id_inputType_0">
+                NAMES</label>
+                </li>
+                    <li><label for="id_inputType_1"><input type="radio" name="inputType" value="raw_smiles" required="" id="id_inputType_1" checked="">
+                SMILES</label>
+                </li>
+                </ul>
+                <span class="tooltiptext">提示文本</span>
+                <p class="warning" id="warning1" style="display: block;">* Please, fill in the blank</p>
+                <textarea name="inputStr" rows="10" maxlength="2000" id="id_inputStr"
+                placeholder="Please select and enter the SMILES or NAMES of your compound, one per line">
+                </textarea>
+
+                <ul id="id_modelTypes">
+                    <p class="warning" id="warning2" style="display: none;">* Please, select at least one AI model type!</p>
+                    <li><label for="id_modelTypes_0"><input type="checkbox" name="modelTypes" value="A-Heterogeneous antiviral" id="id_modelTypes_0">
+                 A.1 Ligand based Heterogeneous antiviral AI model</label>
+
+                </li>
+                    <li><label for="id_modelTypes_1"><input type="checkbox" name="modelTypes" value="A-Phenotypic antiviral" id="id_modelTypes_1">
+                 A.2 Ligand based Phenotypic antiviral AI model</label>
+
+                </li>
+                    <li><label for="id_modelTypes_2"><input type="checkbox" name="modelTypes" value="A-RNA-dependent-RNA-polymerase" id="id_modelTypes_2">
+                 A.3 Ligand based RNA-dependent RNA polymerase AI model</label>
+
+                </li>
+                    <li><label for="id_modelTypes_3"><input type="checkbox" name="modelTypes" value="A-Helicase" id="id_modelTypes_3">
+                 A.4 Ligand based Helicase AI model</label>
+
+                </li>
+                    <li><label for="id_modelTypes_4"><input type="checkbox" name="modelTypes" value="A-3C-like-protease" id="id_modelTypes_4">
+                 A.5 Ligand based  3C-like protease AI model</label>
+
+                </li>
+                </ul>
+                <input type="submit" value="submit">
+            </form>            
+        </div>
+    </div>
+
+</body></html>

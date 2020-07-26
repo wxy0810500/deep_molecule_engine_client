@@ -2,9 +2,11 @@ import pandas as pd
 import os
 from deep_engine_client.forms import TextInputForm
 from .cleanSmiles import cleanSmilesListSimply
-from typing import Union, List
+from typing import Union, List, Tuple
+import numpy as np
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
+# [drug_name,DrugBank ID,CID,smiles,canonical_smiles,cleaned_smiles,scaffolds]
 DRUG_REFERENCE_DB_DF: pd.DataFrame = pd.read_csv(os.path.join(DB_FILE_BASE_DIR, 'drug_reference.csv'))
 DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES: pd.Series = DRUG_REFERENCE_DB_DF['drug_name'].str.lower()
 DRUG_REFERENCE_WITH_NAME_AND_SMILES: pd.DataFrame = DRUG_REFERENCE_DB_DF[['drug_name', 'cleaned_smiles']]
@@ -16,60 +18,58 @@ def searchDrugReferenceByCleanedSmiles(dfWithCleanedSmiles: pd.DataFrame) -> pd.
     ret = searchRet.groupby('input').agg({'drug_name': lambda x: ','.join(x),
                                           'scaffolds': 'first',
                                           'cleaned_smiles': 'first'}).reset_index()
-
+    if ret.size == 0:
+        ret = None
     return ret
 
 
 def searchDrugReferenceExactlyByName(nameList: List):
+    """
+
+    @param nameList:
+    @return: [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds]
+    """
     isInList = DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES.isin(nameList)
     retDF = DRUG_REFERENCE_DB_DF[isInList]
-    if retDF.size == 0:
-        retDF = None
+
     return retDF
 
 
-def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Union[None, pd.DataFrame]:
+def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[bool, pd.DataFrame]:
+    """
+
+    @param inputType:
+    @param inputStr:
+    @return: ret , drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds]
+            若未查询到对应的smiles信息，则ret为true
+    """
     if TextInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         inputDrugNameList = TextInputForm.filterInputDrugNames(inputStr)
 
-        drugRefDF = searchDrugReferenceExactlyByName(inputDrugNameList)
+        drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         # 加入input 列
-        drugRefDF['input'] = drugRefDF['drug_name']
+        if drugRefDF.size != 0:
+            drugRefDF['input'] = drugRefDF['drug_name']
+            ret = True
+        else:
+            # 未查到对应的smiles
+            pass
     else:
         # smiles
         inputSmilesList = TextInputForm.filterInputSmiles(inputStr)
         # clean smiles
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)
+
         # clean entries without cleaned smiles
         cleanedSmiles = [entry for entry in cleanedSmiles if entry[1] is not None]
-        csDF = pd.DataFrame(data=cleanedSmiles, columns=['input', 'cleaned_smiles', 'scaffolds'])
+        if len(cleanedSmiles) > 0:
+            csDF = pd.DataFrame(data=cleanedSmiles, columns=['input', 'cleaned_smiles', 'scaffolds'])
 
-        # query drug name
-        drugRefDF = searchDrugReferenceByCleanedSmiles(csDF)
-        # 
-    if drugRefDF.size == 0:
-        drugRefDF = None
+            # query drug name
+            drugRefDF = searchDrugReferenceByCleanedSmiles(csDF)
+            if drugRefDF is None:
+                drugRefDF = csDF
+                drugRefDF['drug_name'] = np.nan
+        else:
+            drugRefDF = None
     return drugRefDF
-
-#
-# df = pd.read_csv(‘tox21_sample.csv')
-# dme = pd.read_csv('drug_reference.csv') #table2
-#
-# #cleaned smiles
-# dme_lookup = pd.merge(df, dme[['drug_name', 'DrugBank ID', 'CID', 'cleaned_smiles']], on='cleaned_smiles', how='inner')
-#
-# #Scaffolds
-# dme_lookup_sc = pd.merge(df[df['scaffolds'].notna()], dme[['drug_name', 'DrugBank ID', 'CID', 'scaffolds']], on='scaffolds', how='inner')
-#
-# #name lookup
-# df = pd.read_csv('dme_db_example.csv') #新的表
-# df['drug_name'] = df['drug_name'].str.lower()
-# #if individual string: str1 = str1.lower()
-#
-# dme['drug_name'] = dme['drug_name'].str.lower()
-#
-# _, i1, c1 = identify_duplicates2(df, dme, df_field='drug_name')
-# df_dme = df.iloc[i1, :]
-# colname = ['cleaned_smiles', 'scaffolds', 'DrugBank ID', 'CID']
-# for column in colname:
-#     df_dme = get_column_value(df_dme, dme, c1, data_field=column) #final table for smiles and scaffolds advancedSearch

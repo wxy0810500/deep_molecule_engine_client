@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://127.0.0.1:8000/covid19/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+        {% if pageTitle is not None %}
+        {{ pageTitle }} |
+        {% endif %}
+        GHDDI COVID-19 AI Engine</title>
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
+</head>
+<body>
+    <div class="top">
+        <div class="header">
+            <a href="http://www.ghddi.org">
+                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
+            </a>
+        </div>
+        <div class="">
+            <h1>
+            <a href="{% url 'main' %}">
+                GHDDI's Free AI Virtual Screening Service for COVID-19
+            </a>
+            </h1>
+            <nav class="crumbs">
+                <ul class="service-type-items clearfix">
+                    <a href="{% url 'prediction_index' sType='ligand'%}"><li class="service-type-item {{ plStatus }}">Ligand Based Engine</li></a>
+                    <a href="{% url 'prediction_index' sType='structure'%}"><li class="service-type-item {{ psStatus }}">Structure Based Engine</li></a>
+{#                    <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {{ pnStatus }}">Network Based Engine</li></a>#}
+                    <a href="{% url 'search_index'%}"><li class="service-type-item {{ sStatus }}">Advanced Search Engine</li></a>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+</body>
+<script>
+    function checkBoxSelectAtLeastOne() {
+        const container = document.querySelector("#id_modelTypes");
+        const checkboxGroup = container.querySelectorAll("input[type='checkbox']");
+        let selectAtLeastOne = false
+        for (let i = 0; i < checkboxGroup.length; i++) {
+            if (checkboxGroup[i].checked === true) {
+                selectAtLeastOne = true
+            }
+        }
+        if (!selectAtLeastOne) {
+            alert('Please, select at least one AI model type!')
+            return false
+        }
+
+    }
+
+
+</script>
+</html>

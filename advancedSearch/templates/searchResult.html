@@ -1,46 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Deep Molecule Engine</title>
-</head>
-<body>
-    <div class="con">
+   {% extends "resultPublic.html" %}
+    {% block tables %}
         {% load django_tables2 %}
-        <div class="results">
-            <h3>exact map</h3>
-            {% render_table exactMapTable %}
-            <hr>
-            <h3>scaffolds map</h3>
-            {% render_table scaffoldMapTable %}
-        </div>
-    </div>
-</body>
-<style>
-.con {
-    margin: 0 auto;
-    height: 100%;
-    overflow: auto;
-}
-table
-{
-    border-collapse:collapse;
-}
-table, th, td {
-    border:1px solid black;
-}
-th, td
-{
-    text-align:left;
-}
-
-{#div.exact-map, div.scaffold-map#}
-{#{#}
-{#    display: inline-block;#}
-{#    width: 47%;#}
-{#}#}
-{#div.exact-map {#}
-{#    padding: 2%;#}
-{#}#}
-</style>
-</html>
+        <h3>exact map</h3>
+        {% render_table exactMapTable %}
+        <h3>scaffolds map</h3>
+        {% render_table scaffoldMapTable %}
+    {% endblock %}

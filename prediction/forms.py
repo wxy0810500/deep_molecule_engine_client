@@ -13,7 +13,8 @@ class LigandModelChoicesForm(TextInputForm):
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
                                            required=True,
-                                           choices=ligandModelChoices)
+                                           choices=ligandModelChoices,
+                                           initial=ligandModelChoices[0])
 
     field_order = ['inputType', 'inputStr', 'modelTypes']
 
@@ -22,10 +23,13 @@ class StructureInputForm(TextInputForm):
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
                                            required=True,
-                                           choices=structureModelChoices)
+                                           choices=structureModelChoices,
+                                           initial=structureModelChoices[0])
 
     field_order = ['inputType', 'inputStr', 'modelTypes']
 
 
 class StructurePDBFileForm(forms.Form):
-    uploadFile = forms.FileField(widget=forms.FileInput, label="", required=True)
+    uploadFile = forms.FileField(widget=forms.FileInput(attrs={
+        "onchange": "document.getElementById('fileName').innerText=this.files[0].name"
+    }), label="", required=True)

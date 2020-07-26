@@ -1,116 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Deep Molecule Engine</title>
-</head>
-<body>
-    <div class="header">
-        <h1>GHDDI's Free AI Virtual Screening Service for COVID-19</h1>
-    </div>
-    <nav class="crumbs">
-        <ul class="service-type-items">
-            <li class="service-type-item"><a href="{% url 'prediction_index' sType='ligand'%}">Ligand Based Engine</a></li>
-            <li class="service-type-item"><a href="{% url 'prediction_index' sType='structure'%}">Structure Based Engine</a></li>
-            <li class="service-type-item"><a href="{% url 'prediction_index' sType='network'%}">Network Based Engine</a></li>
-            <li class="service-type-item"><a href="{% url 'search_index'%}">Advanced Search Engine</a></li>
-        </ul>
-    </nav>
-    <div class="con">
-        <h4> Please select and enter the SMILES or NAMES of your compound, one per line </h4>
-        <form  enctype="multipart/form-data" action="submit/" method="post">
-            {% csrf_token %}
-            {{ inputForm }}
-            {% if pdbFileForm is not None %}
-            <h4> Please upload the pdb file </h4>
-                {{ pdbFileForm }}
-                <br>
-            {% endif %}
-            <input type="submit" value="submit" />
-        </form>
-        {% if statement is not None %}
-            <h4>{{ statement }}</h4>
+{% extends "publicTop.html" %}
+{% block content %}
+    <div class="inner {{ specialClass }}">
+        <div class="input-area">
+        {% if finished %}
+            <form  enctype="multipart/form-data" action="submit/" method="post" name="dataForm"
+                onsubmit="return checkBoxSelectAtLeastOne()">
+                {% csrf_token %}
+                {{ inputForm }}
+                {% if pdbFileForm is not None %}
+                    <h4> Please upload the pdb file </h4>
+                    <div class="upload-area">
+                        {{ pdbFileForm }}
+                        <div class="upload" id="fileName">Select PDB file</div>
+
+                    </div>
+                {% endif %}
+                <input type="submit" value="submit"/>
+            </form>
+        {% else %}
+            <h4> the model is coming soon </h4>
         {% endif %}
+        </div>
+        {% block customBody %}
+        {% endblock %}
     </div>
-</body>
-<style>
-.crumbs{
-	width: 1000px;
-    margin: 0 auto;
-}
-.crumbs .service-type-items {
-    padding: 0;
-    margin: 0;
-}
-.crumbs .service-type-items li{
-    float: left;
-    width: 25%;
-    height: 50px;
-    background-color: #f4f4f4;
-    list-style: none;
-
-    box-sizing: border-box;
-    text-align: center;
-    border: 1px solid white;
-    line-height: 46px;
-}
-.crumbs .clear {
-	clear: both;
-}
-.con, .header {
-    background-color:#f4f4f4;
-    width: 1000px;
-    margin: auto;
-    height: 100%;
-    overflow: auto;
-}
-
-.header {
-    height: 60px;
-    line-height: 56px;
-    padding-left: 20px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-
-
-.con t1 {
-    margin-left: 2%;
-}
-.con h4 {
-    margin-left: 2%;
-}
-.con h3 {
-    margin-left: 2%;
-}
-.con h1, .header h1 {
-    margin: 0;
-}
-.con h2 {
-    margin-left: 1%;
-}
-
-textarea {
-    height: 100%;
-    width: 90%;
-    margin-left: 5%;
-}
-
-input[type="file"] {
-    padding-left: 5%;
-}
-input[type="submit"] {
-    padding: 15px 30px;
-    margin-top: 30px;
-    margin-left: 50px;
-}
-
-html {
-    height: 100%;
-}
-body {
-    height: 100%;
-}
-</style>
-</html>
+{% endblock %}
