@@ -30,6 +30,11 @@
          </button>
          {% block tables %}
          {% endblock %}
+         {% if invalidInputTable is not None %}
+             <h4>invalid input</h4>
+             {% load django_tables2 %}
+             {% render_table invalidInputTable %}
+         {% endif %}
       </div>
       <div class="footer">
         <button>

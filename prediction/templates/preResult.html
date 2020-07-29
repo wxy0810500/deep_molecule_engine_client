@@ -1,10 +1,13 @@
    {% extends "resultPublic.html" %}
     {% block tables %}
-        {% load django_tables2 %}
-        {% for table in retTables %}
-            <h3>{{ table.modelType }}</h3>
-            <h4>{{table.time}}</h4>
-            <h4>results</h4>
-            {% render_table table.tables %}
-        {% endfor %}
+        {% if retTables is not None %}
+            {% load django_tables2 %}
+
+            {% for table in retTables %}
+                <h3>{{ table.modelType }}</h3>
+                <h4>{{table.time}}</h4>
+                <h4>results</h4>
+                {% render_table table.tables %}
+            {% endfor %}
+        {% endif %}
     {% endblock %}

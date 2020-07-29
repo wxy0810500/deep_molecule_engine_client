@@ -35,16 +35,16 @@ def searchBroadSpectrumAntiviralDataByScaffolds(dfWithScaffolds: pd.DataFrame):
     return ret
 
 
-def doAdvancedSearch(inputType: str, inputStr: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    drugRefDF = searchDrugReferenceByTextInputData(inputType, inputStr)
+def doAdvancedSearch(inputType: str, inputStr: str) -> Tuple[pd.DataFrame, pd.DataFrame, List[str]]:
+    drugRefDF, invalidInputList = searchDrugReferenceByTextInputData(inputType, inputStr)
+    csRetDF = None
+    scaffoldsRetDF = None
+    if drugRefDF is not None and drugRefDF.size != 0:
+        # filter scaffolds in blacklist
+        validDrugRetDF = filterScaffoldInBlacklist(drugRefDF)
 
-    if drugRefDF is None:
-        raise Http404()
+        # query virus info
+        csRetDF = searchBroadSpectrumAntiviralDataByCleanedSmiles(validDrugRetDF)
+        scaffoldsRetDF = searchBroadSpectrumAntiviralDataByScaffolds(validDrugRetDF)
 
-    # filter scaffolds in blacklist
-    validDrugRetDF = filterScaffoldInBlacklist(drugRefDF)
-
-    # query virus info
-    csRetDF = searchBroadSpectrumAntiviralDataByCleanedSmiles(validDrugRetDF)
-    scaffoldsRetDF = searchBroadSpectrumAntiviralDataByScaffolds(validDrugRetDF)
-    return csRetDF, scaffoldsRetDF
+    return csRetDF, scaffoldsRetDF, invalidInputList

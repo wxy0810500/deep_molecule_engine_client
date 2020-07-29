@@ -3,6 +3,7 @@ from deep_engine_client.sysConfig import *
 from .service import *
 from .tables import SearchResultTable
 from django.http import HttpResponse
+from deep_engine_client.tables import InvalidInputsTable
 
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
@@ -31,13 +32,17 @@ def advancedSearch(request):
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
 
-    csRetDF, scaffoldsRetDF = doAdvancedSearch(inputType, inputStr)
+    csRetDF, scaffoldsRetDF, invalidInputList = doAdvancedSearch(inputType, inputStr)
 
     ret = {
-        "exactMapTable": SearchResultTable(csRetDF.to_dict(orient='record')),
-        "scaffoldMapTable": SearchResultTable(scaffoldsRetDF.to_dict(orient='record')),
         "backURL": reverse('search_index'),
         "pageTitle": "Search Result"
     }
+    if csRetDF:
+        ret["exactMapTable"] = SearchResultTable(csRetDF.to_dict(orient='record'))
+    if scaffoldsRetDF:
+        ret["scaffoldMapTable"] = SearchResultTable(scaffoldsRetDF.to_dict(orient='record'))
+    if invalidInputList and len(invalidInputList) > 0:
+        ret["invalidInputTable"] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
 
     return render(request, 'searchResult.html', ret)

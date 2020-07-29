@@ -13,7 +13,8 @@ structureModelChoices = tuple([(model, data[0]) for model, data in
 class TextInputForm(forms.Form):
     INPUT_TYPE_DRUG_NAME = 'drugName'
     INPUT_TYPE_SMILES = 'raw_smiles'
-    INPUT_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n| '
+    INPUT_NAME_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
+    INPUT_SMILES_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n| '
     MAX_SMILES_LEN: int = 500
 
     inputType = forms.ChoiceField(widget=forms.RadioSelect, label="", required=True,
@@ -25,10 +26,10 @@ class TextInputForm(forms.Form):
 
     @classmethod
     def filterInputSmiles(cls, smiles: str) -> List[str]:
-        smilesList = re.split(cls.INPUT_STR_SEPARATOR_RX, smiles.strip())
-        return [smiles.strip() for smiles in smilesList if (cls.MAX_SMILES_LEN > len(smiles) > 0)]
+        smilesList = re.split(cls.INPUT_SMILES_STR_SEPARATOR_RX, smiles.strip())
+        return [smiles.strip() for smiles in set(smilesList) if (cls.MAX_SMILES_LEN > len(smiles) > 0)]
 
     @classmethod
     def filterInputDrugNames(cls, drugNames: str) -> List[str]:
-        nameList = re.split(cls.INPUT_STR_SEPARATOR_RX, drugNames.strip())
-        return [name.strip().lower() for name in nameList]
+        nameList = re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip())
+        return [name.strip().lower() for name in set(nameList)]

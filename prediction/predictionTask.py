@@ -72,6 +72,16 @@ def predictStructure(modelTypes: Sequence, smilesInfoList: List, pdbContent) -> 
 
 def _doPredict(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoList, task, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
+    """
+
+
+    @param modelTypeAndPortDict:
+    @param modelTypes:
+    @param smilesInfoList:
+    @param task:
+    @param aux_data:
+    @return:
+    """
     if modelTypes is None or len(modelTypes) == 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     portModelTypeDict = {}

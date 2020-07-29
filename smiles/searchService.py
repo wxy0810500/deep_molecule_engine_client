@@ -18,8 +18,6 @@ def searchDrugReferenceByCleanedSmiles(dfWithCleanedSmiles: pd.DataFrame) -> pd.
     ret = searchRet.groupby('input').agg({'drug_name': lambda x: ','.join(x),
                                           'scaffolds': 'first',
                                           'cleaned_smiles': 'first'}).reset_index()
-    if ret.size == 0:
-        ret = None
     return ret
 
 
@@ -28,6 +26,7 @@ def searchDrugReferenceExactlyByName(nameList: List):
 
     @param nameList:
     @return: [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds]
+            if there is no result, retDF.size == 0
     """
     isInList = DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES.isin(nameList)
     retDF = DRUG_REFERENCE_DB_DF[isInList]
@@ -35,25 +34,30 @@ def searchDrugReferenceExactlyByName(nameList: List):
     return retDF
 
 
-def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[bool, pd.DataFrame]:
+def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[pd.DataFrame, List[str]]:
     """
 
     @param inputType:
     @param inputStr:
-    @return: ret , drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds]
-            若未查询到对应的smiles信息，则ret为true
+    @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
     """
+    invalidInputList = None
     if TextInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         inputDrugNameList = TextInputForm.filterInputDrugNames(inputStr)
 
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
-        # 加入input 列
-        if drugRefDF.size != 0:
+        if len(inputDrugNameList) == drugRefDF.size:
+            # 完全匹配，加入input 列
             drugRefDF['input'] = drugRefDF['drug_name']
-            ret = True
         else:
+            if drugRefDF.size != 0:
+                # 部分匹配，加入input列
+                drugRefDF['input'] = drugRefDF['drug_name']
             # 未查到对应的smiles
-            pass
+            validList = drugRefDF['drug_name'].to_list()
+            for validName in validList:
+                inputDrugNameList.remove(validName.lower())
+            invalidInputList = inputDrugNameList
     else:
         # smiles
         inputSmilesList = TextInputForm.filterInputSmiles(inputStr)
@@ -61,15 +65,16 @@ def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[b
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)
 
         # clean entries without cleaned smiles
+        invalidInputList = [entry[0] for entry in cleanedSmiles if entry[1] is None]
         cleanedSmiles = [entry for entry in cleanedSmiles if entry[1] is not None]
         if len(cleanedSmiles) > 0:
             csDF = pd.DataFrame(data=cleanedSmiles, columns=['input', 'cleaned_smiles', 'scaffolds'])
 
             # query drug name
             drugRefDF = searchDrugReferenceByCleanedSmiles(csDF)
-            if drugRefDF is None:
+            if drugRefDF.size == 0:
                 drugRefDF = csDF
                 drugRefDF['drug_name'] = np.nan
         else:
-            drugRefDF = None
-    return drugRefDF
+            drugRefDF = pd.DataFrame()
+    return drugRefDF, invalidInputList
