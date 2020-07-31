@@ -4,17 +4,24 @@
         <div class="input-area">
         {% if finished %}
             <form  enctype="multipart/form-data" action="submit/" method="post" name="dataForm"
-                onsubmit="return checkBoxSelectAtLeastOne()">
+                onsubmit="return checkAllInput()">
                 {% csrf_token %}
-                {{ inputForm }}
-                {% if pdbFileForm is not None %}
-                    <h4> Please upload the pdb file </h4>
-                    <div class="upload-area">
-                        {{ pdbFileForm }}
-                        <div class="upload" id="fileName">Select PDB file</div>
+                {{ inputForm.inputType }}
+                {{ inputForm.inputStr }}
+                <div class="upload-area">
+                    {{ inputForm.uploadInputFile }}
+                    <div class="upload" id="inputFileName">Select input file</div>
+                </div>
+                {{ inputForm.modelTypes }}
+                <div class="upload-area">
+                    {% if pdbFileForm is not None %}
+                        <h4> Please upload the pdb file </h4>
 
-                    </div>
-                {% endif %}
+                            {{ pdbFileForm }}
+                            <div class="upload" id="pdbFileName">Select PDB file</div>
+
+                    {% endif %}
+                </div>
                 <input type="submit" value="submit"/>
             </form>
         {% else %}

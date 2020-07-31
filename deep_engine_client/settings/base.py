@@ -109,3 +109,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+# upload file handler: excel
+
+FILE_UPLOAD_HANDLERS = [
+    'django_excel.ExcelMemoryFileUploadHandler',
+    'django_excel.TemporaryExcelFileUploadHandler'
+]

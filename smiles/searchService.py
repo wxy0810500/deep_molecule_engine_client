@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from deep_engine_client.forms import TextInputForm
+from deep_engine_client.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
 from typing import Union, List, Tuple
 import numpy as np
@@ -34,16 +34,18 @@ def searchDrugReferenceExactlyByName(nameList: List):
     return retDF
 
 
-def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[pd.DataFrame, List[str]]:
+def searchDrugReferenceByTextInputData(inputType: str, inputStr: str, inputFileStr: str) -> Tuple[pd.DataFrame, List[str]]:
     """
 
+    @param inputFileStr:
     @param inputType:
     @param inputStr:
     @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
     """
+
     invalidInputList = None
-    if TextInputForm.INPUT_TYPE_DRUG_NAME == inputType:
-        inputDrugNameList = TextInputForm.filterInputDrugNames(inputStr)
+    if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
+        inputDrugNameList = CommonInputForm.filterInputDrugNames(inputStr)
 
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         if len(inputDrugNameList) == drugRefDF.size:
@@ -60,7 +62,7 @@ def searchDrugReferenceByTextInputData(inputType: str, inputStr: str) -> Tuple[p
             invalidInputList = inputDrugNameList
     else:
         # smiles
-        inputSmilesList = TextInputForm.filterInputSmiles(inputStr)
+        inputSmilesList = CommonInputForm.filterInputSmiles(inputStr)
         # clean smiles
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)
 

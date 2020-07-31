@@ -6,6 +6,10 @@ def handle_uploaded_file(fs) -> str:
     return ','.join(ret)
 
 
+def handle_uploadedExcelFile(fileHandler):
+    pass
+
+
 def file_iterator(file, chunk_size=512):
     with open(file) as f:
         while True:

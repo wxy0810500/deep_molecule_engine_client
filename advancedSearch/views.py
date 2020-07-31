@@ -9,7 +9,7 @@ from deep_engine_client.tables import InvalidInputsTable
 INPUT_TEMPLATE_FORMS = {
     SERVICE_TYPE_SEARCH: {
         "finished": True,
-        'inputForm': TextInputForm(),
+        'inputForm': CommonInputForm(),
         'actionURL': SERVICE_TYPE_SEARCH,
         'specialClass': "search-page",
         'sStatus': "active",
@@ -26,7 +26,7 @@ def advancedSearch(request):
     if request.method != 'POST':
         return HttpResponse('invalid http method')
 
-    inputForm = TextInputForm(request.POST)
+    inputForm = CommonInputForm(request.POST)
     if not inputForm.is_valid():
         return HttpResponse(status=400)
     inputType = inputForm.cleaned_data['inputType']

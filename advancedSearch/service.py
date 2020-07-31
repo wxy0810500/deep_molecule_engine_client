@@ -1,4 +1,4 @@
-from deep_engine_client.forms import TextInputForm
+from deep_engine_client.forms import CommonInputForm
 from smiles.cleanSmiles import cleanSmilesListSimply
 from smiles.searchService import *
 from typing import Tuple, List
