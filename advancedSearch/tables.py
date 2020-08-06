@@ -2,6 +2,7 @@ import django_tables2 as tables
 
 
 class SearchResultTable(tables.Table):
+    columns = ['input(name|smiles)', 'drug_name', 'ST_VIRUS', 'PX', 'Cleaned smiles', 'Scaffolds']
     input = tables.Column(orderable=False, verbose_name="input(name|smiles)", attrs={
         "th": {
             "class": "c-input"

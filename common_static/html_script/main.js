@@ -16,8 +16,8 @@
         const textarea = document.querySelector("#id_inputStr");
         const uploadInputFile = document.querySelector("#id_uploadInputFile")
 
-        if (textarea.nodeValue == 'none' && uploadInputFile.nodeValue == 'none') {
-            alert('Please, type in the blank!')
+        if (textarea.value == "" && uploadInputFile.value == "") {
+            alert('Please, type in the blank of input string or select an input file')
             return false
         }
 

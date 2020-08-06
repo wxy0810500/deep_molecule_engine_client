@@ -1,7 +1,7 @@
 from django import forms
 from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 import re
-from typing import List
+from typing import List, Iterable
 
 # format  [(value1, name1), (value1, name1)]
 ligandModelChoices = tuple([(model, data[0]) for model, data in
@@ -29,15 +29,17 @@ class CommonInputForm(forms.Form):
     }), required=False, label="")
 
     @classmethod
-    def filterInputSmiles(cls, smiles: str) -> List[str]:
-        smilesList = re.split(cls.INPUT_SMILES_STR_SEPARATOR_RX, smiles.strip())
-        return [smiles.strip() for smiles in set(smilesList) if (cls.MAX_SMILES_LEN > len(smiles) > 0)]
+    def splitInputSmiles(cls, smiles: str) -> List[str]:
+        return re.split(cls.INPUT_SMILES_STR_SEPARATOR_RX, smiles.strip())
 
     @classmethod
-    def filterInputDrugNames(cls, drugNames: str) -> List[str]:
-        nameList = re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip())
+    def splitInputDrugNamesStr(cls, drugNames: str) -> List[str]:
+        return re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip())
+
+    @classmethod
+    def filterInputDrugNames(cls, nameList: Iterable[str]):
         return [name.strip().lower() for name in set(nameList)]
 
-    @staticmethod
-    def checkInputFile():
-        pass
+    @classmethod
+    def filterInputSmiles(cls, smilesList: Iterable[str]):
+        return [smiles.strip() for smiles in set(smilesList) if (cls.MAX_SMILES_LEN > len(smiles) > 0)]

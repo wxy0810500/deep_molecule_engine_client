@@ -9,7 +9,7 @@ structureModelChoices = tuple([(model, data[0]) for model, data in
                                SERVER_CONFIG_DICT.get("modelAndPort").get("structure").items()])
 
 
-class LigandModelChoicesForm(CommonInputForm):
+class LigandModelInputForm(CommonInputForm):
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
                                            required=True,
@@ -20,18 +20,17 @@ class LigandModelChoicesForm(CommonInputForm):
     # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']
 
 
-class StructureInputForm(CommonInputForm):
+class StructureModelInputForm(CommonInputForm):
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                            label="",
                                            required=True,
                                            choices=structureModelChoices,
                                            initial=structureModelChoices[0])
 
-    # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
-    # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']
-
-
-class StructurePDBFileForm(forms.Form):
     uploadPDBFile = forms.FileField(widget=forms.FileInput(attrs={
         "onchange": "document.getElementById('pdbFileName').innerText=this.files[0].name"
     }), label="", required=True)
+
+    # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
+    # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']
+

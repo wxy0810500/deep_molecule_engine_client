@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
-from utils.fileUtils import handle_uploaded_file, handle_uploadedExcelFile
+from utils.fileUtils import handle_uploaded_file
 from .tables import PredictionResultTable
 from .predictionTask import predictLigand, predictStructure, PredictionTaskRet
 from .forms import *
@@ -12,23 +12,23 @@ from io import BytesIO
 from zipfile import ZipFile
 from typing import Dict, List, Tuple
 from deep_engine_client.exception import *
-from smiles.searchService import searchDrugReferenceByTextInputData
+from smiles.searchService import searchDrugReferenceByInputRequest
 from deep_engine_client.tables import InvalidInputsTable
-
+from pyexcel import Book
+from django_excel import make_response
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
         'finished': True,
-        'inputForm': LigandModelChoicesForm(),
+        'inputForm': LigandModelInputForm(),
         'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
         'plStatus': "active",
         "pageTitle": "Ligand Based",
     },
     PREDICTION_TYPE_STRUCTURE: {
         'finished': True,
-        'inputForm': StructureInputForm(),
+        'inputForm': StructureModelInputForm(),
         'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
-        'pdbFileForm': StructurePDBFileForm(),
         'psStatus': "active",
         "pageTitle": "Structure Based",
     },
@@ -47,38 +47,67 @@ def predictionIndex(request, sType: str):
 
 def predict(request, sType: str):
     if not request.POST:
-        return HttpResponse(status=400)
+        return HttpResponseBadRequest()
 
     if PREDICTION_TYPE_LIGAND == sType:
-        inputForm = LigandModelChoicesForm(request.POST, request.FILES)
-        if not inputForm.is_valid():
-            return HttpResponse(status=400)
-        try:
-            retTables, invalidInputList = processLigand(request, inputForm)
-        except PredictionCommonException as e:
-            return HttpResponse(e.message)
-    elif PREDICTION_TYPE_STRUCTURE == sType:
-        inputForm = StructureInputForm(request.POST)
-        pdbForm = StructurePDBFileForm(request.POST, request.FILES)
-        if inputForm.is_valid() and pdbForm.is_valid():
-            try:
-                retTables, invalidInputList = processStructure(request, inputForm)
-            except PredictionCommonException as e:
-                return HttpResponse(e.message)
+        if len(request.FILES) > 0:
+            inputFile = True
+            inputForm = LigandModelInputForm(request.POST, request.FILES)
         else:
-            return HttpResponse(status=400)
+            inputFile = False
+            inputForm = LigandModelInputForm(request.POST)
+        if not inputForm.is_valid():
+            return HttpResponseBadRequest()
+        try:
+            preRet, invalidInputList = processLigand(request, inputForm)
+        except CommonException as e:
+            return HttpResponseBadRequest(e.message)
+    elif PREDICTION_TYPE_STRUCTURE == sType:
+        if len(request.FILES) > 1:
+            inputFile = True
+        else:
+            inputFile = False
+        inputForm = StructureModelInputForm(request.POST, request.FILES)
+        if inputForm.is_valid():
+            try:
+                preRet, invalidInputList = processStructure(request, inputForm)
+            except CommonException as e:
+                return HttpResponseBadRequest(e.message)
+        else:
+            return HttpResponseBadRequest()
     else:
-        return HttpResponse(status=400)
+        return HttpResponseBadRequest()
+    if inputFile:
+        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
+                             file_name=f'{sType}PredictionResult')
+    else:
+        retDict = {
+            "backURL": reverse('prediction_index', args=[sType]),
+            "pageTitle": "Prediction Result"
+        }
+        if preRet:
+            retDict['retTables'] = _formatRetTables(preRet)
+        if invalidInputList and len(invalidInputList) > 0:
+            retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
+        return render(request, "preResult.html", retDict)
 
-    retDict = {
-                  "backURL": reverse('prediction_index', args=[sType]),
-                  "pageTitle": "Prediction Result"
-              }
-    if retTables:
-        retDict['retTables'] = retTables
+
+def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
+    sheets = {}
+    headers = ['', 'Score', 'Input{name|smiles}', 'DrugName', 'CleanedSmiles']
+    if preRet:
+        for modelType, preRetRecord in preRet.items():
+            records = [[sid + 1,  # id
+                        '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,  # score
+                        preRetUnit.input,  # input
+                        preRetUnit.drugName,  # "drugName":
+                        preRetUnit.cleanedSmiles]  # "cleanedSmiles":
+                       for sid, preRetUnit in enumerate(preRetRecord.preResults)]
+            rows = [['time = %0.2fs' % preRetRecord.taskTime], headers] + records
+            sheets[modelType] = rows
     if invalidInputList and len(invalidInputList) > 0:
-        retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-    return render(request, "preResult.html", retDict)
+        sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
+    return Book(sheets)
 
 
 def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
@@ -98,29 +127,24 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
-def _getSmilesInfoListFromInputForm(request, inputForm: CommonInputForm) -> Tuple[List[dict], List[str]]:
-    inputType = inputForm.cleaned_data['inputType']
-    inputStr = inputForm.cleaned_data['inputStr']
-    inputFileStr = handle_uploadedExcelFile(request.FILES['uploadInputFile'])
-
-    drugRefDF, invalidInputList = searchDrugReferenceByTextInputData(inputType, inputStr, inputFileStr)
+def _getSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dict], List[str]]:
+    drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, inputForm)
     if drugRefDF.size == 0:
         return None, invalidInputList
     return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records'), invalidInputList
 
 
-def processLigand(request, inputForm: LigandModelChoicesForm):
+def processLigand(request, inputForm: LigandModelInputForm):
     smilesInfoList, invalidInputList = _getSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']
         preRet = predictLigand(modelTypes, smilesInfoList)
-        retTables = _formatRetTables(preRet)
     else:
-        retTables = None
-    return retTables, invalidInputList
+        preRet = None
+    return preRet, invalidInputList
 
 
-def processStructure(request, inputForm: StructureInputForm):
+def processStructure(request, inputForm: StructureModelInputForm):
     # get smiles
     smilesInfoList, invalidInputList = _getSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
@@ -129,42 +153,40 @@ def processStructure(request, inputForm: StructureInputForm):
 
         modelTypes = inputForm.cleaned_data['modelTypes']
         preRet = predictStructure(modelTypes, smilesInfoList, pdbContent)
-        retTables = _formatRetTables(preRet)
     else:
-        retTables = None
-    return retTables, invalidInputList
+        preRet = None
+    return preRet, invalidInputList
 
-
-def uploadSmilesByFile(request):
-    if request.method == 'POST':
-        form = StructurePDBFileForm(request.POST, request.FILES)
-        if not form.is_valid():
-            return HttpResponse("no files for upload or no model types selected")
-        smiles = handle_uploaded_file(request.FILES['f_smiles'])
-        modelTypes = form.cleaned_data['modelTypes']
-        smilesList = LigandModelChoicesForm.filterInputSmiles(smiles)
-
-        preRet = predictLigand(modelTypes, smilesList)
-        # 每个文件写入到一个csv中，最终写入zip中
-        outputZipIO = BytesIO()
-        outputZip = ZipFile(outputZipIO, "a")
-
-        for modelType, preRetRecord in preRet.items():
-            csvContent = 'modelType:%s\n time = %0.2fs\n score, smiles\n%s' \
-                         % (modelType, preRetRecord.taskTime,
-                            "\n".join(["%0.4f,%s" % (preRetUnit.score, preRetUnit.smiles)
-                                       for preRetUnit in preRetRecord.preResults])
-                            )
-            outputZip.writestr("{}.csv".format(modelType), csvContent)
-
-        for file in outputZip.filelist:
-            file.create_system = 0
-
-        outputZip.close()
-        outputZipIO.seek(0)
-        response = HttpResponse(outputZipIO, content_type="application/zip")
-        response['Content-Disposition'] = 'attachment;filename="result.zip"'
-
-        return response
-    else:
-        return HttpResponse('invalid http method')
+# def uploadSmilesByFile(request):
+#     if request.method == 'POST':
+#         form = StructurePDBFileForm(request.POST, request.FILES)
+#         if not form.is_valid():
+#             return HttpResponse("no files for upload or no model types selected")
+#         smiles = handle_uploaded_file(request.FILES['f_smiles'])
+#         modelTypes = form.cleaned_data['modelTypes']
+#         smilesList = LigandModelChoicesForm.filterInputSmiles(smiles)
+#
+#         preRet = predictLigand(modelTypes, smilesList)
+#         # 每个文件写入到一个csv中，最终写入zip中
+#         outputZipIO = BytesIO()
+#         outputZip = ZipFile(outputZipIO, "a")
+#
+#         for modelType, preRetRecord in preRet.items():
+#             csvContent = 'modelType:%s\n time = %0.2fs\n score, smiles\n%s' \
+#                          % (modelType, preRetRecord.taskTime,
+#                             "\n".join(["%0.4f,%s" % (preRetUnit.score, preRetUnit.smiles)
+#                                        for preRetUnit in preRetRecord.preResults])
+#                             )
+#             outputZip.writestr("{}.csv".format(modelType), csvContent)
+#
+#         for file in outputZip.filelist:
+#             file.create_system = 0
+#
+#         outputZip.close()
+#         outputZipIO.seek(0)
+#         response = HttpResponse(outputZipIO, content_type="application/zip")
+#         response['Content-Disposition'] = 'attachment;filename="result.zip"'
+#
+#         return response
+#     else:
+#         return HttpResponse('invalid http method')

@@ -14,10 +14,10 @@
                 </div>
                 {{ inputForm.modelTypes }}
                 <div class="upload-area">
-                    {% if pdbFileForm is not None %}
+                    {% if inputForm.uploadPDBFile is not None %}
                         <h4> Please upload the pdb file </h4>
 
-                            {{ pdbFileForm }}
+                            {{ inputForm.uploadPDBFile }}
                             <div class="upload" id="pdbFileName">Select PDB file</div>
 
                     {% endif %}

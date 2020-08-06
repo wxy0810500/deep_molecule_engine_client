@@ -23,18 +23,18 @@
             </span>
       </div>
       <div class="inner results">
-         <button>
-             <a href="{{ backURL }}">
+        <button>
+            <a href="{{ backURL }}">
                 <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
-             </a>
-         </button>
-         {% block tables %}
-         {% endblock %}
+            </a>
+        </button>
+            {% block tables %}
+            {% endblock %}
          {% if invalidInputTable is not None %}
-             <h4>invalid input</h4>
-             {% load django_tables2 %}
-             {% render_table invalidInputTable %}
-         {% endif %}
+            <h4>invalid input</h4>
+            {% load django_tables2 %}
+            {% render_table invalidInputTable %}
+        {% endif %}
       </div>
       <div class="footer">
         <button>

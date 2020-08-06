@@ -5,8 +5,10 @@ from typing import Tuple, List
 from django.http import Http404
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
-BROAD_SPECTRUM_ANTIVIRAL_DB_DF: pd.DataFrame = pd.read_csv(os.path.join(DB_FILE_BASE_DIR,
-                                                                        'broad_spectrum_antiviral.csv'))
+BROAD_SPECTRUM_ANTIVIRAL_DB_DF: pd.DataFrame = \
+    pd.read_csv(os.path.join(DB_FILE_BASE_DIR,
+                             'broad_spectrum_antiviral.csv'))[
+        ['drug_name', 'PX', 'ST_VIRUS', 'cleaned_smiles', 'scaffolds']]
 BROAD_SPECTRUM_ANTIVIRAL_DB_WITHOUT_SCAFFOLDS_DF: pd.DataFrame = \
     BROAD_SPECTRUM_ANTIVIRAL_DB_DF.drop(['scaffolds', 'drug_name'], axis=1)
 BROAD_SPECTRUM_ANTIVIRAL_DB_WITHOUT_CLEANED_SMILES_DF: pd.DataFrame = \
@@ -35,8 +37,8 @@ def searchBroadSpectrumAntiviralDataByScaffolds(dfWithScaffolds: pd.DataFrame):
     return ret
 
 
-def doAdvancedSearch(inputType: str, inputStr: str) -> Tuple[pd.DataFrame, pd.DataFrame, List[str]]:
-    drugRefDF, invalidInputList = searchDrugReferenceByTextInputData(inputType, inputStr)
+def doAdvancedSearch(request, inputForm) -> Tuple[pd.DataFrame, pd.DataFrame, List[str]]:
+    drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, inputForm)
     csRetDF = None
     scaffoldsRetDF = None
     if drugRefDF is not None and drugRefDF.size != 0:

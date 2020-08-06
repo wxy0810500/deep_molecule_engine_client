@@ -2,8 +2,10 @@ import pandas as pd
 import os
 from deep_engine_client.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
-from typing import Union, List, Tuple
+from typing import List, Tuple
 import numpy as np
+from utils.fileUtils import handle_uploadedExcelFile
+from deep_engine_client.exception import CommonException
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 # [drug_name,DrugBank ID,CID,smiles,canonical_smiles,cleaned_smiles,scaffolds]
@@ -34,19 +36,30 @@ def searchDrugReferenceExactlyByName(nameList: List):
     return retDF
 
 
-def searchDrugReferenceByTextInputData(inputType: str, inputStr: str, inputFileStr: str) -> Tuple[pd.DataFrame, List[str]]:
+def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
     """
 
-    @param inputFileStr:
-    @param inputType:
-    @param inputStr:
     @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
     """
+    inputType = inputForm.cleaned_data['inputType']
+    inputStr = inputForm.cleaned_data['inputStr']
+    if request.FILES and request.FILES.get('uploadInputFile', None):
+        fileInputList = handle_uploadedExcelFile(request.FILES['uploadInputFile'])
+    else:
+        fileInputList = None
 
     invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
-        inputDrugNameList = CommonInputForm.filterInputDrugNames(inputStr)
-
+        if inputStr:
+            inputDrugNameList: List = CommonInputForm.splitInputDrugNamesStr(inputStr)
+            if fileInputList is not None:
+                inputDrugNameList.extend(fileInputList)
+        else:
+            if fileInputList is not None:
+                inputDrugNameList = fileInputList
+            else:
+                raise CommonException("both input string and file are empty")
+        inputDrugNameList = CommonInputForm.filterInputDrugNames(inputDrugNameList)
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         if len(inputDrugNameList) == drugRefDF.size:
             # 完全匹配，加入input 列
@@ -61,8 +74,18 @@ def searchDrugReferenceByTextInputData(inputType: str, inputStr: str, inputFileS
                 inputDrugNameList.remove(validName.lower())
             invalidInputList = inputDrugNameList
     else:
-        # smiles
-        inputSmilesList = CommonInputForm.filterInputSmiles(inputStr)
+        if inputStr:
+            inputSmilesList: List = CommonInputForm.splitInputSmiles(inputStr)
+            if fileInputList is not None:
+                inputSmilesList.extend(fileInputList)
+        else:
+            if fileInputList is not None:
+                inputSmilesList = fileInputList
+            else:
+                raise CommonException("both input string and file are empty")
+
+        inputSmilesList = CommonInputForm.filterInputSmiles(inputSmilesList)
+
         # clean smiles
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)
 
