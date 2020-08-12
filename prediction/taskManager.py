@@ -109,7 +109,6 @@ def _processOneTask(client: DMEClient, port: int, taskType, smilesDict: dict, au
     retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
     modelRet = PredictionTaskRet(task_time, server_info, retUnitList)
 
-
 def _predictOnce(client: DMEClient, port: int, task, smilesDict: dict, aux_data):
     worker = client.make_worker(default_dme_server_host, port, default_dme_conn_timeout)
     task_time, server_info, predicted_results = client.do_task(worker, task, smilesDict, aux_data)
