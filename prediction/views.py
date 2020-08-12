@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 
 from utils.fileUtils import handle_uploaded_file
 from .tables import PredictionResultTable
 from .predictionTask import predictLigand, predictStructure, PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
-from io import BytesIO
-from zipfile import ZipFile
 from typing import Dict, List, Tuple
 from deep_engine_client.exception import *
 from smiles.searchService import searchDrugReferenceByInputRequest
