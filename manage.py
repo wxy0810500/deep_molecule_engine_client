@@ -16,8 +16,8 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-
-    initProcessPool(processOneTask)
+    if sys.argv[1] == 'runserver':
+        initProcessPool(processOneTask)
     execute_from_command_line(sys.argv)
 
 
