@@ -5,7 +5,7 @@ from django.http import HttpResponseBadRequest
 
 from utils.fileUtils import handle_uploaded_file
 from .tables import PredictionResultTable
-from .predictionTask import predictLigand, predictStructure, PredictionTaskRet
+from .predictionTask import PredictionTaskRet, predictStructure, predictLigand
 from .forms import *
 from deep_engine_client.sysConfig import *
 from typing import Dict, List, Tuple
@@ -76,7 +76,7 @@ def predict(request, sType: str):
     else:
         return HttpResponseBadRequest()
     if inputFile:
-        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
+        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='xls',
                              file_name=f'{sType}PredictionResult')
     else:
         retDict = {
