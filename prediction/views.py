@@ -76,7 +76,7 @@ def predict(request, sType: str):
     else:
         return HttpResponseBadRequest()
     if inputFile:
-        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='xls',
+        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
                              file_name=f'{sType}PredictionResult')
     else:
         retDict = {
