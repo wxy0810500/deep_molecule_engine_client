@@ -12,5 +12,5 @@ import os
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'deep_engine_client.settings.settings')
-
+os.environ.setdefault('RUNTIME_COMMAND', 'runserver')
 application = get_wsgi_application()
