@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_tables2',
+    'webpack_loader'
 ]
 
 MIDDLEWARE = [
@@ -117,3 +118,25 @@ FILE_UPLOAD_HANDLERS = [
     'django_excel.ExcelMemoryFileUploadHandler',
     'django_excel.TemporaryExcelFileUploadHandler'
 ]
+
+
+# 这个是默认设置，Django 默认会在 STATICFILES_DIRS中的文件夹 和 各app下的static文件夹中找文件
+# 注意有先后顺序，找到了就不再继续找了
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.0/howto/static-files/
+STATIC_URL = '/static/'
+
+# 其它 存放静态文件的文件夹，可以用来存放项目中公用的静态文件，里面不能包含 STATIC_ROOT
+# 如果不想用 STATICFILES_DIRS 可以不用，都放在 app 里的 common_static 中也可以
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "common_static"),
+)
+
+
+# # frontend configuration
+# FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')

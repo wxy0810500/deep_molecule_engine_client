@@ -55,7 +55,7 @@ def predict(request, sType: str):
             inputFile = False
             inputForm = LigandModelInputForm(request.POST)
         if not inputForm.is_valid():
-            return HttpResponseBadRequest()
+            return return400ErrorPage(request, inputForm)
         try:
             preRet, invalidInputList = processLigand(request, inputForm)
         except CommonException as e:
@@ -72,7 +72,7 @@ def predict(request, sType: str):
             except CommonException as e:
                 return HttpResponseBadRequest(e.message)
         else:
-            return HttpResponseBadRequest()
+            return return400ErrorPage(request, inputForm)
     else:
         return HttpResponseBadRequest()
     if inputFile:

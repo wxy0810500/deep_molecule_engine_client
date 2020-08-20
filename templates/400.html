@@ -22,7 +22,13 @@
 				<h3>Bad request!</h3>
 				<h1><span>4</span><span>0</span><span>0</span></h1>
 			</div>
-			<h2>Sorry, the request is invalid</h2>
+            {% if errorForm is not None %}
+                {% for key, value in errorForm.errors.items %}
+                    <h2>{{ value }}</h2>
+                {% endfor %}
+            {% else %}
+			    <h2>Sorry, the request is invalid</h2>
+            {% endif %}
 		</div>
 	</div>
 

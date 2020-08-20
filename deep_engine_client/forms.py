@@ -2,6 +2,7 @@ from django import forms
 from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 import re
 from typing import List, Iterable
+from .fields import RestrictedFileField
 
 # format  [(value1, name1), (value1, name1)]
 ligandModelChoices = tuple([(model, data[0]) for model, data in
@@ -24,9 +25,9 @@ class CommonInputForm(forms.Form):
     # error_messages={"required": "Please enter the SMILES or "
     #                             "NAMES of your compound, one per line"})
 
-    uploadInputFile = forms.FileField(widget=forms.FileInput(attrs={
+    uploadInputFile = RestrictedFileField(widget=forms.FileInput(attrs={
         "onchange": "document.getElementById('inputFileName').innerText=this.files[0].name"
-    }), required=False, label="")
+    }), required=False, label="", max_upload_size=10000,)  # 2.5M
 
     @classmethod
     def splitInputSmiles(cls, smiles: str) -> List[str]:

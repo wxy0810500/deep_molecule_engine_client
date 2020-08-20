@@ -2,11 +2,11 @@ from django.shortcuts import render, reverse
 from deep_engine_client.sysConfig import *
 from .service import *
 from .tables import SearchResultTable
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse
+from deep_engine_client.exception import return400ErrorPage
 from deep_engine_client.tables import InvalidInputsTable
 from django_excel import make_response
 from pyexcel import Book
-import pandas as pd
 
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
@@ -35,7 +35,7 @@ def advancedSearch(request):
         inputFile = False
         inputForm = CommonInputForm(request.POST)
     if not inputForm.is_valid():
-        return HttpResponseBadRequest()
+        return return400ErrorPage(request, inputForm)()
 
     csRetDF, scaffoldsRetDF, invalidInputList = doAdvancedSearch(request, inputForm)
     if inputFile:
