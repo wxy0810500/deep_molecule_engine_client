@@ -19,7 +19,7 @@
     box-shadow: 0 0 10px 0 #eee;
     font-size: 14px;
     border-radius: 3px;
-
+    border:2px solid black;
     /* 让消息内部的三个元素（图标、文本、关闭按钮）可以垂直水平居中 */
     display: flex;
     align-items: center;
