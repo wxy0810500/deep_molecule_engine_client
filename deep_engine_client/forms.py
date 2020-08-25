@@ -27,7 +27,7 @@ class CommonInputForm(forms.Form):
 
     uploadInputFile = RestrictedFileField(widget=forms.FileInput(attrs={
         "onchange": "document.getElementById('inputFileName').innerText=this.files[0].name"
-    }), required=False, label="", max_upload_size=10000,)  # 2.5M
+    }), required=False, label="", max_upload_size=2621440,)  # 2.5M
 
     @classmethod
     def splitInputSmiles(cls, smiles: str) -> List[str]:

@@ -1,0 +1,14 @@
+.alert-box{
+    text-align: center;
+    border: 1px solid #eee;
+    width: 330px;
+    height: 130px;
+    margin: 10% auto 0 auto;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px #ccc;
+}
+
+.btn-area{
+    border-top: 1px solid #eee;
+    padding: 15px;
+}
