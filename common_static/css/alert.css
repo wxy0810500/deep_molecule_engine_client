@@ -1,14 +1,16 @@
 .alert-box{
     text-align: center;
-    border: 1px solid #eee;
-    width: 330px;
+    border: 1px solid #111111;
+    width: 400px;
     height: 130px;
-    margin: 10% auto 0 auto;
     border-radius: 5px;
     box-shadow: 5px 5px 10px #ccc;
+    position: absolute;
+    z-index: 99999;
+    top: 20%;
+    left: calc(50% - 200px);
+    background-color: white;
 }
 
-.btn-area{
-    border-top: 1px solid #eee;
-    padding: 15px;
-}
+.btn-area{border-top: 1px solid #eee; padding: 15px;}
+input[type="button"]{width: 65px; height: 35px;}
