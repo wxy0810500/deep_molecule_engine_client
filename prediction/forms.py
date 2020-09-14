@@ -7,6 +7,8 @@ ligandModelChoices = tuple([(model, data[0]) for model, data in
                             SERVER_CONFIG_DICT.get("modelAndPort").get("ligand").items()])
 structureModelChoices = tuple([(model, data[0]) for model, data in
                                SERVER_CONFIG_DICT.get("modelAndPort").get("structure").items()])
+networkModelChoices = tuple([(model, data[0]) for model, data in
+                             SERVER_CONFIG_DICT.get("modelAndPort").get("network").items()])
 
 
 class LigandModelInputForm(CommonInputForm):
@@ -34,3 +36,10 @@ class StructureModelInputForm(CommonInputForm):
     # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
     # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']
 
+
+class NetworkModelInputForm(CommonInputForm):
+    modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+                                           label="",
+                                           required=True,
+                                           choices=networkModelChoices,
+                                           initial=networkModelChoices[0])

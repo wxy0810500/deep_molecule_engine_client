@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 from .taskManager import initProcessPool
 from .predictionTask import processOneTask
+from .service import initNetworkDb
 import os
 
 
@@ -11,3 +12,6 @@ class PredictionConfig(AppConfig):
         cmd = os.environ.get('RUNTIME_COMMAND')
         if cmd and cmd == 'runserver':
             initProcessPool(processOneTask)
+            initNetworkDb()
+
+

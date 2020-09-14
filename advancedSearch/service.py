@@ -1,8 +1,5 @@
-from deep_engine_client.forms import CommonInputForm
-from smiles.cleanSmiles import cleanSmilesListSimply
 from smiles.searchService import *
 from typing import Tuple, List
-from django.http import Http404
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 BROAD_SPECTRUM_ANTIVIRAL_DB_DF: pd.DataFrame = \

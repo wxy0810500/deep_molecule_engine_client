@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render, reverse
+from django.shortcuts import reverse
 from django.http import HttpResponseBadRequest
 
-from utils.fileUtils import handle_uploaded_file
+from .service import processLigand, processStructure, processNetWork
 from .tables import PredictionResultTable
-from .predictionTask import PredictionTaskRet, predictStructure, predictLigand
+from .predictionTask import PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
-from typing import Dict, List, Tuple
+from typing import Dict
 from deep_engine_client.exception import *
-from smiles.searchService import searchDrugReferenceByInputRequest
 from deep_engine_client.tables import InvalidInputsTable
 from pyexcel import Book
 from django_excel import make_response
@@ -31,63 +30,13 @@ INPUT_TEMPLATE_FORMS = {
         "pageTitle": "Structure Based",
     },
     PREDICTION_TYPE_NETWORK: {
-        'finished': False,
-        'specialClass': "unfinished-model",
+        'finished': True,
+        'inputForm': NetworkModelInputForm(),
+        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
         'pnStatus': "active",
         "pageTitle": "Network Based",
     }
 }
-
-
-def predictionIndex(request, sType: str):
-    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
-
-
-def predict(request, sType: str):
-    if not request.POST:
-        return HttpResponseBadRequest()
-
-    if PREDICTION_TYPE_LIGAND == sType:
-        if len(request.FILES) > 0:
-            inputFile = True
-            inputForm = LigandModelInputForm(request.POST, request.FILES)
-        else:
-            inputFile = False
-            inputForm = LigandModelInputForm(request.POST)
-        if not inputForm.is_valid():
-            return return400ErrorPage(request, inputForm)
-        try:
-            preRet, invalidInputList = processLigand(request, inputForm)
-        except CommonException as e:
-            return HttpResponseBadRequest(e.message)
-    elif PREDICTION_TYPE_STRUCTURE == sType:
-        if len(request.FILES) > 1:
-            inputFile = True
-        else:
-            inputFile = False
-        inputForm = StructureModelInputForm(request.POST, request.FILES)
-        if inputForm.is_valid():
-            try:
-                preRet, invalidInputList = processStructure(request, inputForm)
-            except CommonException as e:
-                return HttpResponseBadRequest(e.message)
-        else:
-            return return400ErrorPage(request, inputForm)
-    else:
-        return HttpResponseBadRequest()
-    if inputFile:
-        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
-                             file_name=f'{sType}PredictionResult')
-    else:
-        retDict = {
-            "backURL": reverse('prediction_index', args=[sType]),
-            "pageTitle": "Prediction Result"
-        }
-        if preRet:
-            retDict['retTables'] = _formatRetTables(preRet)
-        if invalidInputList and len(invalidInputList) > 0:
-            retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-        return render(request, "preResult.html", retDict)
 
 
 def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
@@ -125,35 +74,71 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
-def _getSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dict], List[str]]:
-    drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, inputForm)
-    if drugRefDF.size == 0:
-        return None, invalidInputList
-    return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records'), invalidInputList
+def predict(request, sType: str):
+    if not request.POST:
+        return HttpResponseBadRequest()
 
-
-def processLigand(request, inputForm: LigandModelInputForm):
-    smilesInfoList, invalidInputList = _getSmilesInfoListFromInputForm(request, inputForm)
-    if smilesInfoList:
-        modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictLigand(modelTypes, smilesInfoList)
+    if PREDICTION_TYPE_LIGAND == sType:
+        if len(request.FILES) > 0:
+            inputFile = True
+            inputForm = LigandModelInputForm(request.POST, request.FILES)
+        else:
+            inputFile = False
+            inputForm = LigandModelInputForm(request.POST)
+        if not inputForm.is_valid():
+            return return400ErrorPage(request, inputForm)
+        try:
+            preRet, invalidInputList = processLigand(request, inputForm)
+        except CommonException as e:
+            return HttpResponseBadRequest(e.message)
+    elif PREDICTION_TYPE_STRUCTURE == sType:
+        if len(request.FILES) > 1:
+            inputFile = True
+        else:
+            inputFile = False
+        inputForm = StructureModelInputForm(request.POST, request.FILES)
+        if inputForm.is_valid():
+            try:
+                preRet, invalidInputList = processStructure(request, inputForm)
+            except CommonException as e:
+                return HttpResponseBadRequest(e.message)
+        else:
+            return return400ErrorPage(request, inputForm)
+    elif PREDICTION_TYPE_LIGAND == sType:
+        if len(request.FILES) > 0:
+            inputFile = True
+            inputForm = NetworkModelInputForm(request.POST, request.FILES)
+        else:
+            inputFile = False
+            inputForm = NetworkModelInputForm(request.POST)
+        if not inputForm.is_valid():
+            return return400ErrorPage(request, inputForm)
+        try:
+            preRet, invalidInputList = processNetWork(request, inputForm)
+        except CommonException as e:
+            return HttpResponseBadRequest(e.message)
     else:
-        preRet = None
-    return preRet, invalidInputList
-
-
-def processStructure(request, inputForm: StructureModelInputForm):
-    # get smiles
-    smilesInfoList, invalidInputList = _getSmilesInfoListFromInputForm(request, inputForm)
-    if smilesInfoList:
-        # get pdbFile
-        pdbContent = handle_uploaded_file(request.FILES['uploadPDBFile'])
-
-        modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictStructure(modelTypes, smilesInfoList, pdbContent)
+        return HttpResponseBadRequest()
+    if inputFile:
+        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
+                             file_name=f'{sType}PredictionResult')
     else:
-        preRet = None
-    return preRet, invalidInputList
+        retDict = {
+            "backURL": reverse('prediction_index', args=[sType]),
+            "pageTitle": "Prediction Result"
+        }
+        if preRet:
+            retDict['retTables'] = _formatRetTables(preRet)
+        if invalidInputList and len(invalidInputList) > 0:
+            retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
+        return render(request, "preResult.html", retDict)
+
+
+def predictionIndex(request, sType: str):
+    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
+
+
+
 
 # def uploadSmilesByFile(request):
 #     if request.method == 'POST':

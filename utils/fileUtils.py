@@ -1,6 +1,6 @@
 
 
-def handle_uploaded_file(fs) -> str:
+def handleUploadedFile(fs) -> str:
     ret = []
     for chunk in fs.chunks():
         ret.append(str(chunk, 'utf-8'))
@@ -8,7 +8,7 @@ def handle_uploaded_file(fs) -> str:
 
 
 # 当前处理是读取数据的list
-def handle_uploadedExcelFile(fileHandler):
+def handleUploadedExcelFile(fileHandler):
     if fileHandler is not None:
         return [str(record[0]) for record in fileHandler.iget_array() if record is not None and len(record) > 0]
     else:

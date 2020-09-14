@@ -4,7 +4,7 @@ from deep_engine_client.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
 from typing import List, Tuple
 import numpy as np
-from utils.fileUtils import handle_uploadedExcelFile
+from utils.fileUtils import handleUploadedExcelFile
 from deep_engine_client.exception import CommonException
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
@@ -44,7 +44,7 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
     if request.FILES and request.FILES.get('uploadInputFile', None):
-        fileInputList = handle_uploadedExcelFile(request.FILES['uploadInputFile'])
+        fileInputList = handleUploadedExcelFile(request.FILES['uploadInputFile'])
     else:
         fileInputList = None
 
