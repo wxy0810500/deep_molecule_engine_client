@@ -6,6 +6,7 @@ from smiles.searchService import searchDrugReferenceByInputRequest
 from utils.fileUtils import handleUploadedFile, handleUploadedExcelFile
 import pandas as pd
 import os
+import numpy as np
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 
@@ -41,31 +42,33 @@ def processStructure(request, inputForm: StructureModelInputForm):
     return preRet, invalidInputList
 
 
-def initNetworkDB() -> pd.DataFrame:
-    rawResultDF: pd.DataFrame = pd.read_csv(
-        os.path.join(DB_FILE_BASE_DIR, 'training_viral_network_all_raw.csv'),
-    )
-
-    predictResultDF: pd.DataFrame = pd.read_csv(
-        os.path.join(DB_FILE_BASE_DIR, 'training_viral_network_all.csv')
-    )
-
-    rawResultDF
-    return None
-
-
-NetworkResultDF: pd.DataFrame = initNetworkDB()
+NETWORK_RESULT_DF: pd.DataFrame = pd.read_csv(os.path.join(DB_FILE_BASE_DIR, 'training_viral_network_final_result.csv'),
+                                              float_precision='high')
 
 
 def processNetWork(request, inputForm: NetworkModelInputForm):
     # get smiles
-    inputType = inputForm.cleaned_data['inputType']
-    inputStr = inputForm.cleaned_data['inputStr']
-    if request.FILES and request.FILES.get('uploadInputFile', None):
-        fileInputList = handleUploadedExcelFile(request.FILES['uploadInputFile'])
-    else:
-        fileInputList = None
+    drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, inputForm)
 
+    if drugRefDF.size == 0:
+        return None, None, invalidInputList
+
+    # search result in networkResultDF on cleaned smiles
+    drugRefDF = drugRefDF[['input', 'drug_name', 'cleaned_smiles']]
+    cleanedSmilesDF: pd.DataFrame = drugRefDF[['input', 'cleaned_smiles']]
+    searchRetDF: pd.DataFrame = cleanedSmilesDF.merge(NETWORK_RESULT_DF, on='cleaned_smiles', how='left')
+    numberRetDF: pd.DataFrame = searchRetDF[searchRetDF.columns[3:]]
+    # filter raw result: float number > 10
+    predictRetDF = numberRetDF.applymap(lambda x: x if float(x) < 10.0 else np.nan)
+
+    rawDF = numberRetDF.applymap(lambda x: x - 10.0 if float(x) > 1.0 else np.nan)
+
+    predictRetDF = drugRefDF.merge(predictRetDF, right_index=True, left_index=True)
+    rawDF = drugRefDF.merge(rawDF, right_index=True, left_index=True)
+
+    # print(predictRetDF)
+    # print(rawDF)
+    return predictRetDF, rawDF, invalidInputList
 
 
 

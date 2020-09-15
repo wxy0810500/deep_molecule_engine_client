@@ -141,7 +141,7 @@ textarea:focus {
 .crumbs .service-type-items a li{
     /*width: 200px;*/
     /* model 选择框宽度 */
-    width: calc(33% - 8px);
+    width: calc(25% - 8px);
     height: 38px;
     line-height: 32px;
     margin-left: 10px;

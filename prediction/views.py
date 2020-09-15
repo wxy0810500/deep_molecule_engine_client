@@ -13,6 +13,8 @@ from deep_engine_client.exception import *
 from deep_engine_client.tables import InvalidInputsTable
 from pyexcel import Book
 from django_excel import make_response
+import pandas as pd
+import django_tables2 as tables
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
@@ -74,61 +76,97 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
+def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, invalidInputList: pd.DataFrame):
+    sheets = {}
+    if preRetDF:
+        rows = [preRetDF.columns] + preRetDF.to_numpy()
+        sheets['network_prediction'] = rows
+    if rawRetDF:
+        rows = [rawRetDF.columns] + rawRetDF.to_numpy()
+        sheets['network_raw'] = rows
+    if invalidInputList and len(invalidInputList) > 0:
+        sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
+    return Book(sheets)
+
+
+def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
+    ctx = []
+    # predicion table:
+    modelCtx = {'modelType': 'network based prediction result',
+                'tables': tables.Table(preRetDF.to_dict('records'),
+                                       extra_columns=[(column, tables.Column()) for column in preRetDF.columns])}
+    ctx.append(modelCtx)
+    # raw table
+    modelCtx = {'modelType': 'network based raw result',
+                'tables': tables.Table(rawRetDF.to_dict('records'),
+                                       extra_columns=[(column, tables.Column()) for column in rawRetDF.columns])}
+    ctx.append(modelCtx)
+    return ctx
+
+
 def predict(request, sType: str):
     if not request.POST:
         return HttpResponseBadRequest()
 
     if PREDICTION_TYPE_LIGAND == sType:
-        if len(request.FILES) > 0:
-            inputFile = True
-            inputForm = LigandModelInputForm(request.POST, request.FILES)
-        else:
-            inputFile = False
-            inputForm = LigandModelInputForm(request.POST)
+        inputForm = LigandModelInputForm(request.POST, request.FILES)
+
         if not inputForm.is_valid():
             return return400ErrorPage(request, inputForm)
         try:
             preRet, invalidInputList = processLigand(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
-    elif PREDICTION_TYPE_STRUCTURE == sType:
-        if len(request.FILES) > 1:
-            inputFile = True
-        else:
-            inputFile = False
-        inputForm = StructureModelInputForm(request.POST, request.FILES)
-        if inputForm.is_valid():
-            try:
-                preRet, invalidInputList = processStructure(request, inputForm)
-            except CommonException as e:
-                return HttpResponseBadRequest(e.message)
-        else:
-            return return400ErrorPage(request, inputForm)
-    elif PREDICTION_TYPE_LIGAND == sType:
         if len(request.FILES) > 0:
             inputFile = True
-            inputForm = NetworkModelInputForm(request.POST, request.FILES)
+            retBook = _formatRetExcelBook(preRet, invalidInputList)
         else:
             inputFile = False
-            inputForm = NetworkModelInputForm(request.POST)
+            retTables = _formatRetTables(preRet)
+    elif PREDICTION_TYPE_STRUCTURE == sType:
+        inputForm = StructureModelInputForm(request.POST, request.FILES)
+        if not inputForm.is_valid():
+            return return400ErrorPage(request, inputForm)
+
+        try:
+            preRet, invalidInputList = processStructure(request, inputForm)
+
+        except CommonException as e:
+            return HttpResponseBadRequest(e.message)
+        if len(request.FILES) > 1:
+            inputFile = True
+            retBook = _formatRetExcelBook(preRet, invalidInputList)
+        else:
+            inputFile = False
+            retTables = _formatRetTables(preRet)
+
+    elif PREDICTION_TYPE_NETWORK == sType:
+        inputForm = NetworkModelInputForm(request.POST, request.FILES)
+
         if not inputForm.is_valid():
             return return400ErrorPage(request, inputForm)
         try:
-            preRet, invalidInputList = processNetWork(request, inputForm)
+            preRetDF, rawRetDF, invalidInputList = processNetWork(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
+        if len(request.FILES) > 0:
+            inputFile = True
+            retBook = _formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
+        else:
+            inputFile = False
+            retTables = _formatNetworkRetTables(preRetDF, rawRetDF)
     else:
         return HttpResponseBadRequest()
     if inputFile:
-        return make_response(_formatRetExcelBook(preRet, invalidInputList), file_type='csv',
+        return make_response(retBook, file_type='csv',
                              file_name=f'{sType}PredictionResult')
     else:
         retDict = {
             "backURL": reverse('prediction_index', args=[sType]),
             "pageTitle": "Prediction Result"
         }
-        if preRet:
-            retDict['retTables'] = _formatRetTables(preRet)
+        if retTables:
+            retDict['retTables'] = retTables
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
         return render(request, "preResult.html", retDict)
@@ -136,9 +174,6 @@ def predict(request, sType: str):
 
 def predictionIndex(request, sType: str):
     return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
-
-
-
 
 # def uploadSmilesByFile(request):
 #     if request.method == 'POST':

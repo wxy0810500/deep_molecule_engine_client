@@ -50,4 +50,3 @@ class PredictionResultTable(tables.Table):
             "class": "c-cSmiles"
         }
     })
-
