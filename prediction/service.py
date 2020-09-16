@@ -54,8 +54,9 @@ def processNetWork(request, inputForm: NetworkModelInputForm):
         return None, None, invalidInputList
 
     # search result in networkResultDF on cleaned smiles
-    drugRefDF = drugRefDF[['input', 'drug_name', 'cleaned_smiles']]
-    cleanedSmilesDF: pd.DataFrame = drugRefDF[['input', 'cleaned_smiles']]
+    drugRefDF = drugRefDF.loc[:, ['input', 'drug_name', 'cleaned_smiles']]
+    drugRefDF.reset_index(drop=True, inplace=True)
+    cleanedSmilesDF = drugRefDF.loc[:, ['input', 'cleaned_smiles']]
     searchRetDF: pd.DataFrame = cleanedSmilesDF.merge(NETWORK_RESULT_DF, on='cleaned_smiles', how='left')
     numberRetDF: pd.DataFrame = searchRetDF[searchRetDF.columns[3:]]
     # filter raw result: float number > 10
@@ -68,6 +69,8 @@ def processNetWork(request, inputForm: NetworkModelInputForm):
 
     # print(predictRetDF)
     # print(rawDF)
+    predictRetDF.fillna('', inplace=True)
+    rawDF.dropna(axis=1, how='all', inplace=True)
     return predictRetDF, rawDF, invalidInputList
 
 

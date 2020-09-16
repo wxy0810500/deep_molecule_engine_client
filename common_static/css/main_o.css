@@ -234,20 +234,15 @@ textarea:focus {
     margin-top: 60px;
     margin-bottom: 25px;
 }
-.table-container {
-    overflow: auto;
-}
-table th,
-table td {
-    /*line-height: 58px;*/
+.results th,
+.results td {
+    line-height: 58px;
     border: 1px solid #C8C8C8;
     min-width: 60px;
-    max-width: 160px;
-    overflow: auto;
-    /*word-break: break-all; /*允许在字内换行,即单词可分*/
-    /*word-wrap:break-word;/*允许长单词或URL地址换行*/
+    word-break: break-all; /*允许在字内换行,即单词可分*/
+    word-wrap:break-word;/*允许长单词或URL地址换行*/
 }
-table th {
+.results th {
     background-color: #f4fbff;
 }
 table{

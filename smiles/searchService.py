@@ -63,11 +63,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         if len(inputDrugNameList) == drugRefDF.size:
             # 完全匹配，加入input 列
-            drugRefDF['input'] = drugRefDF['drug_name']
+            drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
         else:
             if drugRefDF.size != 0:
                 # 部分匹配，加入input列
-                drugRefDF['input'] = drugRefDF['drug_name']
+                drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
             # 未查到对应的smiles
             validList = drugRefDF['drug_name'].to_list()
             for validName in validList:

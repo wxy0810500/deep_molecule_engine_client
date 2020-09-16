@@ -78,11 +78,14 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
 
 def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, invalidInputList: pd.DataFrame):
     sheets = {}
-    if preRetDF:
-        rows = [preRetDF.columns] + preRetDF.to_numpy()
+    if preRetDF is not None:
+        rows = [preRetDF.columns] + preRetDF.values.tolist()
+        # preRetDF.astype(dtype='O')
+        # rows = [preRetDF.columns] + preRetDF.to_numpy()
         sheets['network_prediction'] = rows
-    if rawRetDF:
-        rows = [rawRetDF.columns] + rawRetDF.to_numpy()
+
+    if rawRetDF is not None:
+        rows = [rawRetDF.columns] + rawRetDF.values.tolist()
         sheets['network_raw'] = rows
     if invalidInputList and len(invalidInputList) > 0:
         sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
@@ -94,12 +97,14 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
     # predicion table:
     modelCtx = {'modelType': 'network based prediction result',
                 'tables': tables.Table(preRetDF.to_dict('records'),
-                                       extra_columns=[(column, tables.Column()) for column in preRetDF.columns])}
+                                       extra_columns=[(column, tables.Column(orderable=False))
+                                                      for column in preRetDF.columns])}
     ctx.append(modelCtx)
     # raw table
     modelCtx = {'modelType': 'network based raw result',
                 'tables': tables.Table(rawRetDF.to_dict('records'),
-                                       extra_columns=[(column, tables.Column()) for column in rawRetDF.columns])}
+                                       extra_columns=[(column, tables.Column(orderable=False))
+                                                      for column in rawRetDF.columns])}
     ctx.append(modelCtx)
     return ctx
 
