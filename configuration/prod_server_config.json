@@ -29,6 +29,12 @@
         "B. Structure based (none-docking) AI model",
         7005
       ]
+    },
+    "network": {
+      "C-network-based": [
+        "C. Advanced Search on Antiviral Phenotypic Network",
+        7006
+      ]
     }
   }
 }
