@@ -60,3 +60,4 @@ function checkAllInput() {
     }
     return checkInputStringAndFile()
 }
+

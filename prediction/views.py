@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from django.http import HttpResponseBadRequest
 
 from .service import processLigand, processStructure, processNetWork
-from .tables import PredictionResultTable
+from .tables import *
 from .predictionTask import PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
@@ -14,7 +14,7 @@ from deep_engine_client.tables import InvalidInputsTable
 from pyexcel import Book
 from django_excel import make_response
 import pandas as pd
-import django_tables2 as tables
+from typing import Dict, List
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
@@ -93,20 +93,46 @@ def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, inva
 
 
 def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
-    ctx = []
     # predicion table:
-    modelCtx = {'modelType': 'network based prediction result',
-                'tables': tables.Table(preRetDF.to_dict('records'),
-                                       extra_columns=[(column, tables.Column(orderable=False))
-                                                      for column in preRetDF.columns])}
-    ctx.append(modelCtx)
-    # raw table
-    modelCtx = {'modelType': 'network based raw result',
-                'tables': tables.Table(rawRetDF.to_dict('records'),
-                                       extra_columns=[(column, tables.Column(orderable=False))
-                                                      for column in rawRetDF.columns])}
-    ctx.append(modelCtx)
-    return ctx
+    retDictList: List[Dict] = preRetDF.to_dict('records')
+    # 排除input,drug_name, cleaned_smiles三个字段
+    preRetCtx = []
+    i = 1
+    for columnName in preRetDF.columns[3:]:
+        dataDictList = [{
+            "input": rowDict.get('input'),
+            "drugName": rowDict.get('drug_name'),
+            "cleanedSmiles": rowDict.get('cleaned_smiles'),
+            'score': rowDict.get(columnName)
+        } for rowDict in retDictList]
+
+        modelCtx = {
+            'virusName': f'{i}.columnName',
+            "tables": NetworkBasedResultTable(dataDictList)
+        }
+        i += 1
+        preRetCtx.append(modelCtx)
+    # raw
+    retDictList: List[Dict] = rawRetDF.to_dict('records')
+    # 排除input,drug_name, cleaned_smiles三个字段
+    rawRetCtx = []
+    i = 1
+    for columnName in rawRetDF.columns[3:]:
+        dataDictList = [{
+            "input": rowDict.get('input'),
+            "drugName": rowDict.get('drug_name'),
+            "cleanedSmiles": rowDict.get('cleaned_smiles'),
+            'score': rowDict.get(columnName)
+        } for rowDict in retDictList]
+
+        modelCtx = {
+            'virusName': f'{i}.columnName',
+            "tables": NetworkBasedResultTable(dataDictList)
+        }
+        i += 1
+        rawRetCtx.append(modelCtx)
+
+    return preRetCtx, rawRetCtx
 
 
 def predict(request, sType: str):
@@ -127,7 +153,8 @@ def predict(request, sType: str):
             retBook = _formatRetExcelBook(preRet, invalidInputList)
         else:
             inputFile = False
-            retTables = _formatRetTables(preRet)
+            preRetTables = _formatRetTables(preRet)
+        retTemplate = 'preResult.html'
     elif PREDICTION_TYPE_STRUCTURE == sType:
         inputForm = StructureModelInputForm(request.POST, request.FILES)
         if not inputForm.is_valid():
@@ -143,7 +170,8 @@ def predict(request, sType: str):
             retBook = _formatRetExcelBook(preRet, invalidInputList)
         else:
             inputFile = False
-            retTables = _formatRetTables(preRet)
+            preRetTables = _formatRetTables(preRet)
+        retTemplate = 'preResult.html'
 
     elif PREDICTION_TYPE_NETWORK == sType:
         inputForm = NetworkModelInputForm(request.POST, request.FILES)
@@ -159,7 +187,9 @@ def predict(request, sType: str):
             retBook = _formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
         else:
             inputFile = False
-            retTables = _formatNetworkRetTables(preRetDF, rawRetDF)
+            preRetTables, rawRetTables = _formatNetworkRetTables(preRetDF, rawRetDF)
+
+        retTemplate = 'networkBasedResult.html'
     else:
         return HttpResponseBadRequest()
     if inputFile:
@@ -170,11 +200,14 @@ def predict(request, sType: str):
             "backURL": reverse('prediction_index', args=[sType]),
             "pageTitle": "Prediction Result"
         }
-        if retTables:
-            retDict['retTables'] = retTables
+        if preRetTables:
+            retDict['preRetTables'] = preRetTables
+        # just for network based
+        if PREDICTION_TYPE_NETWORK == sType and rawRetTables is not None:
+            retDict['rawRetTables'] = rawRetTables
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-        return render(request, "preResult.html", retDict)
+        return render(request, retTemplate, retDict)
 
 
 def predictionIndex(request, sType: str):

@@ -71,6 +71,7 @@ def processNetWork(request, inputForm: NetworkModelInputForm):
     # print(rawDF)
     predictRetDF.fillna('', inplace=True)
     rawDF.dropna(axis=1, how='all', inplace=True)
+    rawDF.fillna('', inplace=True)
     return predictRetDF, rawDF, invalidInputList
 
 

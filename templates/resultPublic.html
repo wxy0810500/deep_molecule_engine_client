@@ -10,6 +10,8 @@
        {% load static %}
         <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
        <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
+       <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
+        <script src="{% static 'js/result.js' %}"></script>
    </head>
    <body>
       <div class="result-top">
@@ -23,7 +25,7 @@
             </span>
       </div>
       <div class="results">
-        <button>
+        <button class="return">
             <a href="{{ backURL }}">
                 <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
             </a>
@@ -37,7 +39,7 @@
         {% endif %}
       </div>
       <div class="footer">
-        <button>
+        <button class="return">
              <a href="{{ backURL }}">
                 <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
              </a>

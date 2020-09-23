@@ -10,15 +10,8 @@
                 {{ inputForm.inputStr }}
                 <div class="upload-area">
                     {{ inputForm.uploadInputFile }}
-                    <div class="upload" id="inputFileName">Select input file</div>
+                    <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
                 </div>
-{#                <div id="message-container">#}
-{#                    <div class="message move-in move-out">#}
-{#                        <!-- 消息文本 -->#}
-{#                        <div class="text">这是一条正经的消息~</div>#}
-{#                        <div class="close icon icon-close"></div>#}
-{#                    </div>#}
-{#                </div>#}
                 {{ inputForm.modelTypes }}
                 <div class="upload-area">
                     {% if inputForm.uploadPDBFile is not None %}

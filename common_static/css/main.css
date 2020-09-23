@@ -219,8 +219,7 @@ textarea:focus {
     padding-left: 10%;
 }
 
-.results button,
-.footer button {
+button.return{
     background-image: linear-gradient(0deg, #EFF6FB 0%, #FFFFFF 60%);
     border: 1px solid #EBEBEB;
     border-radius: 8px;
@@ -237,25 +236,26 @@ textarea:focus {
 .table-container {
     overflow: auto;
 }
-table th,
-table td {
-    /*line-height: 58px;*/
-    border: 1px solid #C8C8C8;
-    min-width: 60px;
-    max-width: 160px;
-    overflow: auto;
-    /*word-break: break-all; /*允许在字内换行,即单词可分*/
-    /*word-wrap:break-word;/*允许长单词或URL地址换行*/
-}
-table th {
-    background-color: #f4fbff;
-}
-table{
-    width:100%;
-    text-align:center;
-    border-collapse:collapse;
-    border-spacing:0;
-}
+
+/*table.commonTable th,*/
+/*table.commonTable td {*/
+/*    !*line-height: 58px;*!*/
+/*    border: 1px solid #C8C8C8;*/
+/*    min-width: 60px;*/
+/*    max-width: 160px;*/
+/*    overflow: auto;*/
+/*    !*word-break: break-all; !*允许在字内换行,即单词可分*!*/
+/*    !*word-wrap:break-word;!*允许长单词或URL地址换行*!*/
+/*}*/
+/*table.commonTable th {*/
+/*    background-color: #f4fbff;*/
+/*}*/
+/*table.commonTable {*/
+/*    width:100%;*/
+/*    text-align:center;*/
+/*    border-collapse:collapse;*/
+/*    border-spacing:0;*/
+/*}*/
 
 
 

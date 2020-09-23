@@ -50,3 +50,23 @@ class PredictionResultTable(tables.Table):
             "class": "c-cSmiles"
         }
     })
+
+    class Meta:
+        attrs = {
+            "class": "blueTable"
+        }
+
+
+class NetworkBasedResultTable(tables.Table):
+
+    score = tables.Column(orderable=False, verbose_name="Score")
+    input = tables.Column(orderable=False, verbose_name="Input{name|smiles}")
+    drugName = tables.Column(orderable=False, verbose_name="drug_name")
+    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles")
+
+    class Meta:
+        attrs = {
+            "class": "blueTable"
+        }
+
+

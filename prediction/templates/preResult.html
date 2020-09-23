@@ -1,9 +1,9 @@
    {% extends "resultPublic.html" %}
     {% block tables %}
-        {% if retTables is not None %}
+        {% if preRetTables is not None %}
             {% load django_tables2 %}
 
-            {% for table in retTables %}
+            {% for table in preRetTables %}
                 <h3>{{ table.modelType }}</h3>
                 <h4>{{table.time}}</h4>
                 <h4>results</h4>
