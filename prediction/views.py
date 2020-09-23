@@ -107,7 +107,7 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
         } for rowDict in retDictList]
 
         modelCtx = {
-            'virusName': f'{i}.columnName',
+            'virusName': f'{i}.{columnName}',
             "tables": NetworkBasedResultTable(dataDictList)
         }
         i += 1
@@ -126,7 +126,7 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
         } for rowDict in retDictList]
 
         modelCtx = {
-            'virusName': f'{i}.columnName',
+            'virusName': f'{i}.{columnName}',
             "tables": NetworkBasedResultTable(dataDictList)
         }
         i += 1
