@@ -33,7 +33,7 @@
             {% block tables %}
             {% endblock %}
          {% if invalidInputTable is not None %}
-            <h4>invalid input</h4>
+            <h3>invalid input</h3>
             {% load django_tables2 %}
             {% render_table invalidInputTable %}
         {% endif %}

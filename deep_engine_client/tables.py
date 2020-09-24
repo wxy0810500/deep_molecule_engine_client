@@ -11,6 +11,11 @@ class InvalidInputsTable(tables.Table):
         }
     })
 
+    class Meta:
+        attrs = {
+            "class": "blueTable"
+        }
+
     @staticmethod
     def getInvalidInputsTable(invalidInputList):
         return InvalidInputsTable([{'input': invalidInput} for invalidInput in invalidInputList])
