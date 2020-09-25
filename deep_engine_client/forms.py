@@ -4,12 +4,6 @@ import re
 from typing import List, Iterable
 from .fields import RestrictedFileField
 
-# format  [(value1, name1), (value1, name1)]
-ligandModelChoices = tuple([(model, data[0]) for model, data in
-                            SERVER_CONFIG_DICT.get("modelAndPort").get("ligand").items()])
-structureModelChoices = tuple([(model, data[0]) for model, data in
-                               SERVER_CONFIG_DICT.get("modelAndPort").get("structure").items()])
-
 
 class CommonInputForm(forms.Form):
     INPUT_TYPE_DRUG_NAME = 'drugName'

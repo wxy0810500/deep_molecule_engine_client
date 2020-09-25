@@ -3,7 +3,7 @@
 from django.shortcuts import reverse
 from django.http import HttpResponseBadRequest
 
-from .service import processLigand, processStructure, processNetWork
+from .service import processADMET
 from .tables import *
 from .predictionTask import PredictionTaskRet
 from .forms import *
@@ -118,80 +118,40 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
     return preRetCtx, rawRetCtx
 
 
-def predict(request, sType: str):
+def predict(request):
     if not request.POST:
         return HttpResponseBadRequest()
-    return HttpResponseBadRequest()
 
-    # if PREDICTION_TYPE_LIGAND == sType:
-    #     inputForm = LigandModelInputForm(request.POST, request.FILES)
-    #
-    #     if not inputForm.is_valid():
-    #         return return400ErrorPage(request, inputForm)
-    #     try:
-    #         preRet, invalidInputList = processLigand(request, inputForm)
-    #     except CommonException as e:
-    #         return HttpResponseBadRequest(e.message)
-    #     if len(request.FILES) > 0:
-    #         inputFile = True
-    #         retBook = _formatRetExcelBook(preRet, invalidInputList)
-    #     else:
-    #         inputFile = False
-    #         preRetTables = _formatRetTables(preRet)
-    #     retTemplate = 'preResult.html'
-    # elif PREDICTION_TYPE_STRUCTURE == sType:
-    #     inputForm = StructureModelInputForm(request.POST, request.FILES)
-    #     if not inputForm.is_valid():
-    #         return return400ErrorPage(request, inputForm)
-    #
-    #     try:
-    #         preRet, invalidInputList = processStructure(request, inputForm)
-    #
-    #     except CommonException as e:
-    #         return HttpResponseBadRequest(e.message)
-    #     if len(request.FILES) > 1:
-    #         inputFile = True
-    #         retBook = _formatRetExcelBook(preRet, invalidInputList)
-    #     else:
-    #         inputFile = False
-    #         preRetTables = _formatRetTables(preRet)
-    #     retTemplate = 'preResult.html'
-    #
-    # elif PREDICTION_TYPE_NETWORK == sType:
-    #     inputForm = NetworkModelInputForm(request.POST, request.FILES)
-    #
-    #     if not inputForm.is_valid():
-    #         return return400ErrorPage(request, inputForm)
-    #     try:
-    #         preRetDF, rawRetDF, invalidInputList = processNetWork(request, inputForm)
-    #     except CommonException as e:
-    #         return HttpResponseBadRequest(e.message)
-    #     if len(request.FILES) > 0:
-    #         inputFile = True
-    #         retBook = _formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
-    #     else:
-    #         inputFile = False
-    #         preRetTables, rawRetTables = _formatNetworkRetTables(preRetDF, rawRetDF)
-    #
-    #     retTemplate = 'networkBasedResult.html'
-    # else:
-    #     return HttpResponseBadRequest()
-    # if inputFile:
-    #     return make_response(retBook, file_type='csv',
-    #                          file_name=f'{sType}PredictionResult')
-    # else:
-    #     retDict = {
-    #         "backURL": reverse('prediction_index', args=[sType]),
-    #         "pageTitle": "Prediction Result"
-    #     }
-    #     if preRetTables:
-    #         retDict['preRetTables'] = preRetTables
-    #     # just for network based
-    #     if PREDICTION_TYPE_NETWORK == sType and rawRetTables is not None:
-    #         retDict['rawRetTables'] = rawRetTables
-    #     if invalidInputList and len(invalidInputList) > 0:
-    #         retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-    #     return render(request, retTemplate, retDict)
+    inputForm = ADMETModelInputForm(request.POST, request.FILES)
+
+    if not inputForm.is_valid():
+        return return400ErrorPage(request, inputForm)
+    try:
+        preRet, invalidInputList = processADMET(request, inputForm)
+    except CommonException as e:
+        return HttpResponseBadRequest(e.message)
+    if len(request.FILES) > 0:
+        inputFile = True
+        retBook = _formatRetExcelBook(preRet, invalidInputList)
+    else:
+        inputFile = False
+        preRetTables = _formatRetTables(preRet)
+
+
+    if inputFile:
+        return make_response(retBook, file_type='csv',
+                             file_name=f'predictionResult')
+    else:
+        retDict = {
+            "backURL": reverse('prediction_index'),
+            "pageTitle": "Prediction Result"
+        }
+        if preRetTables:
+            retDict['preRetTables'] = preRetTables
+        # just for network based
+        if invalidInputList and len(invalidInputList) > 0:
+            retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
+        return render(request, retTemplate, retDict)
 
 
 def predictionIndex(request):
