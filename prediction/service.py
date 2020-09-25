@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from prediction.forms import LigandModelInputForm, StructureModelInputForm, NetworkModelInputForm
+from prediction.forms import ADMETModelInputForm, StructureModelInputForm, NetworkModelInputForm
 from prediction.predictionTask import predictLigand, predictStructure
 from smiles.searchService import searchDrugReferenceByInputRequest
 from utils.fileUtils import handleUploadedFile, handleUploadedExcelFile
@@ -18,7 +18,7 @@ def _getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dic
     return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records'), invalidInputList
 
 
-def processLigand(request, inputForm: LigandModelInputForm):
+def processLigand(request, inputForm: ADMETModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']

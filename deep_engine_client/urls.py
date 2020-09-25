@@ -18,16 +18,13 @@ from django.contrib import admin
 from deep_engine_client import views
 from django.urls import path, include
 
-BASE_URL = r'covid19/'
-PREDICTION_BASE_URL = r'service/prediction/<str:sType>/'
-SEARCH_BASE_URL = r'service/advancedSearch/'
+BASE_URL = r'admet/'
+PREDICTION_BASE_URL = r'service/prediction/'
 urlpatterns = [
-    path(r'', views.tempRoot, name='main'),
     path(BASE_URL, include([
-        path(r'', views.index),
+        path(r'', views.index, name='main'),
         path(r'admin/', admin.site.urls),
-        path(PREDICTION_BASE_URL, include('prediction.urls')),
-        path(SEARCH_BASE_URL, include('advancedSearch.urls'))
+        path(PREDICTION_BASE_URL, include('prediction.urls'))
         ])
     )
 ]

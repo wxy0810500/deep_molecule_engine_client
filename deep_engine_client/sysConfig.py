@@ -9,9 +9,4 @@ with open(os.path.join(CUSTOM_CONFIG_URL, f'{RUNTIME_ENV}_server_config.json'), 
     SERVER_CONFIG_DICT: dict = json.load(f)
     CACHE_CONFIG_DICT: dict = SERVER_CONFIG_DICT.get('cache')
 
-
-PREDICTION_TYPE_LIGAND = "ligand"
-PREDICTION_TYPE_STRUCTURE = "structure"
-PREDICTION_TYPE_NETWORK = "network"
-SERVICE_TYPE_SEARCH = "advancedSearch"
-SERVICE_TYPE_PREDICTION = "prediction"
+PREDICTION_TYPE_ADMET = "ADMET"
