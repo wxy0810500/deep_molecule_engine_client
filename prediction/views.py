@@ -98,7 +98,7 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
             "drugName": rowDict.get('drug_name'),
             "cleanedSmiles": rowDict.get('cleaned_smiles'),
             'score': rowDict.get(columnName)
-        } for rowDict in retDictList]
+        } for rowDict in retDictList if rowDict.get(columnName) != '']
 
         modelCtx = {
             'virusName': f'{i}.{columnName}',
@@ -117,7 +117,7 @@ def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
             "drugName": rowDict.get('drug_name'),
             "cleanedSmiles": rowDict.get('cleaned_smiles'),
             'score': rowDict.get(columnName)
-        } for rowDict in retDictList]
+        } for rowDict in retDictList if rowDict.get(columnName) != '']
 
         modelCtx = {
             'virusName': f'{i}.{columnName}',
