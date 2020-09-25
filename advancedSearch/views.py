@@ -11,9 +11,7 @@ from pyexcel import Book
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
     SERVICE_TYPE_SEARCH: {
-        "finished": True,
         'inputForm': CommonInputForm(),
-        'actionURL': SERVICE_TYPE_SEARCH,
         'specialClass': "search-page",
         'sStatus': "active",
         "pageTitle": "Advanced Search"
@@ -22,7 +20,7 @@ INPUT_TEMPLATE_FORMS = {
 
 
 def searchIndex(request):
-    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(SERVICE_TYPE_SEARCH))
+    return render(request, 'searchInput.html', INPUT_TEMPLATE_FORMS.get(SERVICE_TYPE_SEARCH))
 
 
 def advancedSearch(request):

@@ -1,55 +1,6 @@
-    {% extends "publicTop.html" %}
-    {% block content %}
-    <div class="inner intro">
+    {% extends "publicTopAndRoot.html" %}
+    {% block modelDescription %}
 
-        {% load static %}
-        <img class="" src="{% static "imgs/statement_index.png" %}" width="100%">
-
-        <div class="title">Model Documentation</div>
-
-        <h4> A. Ligand based AI models</h4>
-
-        <t1>We have tried different training sets containing different virus species and their targets to build target specific or phenotype based classification AI models using GHDDI self-developed HAG-Net deep learning system. HAG-Net, short for Heterogeneous Aggregation Graph Net, constructs multi-channel convolution with hybrid aggregation to enhance the feature extraction capability for graph-based molecular data. We only selected models showing 5-fold cross-validation AUC>0.9 as qualification for further predictive practice, and the results are ensemble predictions. Viral targets, including RDRP, Helicase, 3C-like protease of SARS-CoV-2 showing relatively higher between species conservation are prioritized in this effort. We use these models to predict different bioactivities of approved or investigational stage drug molecules (~12K) in GHDDI stock as part of the drug repurposing effort. As we are constantly improving our algorithm and expanding our training data, the results will be updated periodically.</t1>
-
-        <img class="" src="{% static "imgs/ligand_based_index.png" %}" width="100%">
-
-        <h5>A.1 Heterogeneous antiviral AI model</h5>
-
-        <t1>Training Data: Using heterogeneous records of antiviral bioactivity data including target based and phenotype based records from various species and in vitro assays, a total of 76247 compounds with 37332 active and 38915 inactive molecules (EC50 <=100nM for at least one viral species as active). Performance (5-fold cross-validation): AUC avg. = 0.94</t1>
-
-        <h5>A.2 Phenotypic antiviral AI model</h5>
-        <t1>Training Data: Using heterogeneous records of antiviral bioactivity data of phenotype based records from various species and in vitro assays, a total of 7305 compounds with 3751 active and 3554 inactive molecules (EC50 &lt;=100nM for at least one viral species as active). Performance (5-fold cross-validation): AUC avg. = 0.908</t1>
-
-
-        <h5>A.3 RNA-dependent RNA polymerase AI model</h5>
-        <t1>Training Data: Using heterogeneous records of RNA-dependent RNA polymerase related bioactivity data from various species and in vitro assays, a total of 583 compounds with 306 active and 277 inactive molecules (IC50 &lt;=1μM as active).
-            Performance (5-fold cross-validation): AUC avg. = 0.952</t1>
-
-
-        <h5>A.4 Helicase AI model</h5>
-        <t1>Training Data: Using heterogeneous records of Helicase related bioactivity data from various pathogen species and in vitro assays, a total of 878 compounds with 127 active and 751 inactive molecules (IC50 &lt;=1μM as active). Performance (5-fold cross-validation): AUC avg. = 0.926</t1>
-
-        <h5>A.5 3C-like protease AI model</h5>
-        <t1>Training Data: Using heterogeneous records of 3C-like protease related bioactivity data from various species and in vitro assays, a total of 457 compounds with 132 active and 325 inactive molecules (IC50 &lt;=1μM as active). Performance (5-fold cross-validation): AUC avg. = 0.97</t1>
-
-        <h4>B. Structure based (none-docking) AI model</h4>
-        <t1>The structure based AI model was constructed based on GHDDI developed HAG-net. The model was trained based on all existing drug targets 3D information and their related biochemical data for up to 2 million molecules. The model is universal for all targets with 3D structures. The model was evaluated using benchmark set DUD.E with average AUC of 0.99, after removal of computer generated decoys, the model shows an average AUC of 0.94 over 2 million protein-ligand interactions of over 200 protein targets which outperforms the state-of-the-art virtual screening tools. Given a target 3D structure, preferably the binding pocket with a radius of 15 Å, and screening library SMILES list as input, we are able to screen all 10K compounds in 4 minutes, which is exponentially faster than traditional docking tools. </t1>
-
-        <img class="" src="{% static "imgs/structure_based_index.png" %}" width="100%">
-
-        <h4>C. Advanced Search on Antiviral Phenotypic Network</h4>
-        <t1>We have curated over 9000 antiviral compounds and respective virus species available for search based on in vitro viral infection assay results (EC50<=1uM) and in vivo results</t1>
-        <img class="" src="{% static "imgs/antiviral_data_analysis.png" %}" width="100%">
-
-    </div>
-    <div class="footer">
-        <div>
-            <b>For high throughput virtual screening or other request, please contact us at aidd@ghddi.org</b>
-            <br>
-            <b>For more information of our COVID-19 efforts, please visit
-                <a href="https://ghddi-ailab.github.io/Targeting2019-nCoV/">Targeting2019-nCoV</a>
-            </b>
-        </div>
-        <div>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：<a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;"><span>京ICP备16047874号</span></a></div>
-    </div>
+    {% load static %}
+    <img class="" src="{% static "imgs/statement_index.png" %}" width="100%">
     {% endblock %}

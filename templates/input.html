@@ -1,32 +1,28 @@
-{% extends "publicTop.html" %}
+{% extends "publicTopAndRoot.html" %}
 {% block content %}
     <div class="inner {{ specialClass }}">
         <div class="input-area">
-        {% if finished %}
-            <form  enctype="multipart/form-data" action="submit/" method="post" name="dataForm"
-                onsubmit="return checkAllInput()">
-                {% csrf_token %}
-                {{ inputForm.inputType }}
-                {{ inputForm.inputStr }}
-                <div class="upload-area">
-                    {{ inputForm.uploadInputFile }}
-                    <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
-                </div>
-                {{ inputForm.modelTypes }}
-                <div class="upload-area">
-                    {% if inputForm.uploadPDBFile is not None %}
-                        <h4> Please upload the pdb file </h4>
+        <form  enctype="multipart/form-data" action="submit/" method="post" name="dataForm"
+            onsubmit="return checkAllInput()">
+            {% csrf_token %}
+            {{ inputForm.inputType }}
+            {{ inputForm.inputStr }}
+            <div class="upload-area">
+                {{ inputForm.uploadInputFile }}
+                <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
+            </div>
+            {{ inputForm.modelTypes }}
+            <div class="upload-area">
+                {% if inputForm.uploadPDBFile is not None %}
+                    <h4> Please upload the pdb file </h4>
 
-                            {{ inputForm.uploadPDBFile }}
-                            <div class="upload" id="pdbFileName">Select PDB file</div>
+                        {{ inputForm.uploadPDBFile }}
+                        <div class="upload" id="pdbFileName">Select PDB file</div>
 
-                    {% endif %}
-                </div>
-                <input type="submit" value="submit"/>
-            </form>
-        {% else %}
-            <h4> the model is coming soon </h4>
-        {% endif %}
+                {% endif %}
+            </div>
+            <input type="submit" value="submit"/>
+        </form>
         </div>
         {% block customBody %}
         {% endblock %}

@@ -3,7 +3,7 @@
         {% if preRetTables is not None and rawRetTables is not None%}
             {% load django_tables2 %}
             <div class="wholeTable">
-                <h3>prediction result table</h3>
+                <h3>Antiviral compound-phenotype link prediction</h3>
                 <div class="tab">
                     {% for table in preRetTables %}
                     <button class="tablinks pTabLinks" onclick="openPreTable(this, 'p{{ table.virusName }}')">{{ table.virusName }}</button>
@@ -16,9 +16,9 @@
                     </div>
                 {% endfor %}
             </div>
-            <!-- raw table -->、
+            <!-- raw table -->
             <div class="wholeTable">
-                <h3>raw result table</h3>
+                <h3>Initial in vitro viral / in vivo infection assay data</h3>
                 <div class="tab">
                     {% for table in rawRetTables %}
                     <button class="tablinks rTabLinks" onclick="openRawTable(this, 'r{{ table.virusName }}')">{{ table.virusName }}</button>

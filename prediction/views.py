@@ -18,23 +18,17 @@ from typing import Dict, List
 
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
-        'finished': True,
         'inputForm': LigandModelInputForm(),
-        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
         'plStatus': "active",
         "pageTitle": "Ligand Based",
     },
     PREDICTION_TYPE_STRUCTURE: {
-        'finished': True,
         'inputForm': StructureModelInputForm(),
-        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
         'psStatus': "active",
         "pageTitle": "Structure Based",
     },
     PREDICTION_TYPE_NETWORK: {
-        'finished': True,
         'inputForm': NetworkModelInputForm(),
-        'actionURL': f'predict/{SERVICE_TYPE_PREDICTION}',
         'pnStatus': "active",
         "pageTitle": "Network Based",
     }
@@ -211,7 +205,7 @@ def predict(request, sType: str):
 
 
 def predictionIndex(request, sType: str):
-    return render(request, 'input.html', INPUT_TEMPLATE_FORMS.get(sType))
+    return render(request, f'{sType}BasedInput.html', INPUT_TEMPLATE_FORMS.get(sType))
 
 # def uploadSmilesByFile(request):
 #     if request.method == 'POST':
