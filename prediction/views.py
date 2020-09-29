@@ -59,65 +59,6 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
     return ctx
 
 
-def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, invalidInputList: pd.DataFrame):
-    sheets = {}
-    if preRetDF is not None:
-        rows = [preRetDF.columns] + preRetDF.values.tolist()
-        # preRetDF.astype(dtype='O')
-        # rows = [preRetDF.columns] + preRetDF.to_numpy()
-        sheets['network_prediction'] = rows
-
-    if rawRetDF is not None:
-        rows = [rawRetDF.columns] + rawRetDF.values.tolist()
-        sheets['network_raw'] = rows
-    if invalidInputList and len(invalidInputList) > 0:
-        sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
-    return Book(sheets)
-
-
-def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
-    # predicion table:
-    retDictList: List[Dict] = preRetDF.to_dict('records')
-    # 排除input,drug_name, cleaned_smiles三个字段
-    preRetCtx = []
-    i = 1
-    for columnName in preRetDF.columns[3:]:
-        dataDictList = [{
-            "input": rowDict.get('input'),
-            "drugName": rowDict.get('drug_name'),
-            "cleanedSmiles": rowDict.get('cleaned_smiles'),
-            'score': rowDict.get(columnName)
-        } for rowDict in retDictList]
-
-        modelCtx = {
-            'virusName': f'{i}.{columnName}',
-            "tables": NetworkBasedResultTable(dataDictList)
-        }
-        i += 1
-        preRetCtx.append(modelCtx)
-    # raw
-    retDictList: List[Dict] = rawRetDF.to_dict('records')
-    # 排除input,drug_name, cleaned_smiles三个字段
-    rawRetCtx = []
-    i = 1
-    for columnName in rawRetDF.columns[3:]:
-        dataDictList = [{
-            "input": rowDict.get('input'),
-            "drugName": rowDict.get('drug_name'),
-            "cleanedSmiles": rowDict.get('cleaned_smiles'),
-            'score': rowDict.get(columnName)
-        } for rowDict in retDictList]
-
-        modelCtx = {
-            'virusName': f'{i}.{columnName}',
-            "tables": NetworkBasedResultTable(dataDictList)
-        }
-        i += 1
-        rawRetCtx.append(modelCtx)
-
-    return preRetCtx, rawRetCtx
-
-
 def predict(request):
     if not request.POST:
         return HttpResponseBadRequest()
@@ -137,10 +78,9 @@ def predict(request):
         inputFile = False
         preRetTables = _formatRetTables(preRet)
 
-
     if inputFile:
         return make_response(retBook, file_type='csv',
-                             file_name=f'predictionResult')
+                             file_name=f'ADMET_PredictionResult')
     else:
         retDict = {
             "backURL": reverse('prediction_index'),
@@ -151,7 +91,7 @@ def predict(request):
         # just for network based
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-        return render(request, retTemplate, retDict)
+        return render(request, "retTemplate", retDict)
 
 
 def predictionIndex(request):

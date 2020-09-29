@@ -51,3 +51,8 @@ class SearchResultTable(tables.Table):
             "class": "c-scaffolds"
         }
     })
+
+    class Meta:
+        attrs = {
+            "class": "blueTable"
+        }

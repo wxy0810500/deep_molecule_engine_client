@@ -1,7 +1,7 @@
 from typing import Tuple, List
 
 from prediction.forms import ADMETModelInputForm
-from prediction.predictionTask import predictLigand, predictStructure
+from prediction.predictionTask import predictADMET
 from smiles.searchService import searchDrugReferenceByInputRequest
 import pandas as pd
 import os
@@ -21,7 +21,7 @@ def processADMET(request, inputForm: ADMETModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictLigand(modelTypes, smilesInfoList)
+        preRet = predictADMET(modelTypes, smilesInfoList)
     else:
         preRet = None
     return preRet, invalidInputList

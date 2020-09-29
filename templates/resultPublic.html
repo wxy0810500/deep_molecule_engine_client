@@ -12,8 +12,9 @@
        <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
        <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
         <script src="{% static 'js/result.js' %}"></script>
+        <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
    </head>
-   <body>
+   <body onload="drawSmiles()">
       <div class="result-top">
             <a href="http://www.ghddi.org">
                 <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
