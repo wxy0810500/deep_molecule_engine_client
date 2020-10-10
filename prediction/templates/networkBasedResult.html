@@ -6,7 +6,7 @@
                 <h3>Antiviral compound-phenotype link prediction</h3>
                 <div class="tab">
                     {% for table in preRetTables %}
-                    <button class="tablinks pTabLinks" onclick="openPreTable(this, 'p{{ table.virusName }}')">{{ table.virusName }}</button>
+                    <button class="tablinks pTabLinks" onclick='openPreTable(this, "p{{ table.virusName }}")'>{{ table.virusName }}</button>
                     {% endfor %}
                 </div>
                 <!-- prediction result table -->
@@ -21,7 +21,7 @@
                 <h3>Initial in vitro viral / in vivo infection assay data</h3>
                 <div class="tab">
                     {% for table in rawRetTables %}
-                    <button class="tablinks rTabLinks" onclick="openRawTable(this, 'r{{ table.virusName }}')">{{ table.virusName }}</button>
+                    <button class="tablinks rTabLinks" onclick='openRawTable(this, "r{{ table.virusName }}")'>{{ table.virusName }}</button>
                     {% endfor %}
                 </div>
                 {% for table in rawRetTables %}
@@ -30,5 +30,8 @@
                     </div>
                 {% endfor %}
             </div>
+            <script>
+                addCanvas()
+            </script>
         {% endif %}
     {% endblock %}

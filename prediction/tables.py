@@ -42,13 +42,9 @@ class PredictionResultTable(tables.Table):
             "class": "c-drugName"
         }
     })
-    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={
-        "th": {
-            "class": "c-cSmiles"
-        },
-        "td": {
-            "class": "c-cSmiles"
-        }
+    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={"td": {
+        "class": "cleaned-smiles"
+    }
     })
 
     class Meta:
@@ -58,15 +54,15 @@ class PredictionResultTable(tables.Table):
 
 
 class NetworkBasedResultTable(tables.Table):
-
     score = tables.Column(orderable=False, verbose_name="Score")
     input = tables.Column(orderable=False, verbose_name="Input{name|smiles}")
     drugName = tables.Column(orderable=False, verbose_name="drug_name")
-    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles")
+    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={"td": {
+        "class": "cleaned-smiles"
+    }
+    })
 
     class Meta:
         attrs = {
             "class": "blueTable"
         }
-
-

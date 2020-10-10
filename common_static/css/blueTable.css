@@ -12,7 +12,9 @@ table.blueTable td, table.blueTable th {
 	font-size: 15px;
 	min-width: 60px;
     max-width: 160px;
+	word-break: break-word;
 }
+
 
 table.blueTable tr:nth-child(even) {
 	background: #D0E4F5;
@@ -97,3 +99,5 @@ table.blueTable tfoot .links a {
   border: 1px solid #ccc;
   border-top: none;
 }
+
+

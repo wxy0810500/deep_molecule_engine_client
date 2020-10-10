@@ -35,13 +35,9 @@ class SearchResultTable(tables.Table):
             "class": "c-px"
         }
     })
-    cleaned_smiles = tables.Column(verbose_name="Cleaned smiles", orderable=False, attrs={
-        "th": {
-            "class": "c-cs"
-        },
-        "td": {
-            "class": "c-cs"
-        }
+    cleaned_smiles = tables.Column(verbose_name="Cleaned smiles", orderable=False, attrs={"td": {
+        "class": "cleaned-smiles"
+    }
     })
     scaffolds = tables.Column(verbose_name="Scaffolds", orderable=False, attrs={
         "th": {
@@ -51,3 +47,8 @@ class SearchResultTable(tables.Table):
             "class": "c-scaffolds"
         }
     })
+
+    class Meta:
+        attrs = {
+            "class": "blueTable"
+        }
