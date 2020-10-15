@@ -28,7 +28,7 @@
             <nav class="crumbs">
                 <ul class="service-type-items clearfix">
                     <a href="{% url 'prediction_index' sType='ligand'%}"><li class="service-type-item">Ligand Based Engine</li></a>
-                    <a href="{% url 'prediction_index' sType='structure'%}"><li class="service-type-item {{ psStatus }}">Structure Based Engine</li></a>
+{#                    <a href="{% url 'prediction_index' sType='structure'%}"><li class="service-type-item {{ psStatus }}">Structure Based Engine</li></a>#}
                     <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {{ pnStatus }}">Network Based Engine</li></a>
                     <a href="{% url 'search_index'%}"><li class="service-type-item {{ sStatus }}">Advanced Search Engine</li></a>
                 </ul>

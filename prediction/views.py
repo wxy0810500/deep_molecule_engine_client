@@ -8,7 +8,6 @@ from .tables import *
 from .predictionTask import PredictionTaskRet
 from .forms import *
 from deep_engine_client.sysConfig import *
-from typing import Dict
 from deep_engine_client.exception import *
 from deep_engine_client.tables import InvalidInputsTable
 from pyexcel import Book
