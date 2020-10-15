@@ -1,24 +1,12 @@
 {
   "host": "172.17.10.209",
-  "modelAndPort": {
-    "A": [
-      "Absorption"
-    ],
-    "D": [
-      "Distribution"
-    ],
-    "M": [
-      "Metabolism"
-    ],
-    "E": [
-      "Excretion"
-    ],
-    "T": [
-      "Toxicity"
-    ],
-    "P": [
-      "Mechanism Protein"
-    ]
+  "modelCategory": {
+    "A": "Absorption",
+    "D": "Distribution",
+    "M": "Metabolism",
+    "E": "Excretion",
+    "T": "Toxicity",
+    "P": "Mechanism Protein"
   },
   "timeout": 10
 }

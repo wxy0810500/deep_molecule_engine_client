@@ -3,8 +3,8 @@ from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 from deep_engine_client.forms import CommonInputForm
 
 # format  [(value1, name1), (value1, name1)]
-ADMET_model_types = tuple([(model, data[0]) for model, data in
-                           SERVER_CONFIG_DICT.get("modelAndPort").items()])
+ADMET_model_types = tuple([(tag, category) for tag, category in
+                           SERVER_CONFIG_DICT.get("modelCategory").items()])
 
 
 class ADMETModelInputForm(CommonInputForm):
