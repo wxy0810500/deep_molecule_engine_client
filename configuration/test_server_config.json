@@ -1,98 +1,24 @@
 {
   "host": "172.17.10.209",
-  "timeout": 10,
   "modelAndPort": {
     "A": [
-      "Absorption",
-      {
-        "BBB_1838-av1": 7100,
-        "Caco2_664-av1": 7101,
-        "HIA_578-av1": 7102,
-        "PgpI_1272-av1": 7103,
-        "PgpI-2_1227-av1": 7104,
-        "PgpS_332-av1": 7105,
-        "caco2-2_7624_GV1": 7106,
-        "hob-PR2014-995-av2": 7107
-      }
+      "Absorption"
     ],
     "D": [
-      "Distribution",
-      {
-        "PPBmaxAll_11318_70cut_Gv1": 7108,
-        "PPBmaxHuman_8186_70cut_Gv1": 7109,
-        "PPBmaxMouse_1205_70cut_Gv1": 7110,
-        "PPBmaxRat_4383_70cut_Gv1": 7111
-      }
+      "Distribution"
     ],
     "M": [
-      "Metabolism",
-      {
-        "BIO_1603-av1": 7114,
-        "CYP1A2I_14898_av1": 7115,
-        "CYP2C19I_14570_av1": 7116,
-        "CYP2C9I_14704_av1": 7117,
-        "CYP2C9S_668-av1": 7118,
-        "CYP2D6I_14736_av1": 7119,
-        "CYP2D6S_666-av1": 7120,
-        "CYP3A4I_18552_av1": 7121
-      }
+      "Metabolism"
     ],
     "E": [
-      "Excretion",
-      {
-        "HLM_15989_Gv1": 7112,
-        "OCT2I_897-av1": 7113
-      }
+      "Excretion"
     ],
     "T": [
-      "Toxicity",
-      {
-        "Carc_280-av1": 7132,
-        "Cytotox5cells_33971_Gv2": 7133,
-        "CytotoxAllcellMix_84568_Gv2": 7134,
-        "CytotoxHEK293_3696_Gv2": 7135,
-        "CytotoxHepG2_8113_Gv2": 7136,
-        "CytotoxHuh7_11889_Gv2": 7137,
-        "CytotoxVero_10570_Gv2": 7138,
-        "CytotoxMRC5_1725_Gv2": 7139,
-        "CytoxHEK_5279_Gv1": 7140,
-        "CytoxHep_15946_Gv1": 7141,
-        "CytoxMRC_3528_Gv1": 7142,
-        "FHMT_554-av1": 7143,
-        "HBT_193-av1": 7144,
-        "LD50_ratmice_35750_500mgkgcut_Gv1": 7145,
-        "ames_7276_av2": 7146,
-        "dilt_3708_av2": 7147,
-        "hERG-3_12735_Gv1": 7148,
-        "hERG-1_368-av1": 7149,
-        "hERG-2_806-av1": 7150
-      }
+      "Toxicity"
     ],
     "P": [
-      "Mechanism Protein",
-      {
-        "bcrpi-MI2014-966-av2": 7123,
-        "bsepi-DMD2012-607-av2": 7124,
-        "mate1-JMC2013-818-av2": 7125,
-        "oatp1b1i-MP2013-1854-av2": 7126,
-        "oatp1b3i-MP2013-1872-av2": 7127,
-        "oatp2b1i-JMC2012-219-av2": 7128,
-        "oct1i-JMC2008-184-av2": 7129,
-        "pgpi-2_1943-av2": 7130,
-        "pgps-2_1564-av2": 7131,
-        "Tox21-NR-AR-LBD": 7151,
-        "Tox21-NR-ER-LBD": 7152,
-        "Tox21-SR-ATAD5": 7153,
-        "Tox21-NR-AR": 7154,
-        "Tox21-NR-ER": 7155,
-        "Tox21-SR-HSE": 7156,
-        "Tox21-NR-AhR": 7157,
-        "Tox21-NR-PPAR-gamma": 7158,
-        "Tox21-SR-MMP": 7159,
-        "Tox21-NR-Aromatase": 7160,
-        "Tox21-SR-ARE": 7161,
-        "Tox21-SR-P53": 7162
-      }
+      "Mechanism Protein"
     ]
-  }
+  },
+  "timeout": 10
 }

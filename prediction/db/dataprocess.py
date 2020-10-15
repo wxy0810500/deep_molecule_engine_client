@@ -10,10 +10,3 @@ predictDF: pd.DataFrame = pd.read_csv('training_viral_network_all.csv', float_pr
 predictDF.update(rawDF)
 
 predictDF.to_csv("training_viral_network_final_result.csv", index=False)
-
-
-# with open('filelist_admet.csv', 'r') as f:
-#     lines = f.readlines()
-#     for index, line in enumerate(lines):
-#         records = line.strip().split('_', 1)
-#         print(f'{records[0]}, "{records[1]}": {7100 + index},')
