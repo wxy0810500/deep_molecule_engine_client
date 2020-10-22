@@ -1,18 +1,17 @@
 from .thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
+from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_MODEL_PORT_DICT
 from utils.timeUtils import sleepWithSwitchInterval
 from deep_engine_client.exception import PredictionCommonException
 from .taskManager import getProcessPool
 
-default_dme_server_host = SERVER_CONFIG_DICT.get("host")
-default_dme_conn_timeout = SERVER_CONFIG_DICT.get("timeout")
+default_dme_server_host = PREDICTION_HOST
+default_dme_conn_timeout = SYSTEM_CONFIG_DICT.get("timeout")
 
-ADMETModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort")
-
-PREDICTION_TASK_TYPE_LIGAND = "LBVS"
-PREDICTION_TASK_TYPE_STRUCTURE = "SBVS"
+ADMETModelAndPortDict = PREDICTION_MODEL_PORT_DICT
+PREDICTION_TASK_TYPE_LBVS = "LBVS"
+PREDICTION_TYPE_ADMET = "admet"
 
 
 class PredictedRetUnit:
@@ -62,42 +61,42 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoList, taskType, aux_data=None) \
+def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, smilesInfoList, taskType, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
     """
 
 
     @param modelTypeAndPortDict:
-    @param modelTypes:
+    @param categorys:
     @param smilesInfoList:
     @param taskType:
     @param aux_data:
     @return:
             {
-                modleName:PredictionTaskRet
+                modelName:PredictionTaskRet
             }
     """
-    if modelTypes is None or len(modelTypes) == 0:
+    if categorys is None or len(categorys) == 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     modelPortDict = {}
-    for modelType in modelTypes:
-        data = modelTypeAndPortDict.get(modelType, None)
+    for category in categorys:
+        data = modelTypeAndPortDict.get(category, None)
         if data is not None:
-            modelPortDict += data[1]
+            modelPortDict.update(data)
     if len(modelPortDict) > 0:
         # --- make client ---#
         ret = {}
-        # define sample_id in order
+        # define smiles_index in order
         smilesDict = {}
         for i, smilesInfo in enumerate(smilesInfoList):
             smilesDict[i] = smilesInfo
 
         # do tasks one by one
         processPool = getProcessPool()
-        taskIdList = []
+        taskInfoList = []
         for modelName, port in modelPortDict.items():
             taskId = uuid.uuid1()
-            taskIdList.append((taskId, modelName))
+            taskInfoList.append((taskId, modelName))
             taskArgs = {
                 "taskId": taskId,
                 "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data)
@@ -106,17 +105,17 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
         while True:
             sleepWithSwitchInterval(10)
             finishedIds = []
-            for taskId, modelName in taskIdList:
+            for taskId, modelName in taskInfoList:
                 taskRet = processPool.getTaskRet(taskId)
                 if taskRet:
                     ret[modelName] = taskRet
                     finishedIds.append((taskId, modelName))
             if len(finishedIds) > 0:
                 for finishedId in finishedIds:
-                    taskIdList.remove(finishedId)
-            if len(taskIdList) == 0:
+                    taskInfoList.remove(finishedId)
+            if len(taskInfoList) == 0:
                 break
-        return ret
+        return ret, smilesDict
     else:
         raise PredictionCommonException('We will support these model types as soon as possible!')
 
@@ -185,5 +184,5 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     return task_time, server_info, retUnitList, againDict
 
 
-def predictADMET(modelTypes: Sequence, smilesInfoList: List) -> Dict[str, PredictionTaskRet]:
-    return processTasks(ADMETModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_LIGAND)
+def predictADMET(categorys: Sequence, smilesInfoList: List) -> Dict[str, PredictionTaskRet]:
+    return processTasks(ADMETModelAndPortDict, categorys, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)

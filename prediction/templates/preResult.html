@@ -2,12 +2,23 @@
     {% block tables %}
         {% if preRetTables is not None %}
             {% load django_tables2 %}
+            <div class="main-result">
+            {% for retUnit in preRetTables %}
+                <div class="main-block">
+                    <div class="half-block">
+                        <canvas class="smiles-canvas">{{ retUnit.smiles.cleaned_smiles }}</canvas>
+                        {% render_table retUnit.smiles %}
 
-            {% for table in preRetTables %}
-                <h3>{{ table.modelType }}</h3>
-                <h4>{{table.time}}</h4>
-                <h4>results</h4>
-                {% render_table table.tables %}
+                        {% for category, tables in retUnit.result.items %}
+                            <p>{{ category }}</p>
+                            {% render_table tables %}
+                        {% endfor %}
+                    </div>
+                    <div class="half-block">
+
+                    </div>
+                </div>
             {% endfor %}
+            </div>
         {% endif %}
     {% endblock %}

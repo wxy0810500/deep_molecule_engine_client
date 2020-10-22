@@ -1,6 +1,6 @@
 {
-  "host": "172.17.10.209",
-  "modelCategory": {
+  "predictionServerHost": "47.93.199.163",
+  "categorys": {
     "A": "Absorption",
     "D": "Distribution",
     "M": "Metabolism",

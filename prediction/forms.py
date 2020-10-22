@@ -1,18 +1,17 @@
 from django import forms
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
+from configuration.sysConfig import PREDICTION_CATEGORY_NAME_DICT
 from deep_engine_client.forms import CommonInputForm
 
 # format  [(value1, name1), (value1, name1)]
-ADMET_model_types = tuple([(tag, category) for tag, category in
-                           SERVER_CONFIG_DICT.get("modelCategory").items()])
+ADMET_categorys = tuple([(tag, category) for tag, category in PREDICTION_CATEGORY_NAME_DICT.items()])
 
 
 class ADMETModelInputForm(CommonInputForm):
-    modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
-                                           label="",
-                                           required=True,
-                                           choices=ADMET_model_types,
-                                           initial=ADMET_model_types[0])
+    categorys = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
+                                          label="",
+                                          required=True,
+                                          choices=ADMET_categorys,
+                                          initial=ADMET_categorys[0])
 
     # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
     # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']

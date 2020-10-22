@@ -1,5 +1,4 @@
 from django import forms
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 import re
 from typing import List, Iterable
 from .fields import RestrictedFileField

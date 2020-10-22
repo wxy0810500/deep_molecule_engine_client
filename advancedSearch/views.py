@@ -1,5 +1,4 @@
 from django.shortcuts import render, reverse
-from deep_engine_client.sysConfig import *
 from .service import *
 from .tables import SearchResultTable
 from django.http import HttpResponse

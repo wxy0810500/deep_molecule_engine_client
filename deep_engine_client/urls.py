@@ -23,7 +23,6 @@ PREDICTION_BASE_URL = r'service/prediction/'
 urlpatterns = [
     path(BASE_URL, include([
         path(r'', views.index, name='main'),
-        path(r'admin/', admin.site.urls),
         path(PREDICTION_BASE_URL, include('prediction.urls'))
         ])
     )

@@ -2,49 +2,21 @@ import django_tables2 as tables
 
 
 class PredictionResultTable(tables.Table):
-    id = tables.Column(verbose_name="", orderable=False, attrs={
+    model = tables.Column(orderable=False, attrs={
         "th": {
-            "class": "c-id"
+            "class": "model_th"
         },
         "td": {
-            "class": "c-id"
+            "class": "c-model"
         }
     })
-    score = tables.Column(orderable=False, verbose_name="Score", attrs={
+
+    score = tables.Column(orderable=False, attrs={
         "th": {
+            "class": "score_th"
+        },
+        "td": {
             "class": "c-score"
-        },
-        "td": {
-            "class": "c-score"
-        }
-    })
-    # label = tables.Column(orderable=False, attrs={
-    #     "th": {
-    #         "class": "c-label"
-    #     },
-    #     "td": {
-    #         "class": "c-label"
-    #     }
-    # })
-    input = tables.Column(orderable=False, verbose_name="Input{name|smiles}", attrs={
-        "th": {
-            "class": "c-input"
-        },
-        "td": {
-            "class": "c-input"
-        }
-    })
-    drugName = tables.Column(orderable=False, verbose_name="drug_name", attrs={
-        "th": {
-            "class": "c-drugName"
-        },
-        "td": {
-            "class": "c-drugName"
-        }
-    })
-    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={
-        "td": {
-            "class": "cleaned-smiles"
         }
     })
 
@@ -54,13 +26,16 @@ class PredictionResultTable(tables.Table):
         }
 
 
-class NetworkBasedResultTable(tables.Table):
-    score = tables.Column(orderable=False, verbose_name="Score")
-    input = tables.Column(orderable=False, verbose_name="Input{name|smiles}")
-    drugName = tables.Column(orderable=False, verbose_name="drug_name")
-    cleanedSmiles = tables.Column(orderable=False, verbose_name="cleaned_smiles", attrs={
+class PredictionResultSmilesInfoTable(tables.Table):
+    columns = ['Input(name|smiles)', 'DrugName', 'Cleaned smiles']
+    input = tables.Column(orderable=False, verbose_name="Input(name|smiles)")
+    drug_name = tables.Column(orderable=False, verbose_name="DrugName")
+    cleaned_smiles = tables.Column(verbose_name="Cleaned smiles", orderable=False, attrs={
+        "th": {
+            "class": "c-cs"
+        },
         "td": {
-            "class": "cleaned-smiles"
+            "class": "c-cs"
         }
     })
 
@@ -68,3 +43,5 @@ class NetworkBasedResultTable(tables.Table):
         attrs = {
             "class": "blueTable"
         }
+
+
