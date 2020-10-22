@@ -1,0 +1,21 @@
+User-agent: Baiduspider
+Disallow: /covid19/service/prediction/ligand/submit/
+Disallow: /covid19/service/prediction/network/submit/
+Disallow: /covid19/service/prediction/structure//submit/submit/
+Disallow: /covid19/service/advancedSearch/submit/
+
+User-agent: Googlebot
+Disallow: /covid19/service/prediction/ligand/submit/
+Disallow: /covid19/service/prediction/network/submit/
+Disallow: /covid19/service/prediction/structure//submit/submit/
+Disallow: /covid19/service/advancedSearch/submit/
+
+User-agent: Bingbot
+Disallow: /covid19/service/prediction/ligand/submit/
+Disallow: /covid19/service/prediction/network/submit/
+Disallow: /covid19/service/prediction/structure//submit/submit/
+Disallow: /covid19/service/advancedSearch/submit/
+
+User-agent: *
+Disallow: /
+

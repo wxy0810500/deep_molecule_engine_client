@@ -53,6 +53,8 @@ def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
 
 
 def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
+    if preRet is None:
+        return None
     ctx = []
     for modelType, preRetRecord in preRet.items():
         modelCtx = {'modelType': modelType,
@@ -86,44 +88,51 @@ def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, inva
 
 
 def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
-    # predicion table:
-    retDictList: List[Dict] = preRetDF.to_dict('records')
-    # 排除input,drug_name, cleaned_smiles三个字段
-    preRetCtx = []
-    i = 1
-    for columnName in preRetDF.columns[3:]:
-        dataDictList = [{
-            "input": rowDict.get('input'),
-            "drugName": rowDict.get('drug_name'),
-            "cleanedSmiles": rowDict.get('cleaned_smiles'),
-            'score': rowDict.get(columnName)
-        } for rowDict in retDictList if rowDict.get(columnName) != '']
+    if preRetDF is not None:
+        # predicion table:
+        retDictList: List[Dict] = preRetDF.to_dict('records')
+        # 排除input,drug_name, cleaned_smiles三个字段
+        preRetCtx = []
+        i = 1
+        for columnName in preRetDF.columns[3:]:
+            dataDictList = [{
+                "input": rowDict.get('input'),
+                "drugName": rowDict.get('drug_name'),
+                "cleanedSmiles": rowDict.get('cleaned_smiles'),
+                'score': rowDict.get(columnName)
+            } for rowDict in retDictList if rowDict.get(columnName) != '']
 
-        modelCtx = {
-            'virusName': f'{i}.{columnName}',
-            "tables": NetworkBasedResultTable(dataDictList)
-        }
-        i += 1
-        preRetCtx.append(modelCtx)
-    # raw
-    retDictList: List[Dict] = rawRetDF.to_dict('records')
-    # 排除input,drug_name, cleaned_smiles三个字段
-    rawRetCtx = []
-    i = 1
-    for columnName in rawRetDF.columns[3:]:
-        dataDictList = [{
-            "input": rowDict.get('input'),
-            "drugName": rowDict.get('drug_name'),
-            "cleanedSmiles": rowDict.get('cleaned_smiles'),
-            'score': rowDict.get(columnName)
-        } for rowDict in retDictList if rowDict.get(columnName) != '']
+            modelCtx = {
+                'virusName': f'{i}.{columnName}',
+                "tables": NetworkBasedResultTable(dataDictList)
+            }
+            i += 1
+            preRetCtx.append(modelCtx)
+    else:
+        preRetCtx = None
 
-        modelCtx = {
-            'virusName': f'{i}.{columnName}',
-            "tables": NetworkBasedResultTable(dataDictList)
-        }
-        i += 1
-        rawRetCtx.append(modelCtx)
+    if rawRetDF is not None:
+        # raw
+        retDictList: List[Dict] = rawRetDF.to_dict('records')
+        # 排除input,drug_name, cleaned_smiles三个字段
+        rawRetCtx = []
+        i = 1
+        for columnName in rawRetDF.columns[3:]:
+            dataDictList = [{
+                "input": rowDict.get('input'),
+                "drugName": rowDict.get('drug_name'),
+                "cleanedSmiles": rowDict.get('cleaned_smiles'),
+                'score': rowDict.get(columnName)
+            } for rowDict in retDictList if rowDict.get(columnName) != '']
+
+            modelCtx = {
+                'virusName': f'{i}.{columnName}',
+                "tables": NetworkBasedResultTable(dataDictList)
+            }
+            i += 1
+            rawRetCtx.append(modelCtx)
+    else:
+        rawRetCtx = None
 
     return preRetCtx, rawRetCtx
 
