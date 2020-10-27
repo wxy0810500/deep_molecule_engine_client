@@ -6,22 +6,22 @@
       <title>{% if pageTitle is not None %}
                {{ pageTitle }} |
              {% endif %}
-          GHDDI COVID-19 AI Engine</title>
+          GHDDI ADMET AI Engine</title>
        {% load static %}
-        <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
+       <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
        <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
        <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
-        <script src="{% static 'js/result.js' %}"></script>
         <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
+        <script src="{% static 'js/result.js' %}"></script>
    </head>
-   <body onload="drawSmiles()">
+   <body>
       <div class="result-top">
             <a href="http://www.ghddi.org">
                 <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
             </a>
             <span>
                 <a href="{% url 'main' %}">
-                    GHDDI's Free AI Virtual Screening Service for COVID-19
+                    GHDDI's Free AI Virtual Screening Service for ADMET
                 </a>
             </span>
       </div>

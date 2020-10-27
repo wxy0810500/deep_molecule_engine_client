@@ -237,25 +237,38 @@ button.return{
     overflow: auto;
 }
 
-/*table.commonTable th,*/
-/*table.commonTable td {*/
-/*    !*line-height: 58px;*!*/
-/*    border: 1px solid #C8C8C8;*/
-/*    min-width: 60px;*/
-/*    max-width: 160px;*/
-/*    overflow: auto;*/
-/*    !*word-break: break-all; !*允许在字内换行,即单词可分*!*/
-/*    !*word-wrap:break-word;!*允许长单词或URL地址换行*!*/
-/*}*/
-/*table.commonTable th {*/
-/*    background-color: #f4fbff;*/
-/*}*/
-/*table.commonTable {*/
-/*    width:100%;*/
-/*    text-align:center;*/
-/*    border-collapse:collapse;*/
-/*    border-spacing:0;*/
-/*}*/
+div.category-block {
+    margin-bottom: 10px;
+}
+
+div.category-content {
+
+  background: #1C6EA4;
+
+  border-bottom: 2px solid;
+
+  text-align: center;
+
+  font-weight: bold;
+
+  color: #FFFFFF;
+}
+
+table.score thead{
+    display:none;
+}
+
+.main-block {
+	float: left;
+	width: 100%;
+	padding: 7px;
+	border-color: #000000;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 7px;
+	margin-top: 30px;
+}
+
 
 
 

@@ -22,7 +22,7 @@ class PredictionResultTable(tables.Table):
 
     class Meta:
         attrs = {
-            "class": "blueTable"
+            "class": "blueTable score"
         }
 
 

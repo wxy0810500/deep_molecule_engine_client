@@ -6,12 +6,17 @@
             {% for retUnit in preRetTables %}
                 <div class="main-block">
                     <div class="half-block">
-                        <canvas class="smiles-canvas">{{ retUnit.smiles.cleaned_smiles }}</canvas>
-                        {% render_table retUnit.smiles %}
+                        {% render_table retUnit.smilesTable %}
+                        <canvas id="smiles-canvas-{{ forloop.counter }}"></canvas>
+                        <script>
+                            draw("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}")
+                        </script>
 
                         {% for category, tables in retUnit.result.items %}
-                            <p>{{ category }}</p>
-                            {% render_table tables %}
+                            <div class="category-block">
+                                <div class="category-content">{{ category }}</div>
+                                {% render_table tables %}
+                            </div>
                         {% endfor %}
                     </div>
                     <div class="half-block">

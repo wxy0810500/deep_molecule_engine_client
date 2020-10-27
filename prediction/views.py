@@ -78,15 +78,17 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet], inputCategorys: List[
             })
     # [
     #     {
-    #         "smiles": smiles,
+    #         "smilesTable": smilesTable,
+    #         "cleanedSmiles": cleanedSmiles,
     #         "ret" : {
     #               "category": tables,
     #         }
     #     }
     # ]
     ctx = [{
-        "smiles": PredictionResultSmilesInfoTable([smilesDict[index]]),
-        "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category), PredictionResultTable(tables))
+        "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
+        "cleanedSmiles":smilesDict[index]["cleaned_smiles"],
+        "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category), PredictionResultTable(result))
                        for category, result in results.items())
     } for index, results in retDict.items()]
     return ctx
