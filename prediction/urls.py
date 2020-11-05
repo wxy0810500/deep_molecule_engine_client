@@ -19,6 +19,5 @@ from . import views
 from django.urls import path
 
 urlpatterns = [
-    path(r"", views.predictionIndex, name="prediction_index"),
     path(r"submit/", views.predict, name="prediction_submit"),
 ]

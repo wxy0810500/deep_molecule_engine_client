@@ -20,8 +20,8 @@ def _getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dic
 def processADMET(request, inputForm: ADMETModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
-        categorys = inputForm.cleaned_data['categorys']
-        preRet, smilesDict = predictADMET(categorys, smilesInfoList)
+        inputCategorys = inputForm.cleaned_data['categorys']
+        preRet, smilesDict = predictADMET(inputCategorys, smilesInfoList)
     else:
-        preRet = None
-    return preRet, invalidInputList, categorys, smilesDict
+        inputCategorys, smilesDict, preRet = None, None, None
+    return preRet, invalidInputList, inputCategorys, smilesDict

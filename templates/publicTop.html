@@ -5,11 +5,12 @@
         {% if pageTitle is not None %}
         {{ pageTitle }} |
         {% endif %}
-        GHDDI COVID-19 AI Engine</title>
+        GHDDI's Free ADMET Prediction Service</title>
     {% load static %}
     <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
-    <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/index.css" %} ">
     <link rel="stylesheet" type="text/css" href="{% static  "css/alert.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/public.css" %} ">
     <script src="{% static 'js/main.js' %}"></script>
 </head>
 <body>
@@ -19,21 +20,19 @@
                 <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
             </a>
         </div>
-        <div class="">
             <h1>
             <a href="{% url 'main' %}">
-                GHDDI's Free AI Virtual Screening Service for COVID-19
+                GHDDI's Free ADMET Prediction Service
             </a>
             </h1>
-            <nav class="crumbs">
-                <ul class="service-type-items clearfix">
-                    <a href="{% url 'prediction_index'%}"><li class="service-type-item">admet</li></a>
+{#            <nav class="crumbs">#}
+{#                <ul class="service-type-items clearfix">#}
+{#                    <a href="{% url 'prediction_index'%}"><li class="service-type-item">admet</li></a>#}
 {#                    <a href="{% url 'prediction_index' sType='structure'%}"><li class="service-type-item {{ psStatus }}">Structure Based Engine</li></a>#}
 {#                    <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {{ pnStatus }}">Network Based Engine</li></a>#}
 {#                    <a href="{% url 'search_index'%}"><li class="service-type-item {{ sStatus }}">Advanced Search Engine</li></a>#}
-                </ul>
-            </nav>
-        </div>
+{#                </ul>#}
+{#            </nav>#}
     </div>
     {% block content %}
     {% endblock %}

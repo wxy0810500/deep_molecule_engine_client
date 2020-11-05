@@ -6,38 +6,39 @@
       <title>{% if pageTitle is not None %}
                {{ pageTitle }} |
              {% endif %}
-          GHDDI ADMET AI Engine</title>
+          GHDDI's Free ADMET Prediction Service</title>
        {% load static %}
        <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
-       <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
+       <link rel="stylesheet" type="text/css" href="{% static  "css/result.css" %} ">
        <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
+        <link rel="stylesheet" type="text/css" href="{% static  "css/public.css" %} ">
+        <script src="{%  static 'js/echarts.min.js' %}"></script>
         <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
         <script src="{% static 'js/result.js' %}"></script>
    </head>
    <body>
-      <div class="result-top">
+   <div class="top">
+       <div class="header">
             <a href="http://www.ghddi.org">
                 <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
             </a>
-            <span>
-                <a href="{% url 'main' %}">
-                    GHDDI's Free AI Virtual Screening Service for ADMET
-                </a>
-            </span>
+        </div>
+            <h1>
+            <a href="{% url 'main' %}">
+                GHDDI's Free ADMET Prediction Service
+            </a>
+            </h1>
       </div>
-      <div class="results">
+   <div class="shadow">
+
+      <div class="content">
         <button class="return">
             <a href="{{ backURL }}">
-                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
+                <img class="" src="{% static "imgs/arrow_back.svg" %}">&emsp;Back
             </a>
         </button>
-            {% block tables %}
+            {% block retTables %}
             {% endblock %}
-         {% if invalidInputTable is not None %}
-            <h3>invalid input</h3>
-            {% load django_tables2 %}
-            {% render_table invalidInputTable %}
-        {% endif %}
       </div>
       <div class="footer">
         <button class="return">
@@ -51,5 +52,6 @@
             </a>
         </p>
       </div>
+   </div>
    </body>
 </html>

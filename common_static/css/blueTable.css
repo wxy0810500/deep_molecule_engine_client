@@ -10,8 +10,8 @@ table.blueTable td, table.blueTable th {
 	border: 1px solid #AAAAAA;
 	padding: 3px 2px;
 	font-size: 15px;
-	min-width: 60px;
-    max-width: 160px;
+	/*min-width: 60px;*/
+    /*max-width: 160px;*/
 }
 
 table.blueTable tr:nth-child(even) {

@@ -7,7 +7,7 @@ class PredictionResultTable(tables.Table):
             "class": "model_th"
         },
         "td": {
-            "class": "c-model"
+            "class": "model_td"
         }
     })
 
@@ -16,7 +16,7 @@ class PredictionResultTable(tables.Table):
             "class": "score_th"
         },
         "td": {
-            "class": "c-score"
+            "class": "score_td"
         }
     })
 
@@ -41,7 +41,7 @@ class PredictionResultSmilesInfoTable(tables.Table):
 
     class Meta:
         attrs = {
-            "class": "blueTable"
+            "class": "blueTable smiles-info"
         }
 
 

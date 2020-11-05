@@ -1,12 +1,4 @@
 {
   "predictionServerHost": "47.93.199.163",
-  "timeout": 10,
-  "categorys": {
-    "A": "Absorption",
-    "D": "Distribution",
-    "M": "Metabolism",
-    "E": "Excretion",
-    "T": "Toxicity",
-    "P": "Mechanism Protein"
-  }
+  "timeout": 10
 }
