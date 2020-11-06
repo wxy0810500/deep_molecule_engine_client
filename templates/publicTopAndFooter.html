@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://127.0.0.1:8000/covid19/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+        {% if pageTitle is not None %}
+        {{ pageTitle }} |
+        {% endif %}
+        GHDDI's Free ADMET Prediction Service</title>
+
+    {% load static %}
+    <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
+
+    <link rel="stylesheet" type="text/css" href="{% static  "css/public.css" %} ">
+    {% block custom-css-script %}
+    {% endblock %}
+</head>
+<body>
+    <div class="top">
+        <div class="header">
+            <a href="http://www.ghddi.org">
+                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
+            </a>
+        </div>
+            <h1>
+            <a href="{% url 'main' %}">
+                GHDDI's Free ADMET Prediction Service
+            </a>
+            </h1>
+{#            <nav class="crumbs">#}
+{#                <ul class="service-type-items clearfix">#}
+{#                    <a href="{% url 'prediction_index'%}"><li class="service-type-item">admet</li></a>#}
+{#                    <a href="{% url 'prediction_index' sType='structure'%}"><li class="service-type-item {{ psStatus }}">Structure Based Engine</li></a>#}
+{#                    <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {{ pnStatus }}">Network Based Engine</li></a>#}
+{#                    <a href="{% url 'search_index'%}"><li class="service-type-item {{ sStatus }}">Advanced Search Engine</li></a>#}
+{#                </ul>#}
+{#            </nav>#}
+    </div>
+    {% block content %}
+    {% endblock %}
+    <div class="footer">
+        {% block footer-content %}
+        {% endblock %}
+        <div>
+            <b>For high throughput virtual screening or other request, please contact us at aidd@ghddi.org</b>
+            <br>
+        </div>
+        <div>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：<a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;"><span>京ICP备16047874号</span></a></div>
+    </div>
+</body>
+</html>

@@ -34,7 +34,7 @@ textarea:focus {
     box-shadow: 0px 0px 10px 5px #ccc;*/
     width: 70%;
     height: auto;
-    margin: -8% auto 0px auto;
+    margin: -3.5% auto 0px auto;
     box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.2);
     border-radius: 8px;
     background-color: white;
@@ -57,15 +57,16 @@ button.return{
     background-image: linear-gradient(0deg, #EFF6FB 0%, #FFFFFF 60%);
     border: 1px solid #EBEBEB;
     border-radius: 8px;
-    height: 40px;
-    width: 125px;
-    line-height: 38px;
+    height: 7vh;
+    width: 8vw;
+    line-height: 6vh;
     box-sizing: border-box;
-    font-size: 16px;
+    font-size: 3vh;
+    margin-left: 1%;
 }
 
 .content {
-    padding: 40px 5px;
+    padding: 4% 1%;
     height: auto;
 }
 /*.content h3 {*/
@@ -78,7 +79,7 @@ button.return{
 }
 
 div.category-block {
-    margin-bottom: 10px;
+    margin-bottom: 1.5%;
 }
 
 div.category-content {
