@@ -25,7 +25,6 @@ urlpatterns = [
     path(r'', views.tempRoot, name='main'),
     path(BASE_URL, include([
         path(r'', views.index),
-        path(r'admin/', admin.site.urls),
         path(PREDICTION_BASE_URL, include('prediction.urls')),
         path(SEARCH_BASE_URL, include('advancedSearch.urls'))
         ])
