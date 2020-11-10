@@ -100,7 +100,7 @@ table.score th, table.score td {
 }
 
 table.smiles-info th, table.smiles-info td {
-    width: auto;
+    min-width: 7vw;
 }
 
 div.smiles-radar {
