@@ -40,7 +40,7 @@ def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
         smilesModelScoreDict = dict((int(preRetUnit.sampleId), {
             "input": preRetUnit.input,
             "drugName": preRetUnit.drugName,
-            "cleaned_smiles": preRetUnit.cleanedSmiles,
+            "cleanedSmiles": preRetUnit.cleanedSmiles,
         }) for preRetUnit in preRet.get(inputModelTypes[0]).preResults)
         for modelType, preRetRecord in preRet.items():
             for preRetUnit in preRetRecord.preResults:
