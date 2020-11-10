@@ -3,6 +3,7 @@ import uuid
 from typing import Sequence, List, Dict
 from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_MODEL_PORT_DICT
 from utils.timeUtils import sleepWithSwitchInterval
+from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException
 from .taskManager import getProcessPool
 
@@ -93,27 +94,32 @@ def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, smilesInfoList
 
         # do tasks one by one
         processPool = getProcessPool()
-        taskInfoList = []
+        taskInfoDict: dict = {}
         for modelName, port in modelPortDict.items():
             taskId = uuid.uuid1()
-            taskInfoList.append((taskId, modelName))
+            taskInfoDict[taskId] = modelName
             taskArgs = {
                 "taskId": taskId,
-                "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data)
+                "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data),
+                "errorCode": "failed"
             }
             processPool.putTask(taskArgs)
         while True:
             sleepWithSwitchInterval(10)
-            finishedIds = []
-            for taskId, modelName in taskInfoList:
+            finishedTaskIds = []
+            for taskId, modelName in taskInfoDict.items():
                 taskRet = processPool.getTaskRet(taskId)
                 if taskRet:
-                    ret[modelName] = taskRet
-                    finishedIds.append((taskId, modelName))
-            if len(finishedIds) > 0:
-                for finishedId in finishedIds:
-                    taskInfoList.remove(finishedId)
-            if len(taskInfoList) == 0:
+                    if type(taskRet) == PredictionTaskRet:
+                        ret[modelName] = taskRet
+                    else:
+                        printDebug(taskRet.get("errorMessage", None))
+                    finishedTaskIds.append(taskId)
+            if len(finishedTaskIds) > 0:
+                for taskId in finishedTaskIds:
+                    taskInfoDict.pop(taskId)
+                finishedTaskIds.clear()
+            if len(taskInfoDict) == 0:
                 break
         return ret, smilesDict
     else:
@@ -150,8 +156,8 @@ def processOneTask(client: DMEClient, *args):
         for sampleId, smilesInfo in againDict.items():
             retUnitList.append(PredictedRetUnit.errorOne(sampleId,
                                                          PredictedRetUnit.queue_full_unit_label, smilesInfo))
-    # sort result
-    retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
+    # # sort result
+    # retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
     modelRet = PredictionTaskRet(task_time, server_info, retUnitList)
     return modelRet
 

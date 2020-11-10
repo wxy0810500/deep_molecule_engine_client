@@ -57,11 +57,11 @@ button.return{
     background-image: linear-gradient(0deg, #EFF6FB 0%, #FFFFFF 60%);
     border: 1px solid #EBEBEB;
     border-radius: 8px;
-    height: 7vh;
+    height: 6vh;
     width: 8vw;
     line-height: 6vh;
     box-sizing: border-box;
-    font-size: 3vh;
+    font-size: 2.5vh;
     margin-left: 1%;
 }
 
@@ -115,23 +115,19 @@ div.smiles-radar {
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 7px;
-	margin-top: 30px;
+	margin-top: 2%;
     margin-left: auto;
     margin-right: auto;
 }
 
 .index-block{
-    margin-bottom: 10px;
-    font-size: 20pt;
+    margin-bottom: 1%;
+    font-size: 4vh;
     background-color: #1C6EA4;
-    padding-left: 15px;
+    padding-left: 1%;
     border-radius: 7px;
     color: #FFFFFF;
     overflow: auto;
-    width: 160px;
-}
-h3 {
-    padding-left: 10px;
-    font-size: 20pt;
+    width: 18%;
 }
 
