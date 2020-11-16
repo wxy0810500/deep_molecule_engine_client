@@ -1,11 +1,10 @@
 from typing import Tuple, List
 
-from prediction.forms import ADMETModelInputForm
-from prediction.predictionTask import predictADMET
+from prediction.forms import StructureModelInputForm
 from smiles.searchService import searchDrugReferenceByInputRequest
-import pandas as pd
 import os
-import numpy as np
+from utils.fileUtils import handleUploadedFile
+from prediction.predictionTask import predictSBVS
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 
@@ -17,11 +16,15 @@ def _getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dic
     return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records'), invalidInputList
 
 
-def processADMET(request, inputForm: ADMETModelInputForm):
+def processSBVS(request, inputForm: StructureModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
-        inputCategorys = inputForm.cleaned_data['categorys']
-        preRet, smilesDict = predictADMET(inputCategorys, smilesInfoList)
+        # get pdbFile
+        pdbContent = handleUploadedFile(request.FILES['uploadPDBFile'])
+
+        modelTypes = inputForm.cleaned_data['modelTypes']
+        preRet = predictSBVS(modelTypes, smilesInfoList, pdbContent)
     else:
-        inputCategorys, smilesDict, preRet = None, None, None
-    return preRet, invalidInputList, inputCategorys, smilesDict
+        preRet = None
+    return preRet, invalidInputList
+

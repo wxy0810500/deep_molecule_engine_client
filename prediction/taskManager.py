@@ -15,6 +15,7 @@ def _processWorker(processor, inputQueue: Queue, outputDict: Dict):
         # print(inputArg)
         try:
             ret = processor(client, *inputArg['args'])
+            inputQueue.task_done()
         except Exception:
             ret = {"errorCode": inputArg['errorCode'],
                    "errorMessage": traceback.format_exc()}
@@ -24,12 +25,12 @@ def _processWorker(processor, inputQueue: Queue, outputDict: Dict):
 
 class PredictionTaskProcessPool:
 
-    def __init__(self, processor):
-        self._inputQueue = Queue()
-        self._outputDict = Manager().dict()
+    def __init__(self, processor, inputQueueLength: int):
+        self.__inputQueue = Queue(inputQueueLength)
+        self.__outputDict = Manager().dict()
         jobs = []
         for i in range(0, max(os.cpu_count() // 2, 4)):
-            jobs.append(Process(target=_processWorker, args=(processor, self._inputQueue, self._outputDict)))
+            jobs.append(Process(target=_processWorker, args=(processor, self.__inputQueue, self.__outputDict)))
         self._jobs = jobs
 
     def startAll(self):
@@ -42,10 +43,10 @@ class PredictionTaskProcessPool:
             p.close()
 
     def putTask(self, taskArgs, block=True, timeout=None):
-        self._inputQueue.put(taskArgs, block=block, timeout=timeout)
+        self.__inputQueue.put(taskArgs, block=block, timeout=timeout)
 
     def getTaskRet(self, taskId):
-        return self._outputDict.get(taskId, None)
+        return self.__outputDict.get(taskId, None)
 
 
 _g_Pool: PredictionTaskProcessPool = None
@@ -54,7 +55,7 @@ _g_Pool: PredictionTaskProcessPool = None
 def initProcessPool(processor):
     global _g_Pool
     if _g_Pool is None:
-        _g_Pool = PredictionTaskProcessPool(processor)
+        _g_Pool = PredictionTaskProcessPool(processor, 500)
         _g_Pool.startAll()
 
 

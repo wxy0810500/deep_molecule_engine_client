@@ -50,8 +50,8 @@ class DMEClient:
                  server_info, server information, string
         """
         server_inputs = []
-        for i, smilesInfo in SMILES_dict.items():
-            sample_id = str(i)
+        for smilesIndex, smilesInfo in SMILES_dict.items():
+            sample_id = str(smilesIndex)
             one_input = self.thriftDef.DME_input(sample_id, smilesInfo['cleaned_smiles'], task, aux_data)
             server_inputs.append(one_input)
 

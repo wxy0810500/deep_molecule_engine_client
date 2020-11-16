@@ -15,31 +15,32 @@
             {% csrf_token %}
             {{ inputForm.inputType }}
             {{ inputForm.inputStr }}
-            <div class="upload-area">
+            <div class="button-area">
                 {{ inputForm.uploadInputFile }}
                 <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
+                <input type="button" id="clear_btn" value="Clear"
+                   onclick="this.form.inputStr.value='';
+                           this.form.uploadInputFile.outerHTML=this.form.uploadInputFile.outerHTML;
+                           document.getElementById('inputFileName').innerText='Select input file(*.csv,*.xls, *.xlsx)';">
+                <div class="upload" id="clear_div">Clear</div>
             </div>
-            {{ inputForm.categorys }}
+            {{ inputForm.modelTypes }}
+                <h5> Please upload the pdb file </h5>
+            <div class="button-area">
+
+                {{ inputForm.uploadPDBFile }}
+                <div class="upload" id="pdbFileName">Select PDB file</div>
+            </div>
+            {{ inputForm.outputType }}
             <input type="submit" value="submit"/>
         </form>
     </div>
 
     <div class="title">Model Documentation</div>
-    <h3></h3>
-    <t1>ADMET, i.e. Absorption, Distribution, Metabolism, Excretion and Toxicity, is one of the import domains in drug R&D. Based on the historic experimental data, AI make it possible to assess ADMET properties virtually and early in drug pipelines.</t1>
-    <h3></h3>
-    <t1>Combining different drug pipeline knowledge, more than 60 important and common ADMET properties (Fig. 1) were constructed with deep learning AI models, with the good performance of AUC *~0.97 in 5-fold cross validation (Fig. 2). This service helps to automatically profile and systematically assess your own compounds’ ADMET properties by 1 click workflow (Fig. 3). Models in this service will be updated regularly.</t1>
+    <h3>Structure based (none-docking) AI model</h3>
+    <t1>The structure based AI model was constructed based on GHDDI developed HAG-net. The model was trained based on all existing drug targets 3D information and their related biochemical data for up to 2 million molecules. The model is universal for all targets with 3D structures. The model was evaluated using benchmark set DUD.E with average AUC of 0.99, after removal of computer generated decoys, the model shows an average AUC of 0.94 over 2 million protein-ligand interactions of over 200 protein targets which outperforms the state-of-the-art virtual screening tools. Given a target 3D structure, preferably the binding pocket with a radius of 15 Å, and screening library SMILES list as input, we are able to screen all 10K compounds in 4 minutes, which is exponentially faster than traditional docking tools. </t1>
 
     {% load static %}
-    <h4>Fig 1. ADMET property list</h4>
-    <img class="" src="{% static "imgs/fig1.jpg" %}" width="100%">
-    <h4>Fig 2. The performance of ADMET predictive models</h4>
-    <img class="" src="{% static "imgs/fig2.jpg" %}" width="100%">
-{#        <img class="" src="{% static "imgs/fig3.jpg" %}" width="100%">#}
-
-    <div class="title">News:</div>
-    <h4></h4>
-    <t1>1. GHDDI’s Free ADMET prediction Service is online now. 2020.11.05</t1>
-
+    <img class="" src="{% static "imgs/structure_based_index.png" %}" width="100%">
 </div>
 {% endblock %}

@@ -7,10 +7,18 @@ def handleUploadedFile(fs) -> str:
     return ','.join(ret)
 
 
-# 当前处理是读取数据的list
-def handleUploadedExcelFile(fileHandler):
+# 当前处理是读取数据的Set，有效值100个
+def getInputDataSetFromUploadedExcel(fileHandler):
     if fileHandler is not None:
-        return [str(record[0]) for record in fileHandler.iget_array() if record is not None and len(record) > 0]
+        smilesSet = set()
+        i = 0
+        for record in fileHandler.iget_array():
+            if record is not None:
+                smilesSet.add(str(record[0]))
+                i = i + 1
+                if i == 100:
+                    break
+        return smilesSet
     else:
         return None
 
