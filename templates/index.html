@@ -15,11 +15,17 @@
             {% csrf_token %}
             {{ inputForm.inputType }}
             {{ inputForm.inputStr }}
-            <div class="upload-area">
+            <div class="button-area">
                 {{ inputForm.uploadInputFile }}
                 <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
+                <input type="button" id="clear_btn" value="Clear"
+                   onclick="this.form.inputStr.value='';
+                           this.form.uploadInputFile.outerHTML=this.form.uploadInputFile.outerHTML;
+                           document.getElementById('inputFileName').innerText='Select input file(*.csv,*.xls, *.xlsx)';">
+                <div class="upload" id="clear_div">Clear</div>
             </div>
             {{ inputForm.categorys }}
+            {{ inputForm.outputType }}
             <input type="submit" value="submit"/>
         </form>
     </div>

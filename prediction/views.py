@@ -19,12 +19,12 @@ import numpy as np
 import json
 
 
-def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
+def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], invalidInputList):
     sheets = {}
-    if preRet is not None:
+    if preRetList is not None:
         # headers
         headers = ['Input{name|smiles}', 'DrugName', 'CleanedSmiles']
-        inputModelTypes = list(preRet.keys())
+        inputModelTypes = list(preRetList[0].keys())
         headers.extend(inputModelTypes)
         rows = [headers]
         # smilesModelScoreDict = {
@@ -36,31 +36,33 @@ def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
         #         modelType2:score2,
         #     }
         # }
-        # 从preRet中任意拿出一个preRetRecord，均包含所有的input信息，用于初始化下列dict
-        smilesModelScoreDict = dict((int(preRetUnit.sampleId), {
-            "input": preRetUnit.input,
-            "drugName": preRetUnit.drugName,
-            "cleanedSmiles": preRetUnit.cleanedSmiles,
-        }) for preRetUnit in preRet.get(inputModelTypes[0]).preResults)
-        for modelType, preRetRecord in preRet.items():
-            for preRetUnit in preRetRecord.preResults:
-                smilesIndex = int(preRetUnit.sampleId)
-                smilesModelScoreDict[smilesIndex][modelType] = preRetUnit.score
+        for preRet in preRetList:
+            # 从preRet中任意拿出一个preRetRecord，均包含所有的input信息，用于初始化下列dict
+            smilesModelScoreDict = dict((int(preRetUnit.sampleId), {
+                "input": preRetUnit.input,
+                "drugName": preRetUnit.drugName,
+                "cleanedSmiles": preRetUnit.cleanedSmiles,
+            }) for preRetUnit in preRet.get(inputModelTypes[0]).preResults)
+            for modelType, preRetRecord in preRet.items():
+                for preRetUnit in preRetRecord.preResults:
+                    smilesIndex = int(preRetUnit.sampleId)
+                    smilesModelScoreDict[smilesIndex][modelType] = preRetUnit.score
 
-        # 根据inputModelType中modelType的顺序rowData
-        for smilesIndex, modelScoreDict in smilesModelScoreDict.items():
-            rowData = [modelScoreDict.get('input'), modelScoreDict.get("drugName"), modelScoreDict.get("cleanedSmiles")]
-            for modelType in inputModelTypes:
-                rowData.append(modelScoreDict.get(modelType))
-            rows.append(rowData)
-
+            # 根据inputModelType中modelType的顺序rowData
+            for smilesIndex, modelScoreDict in smilesModelScoreDict.items():
+                rowData = [modelScoreDict.get('input'), modelScoreDict.get("drugName"),
+                           modelScoreDict.get("cleanedSmiles")]
+                for modelType in inputModelTypes:
+                    rowData.append(modelScoreDict.get(modelType))
+                rows.append(rowData)
         sheets['predictionResult'] = rows
     if invalidInputList and len(invalidInputList) > 0:
         sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
     return Book(sheets)
 
 
-def _formatRetTables(preRet: Dict[str, PredictionTaskRet], inputCategorys: List[str], smilesDict: Dict[int, str]):
+def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCategorys: List[str],
+                     smilesDict: Dict[int, str]):
     # tables for each smiles
     # {
     #     smilesIndex: {
@@ -84,17 +86,17 @@ def _formatRetTables(preRet: Dict[str, PredictionTaskRet], inputCategorys: List[
     # }
     retDict = dict((smilesIndex, dict((category, []) for category in inputCategorys))
                    for smilesIndex in smilesDict.keys())
-
-    for modelType, preRetRecord in preRet.items():
-        category = PREDICTION_MODEL_CATEGORY_DICT.get(modelType, None)
-        if category is None:
-            category = "unsupported"
-        for preRetUnit in preRetRecord.preResults:
-            smilesIndex: int = int(preRetUnit.sampleId)
-            retDict[smilesIndex][category].append({
-                "model": modelType,
-                "score": "%.4f" % preRetUnit.score
-            })
+    for preRet in preRetList:
+        for modelType, preRetRecord in preRet.items():
+            category = PREDICTION_MODEL_CATEGORY_DICT.get(modelType, None)
+            if category is None:
+                category = "unsupported"
+            for preRetUnit in preRetRecord.preResults:
+                smilesIndex: int = int(preRetUnit.sampleId)
+                retDict[smilesIndex][category].append({
+                    "model": modelType,
+                    "score": "%.4f" % preRetUnit.score
+                })
 
     # [
     #     {
@@ -142,7 +144,8 @@ def predict(request):
     except CommonException as e:
         return HttpResponseBadRequest(e.message)
 
-    if len(request.FILES) == 0:
+    outputType = inputForm.cleaned_data['outputType']
+    if outputType == CommonInputForm.OUTPUT_TYPE_WEB_PAGE:
         retDict = {
             "backURL": reverse('main'),
             "pageTitle": "Prediction Result"
@@ -155,6 +158,6 @@ def predict(request):
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
         return render(request, "preResult.html", retDict)
     else:
-        retBook = _formatRetExcelBook(preRet, invalidInputList)
+        retBook = __formatRetExcelBook(preRet, invalidInputList)
         return make_response(retBook, file_type='csv',
                              file_name=f'ADMET_PredictionResult')

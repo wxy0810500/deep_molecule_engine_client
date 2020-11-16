@@ -4,7 +4,7 @@ from deep_engine_client.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
 from typing import List, Tuple
 import numpy as np
-from utils.fileUtils import handleUploadedExcelFile
+from utils.fileUtils import getInputDataSetFromUploadedExcel
 from deep_engine_client.exception import CommonException
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
@@ -44,19 +44,19 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
     if request.FILES and request.FILES.get('uploadInputFile', None):
-        fileInputList = handleUploadedExcelFile(request.FILES['uploadInputFile'])
+        fileInputSet = getInputDataSetFromUploadedExcel(request.FILES['uploadInputFile'])
     else:
-        fileInputList = None
+        fileInputSet = None
 
     invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if inputStr:
-            inputDrugNameList: List = CommonInputForm.splitInputDrugNamesStr(inputStr)
-            if fileInputList is not None:
-                inputDrugNameList.extend(fileInputList)
+            inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
+            if fileInputSet is not None:
+                inputDrugNameList.extend(fileInputSet)
         else:
-            if fileInputList is not None:
-                inputDrugNameList = fileInputList
+            if fileInputSet is not None:
+                inputDrugNameList = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
         inputDrugNameList = CommonInputForm.filterInputDrugNames(inputDrugNameList)
@@ -75,16 +75,14 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
             invalidInputList = inputDrugNameList
     else:
         if inputStr:
-            inputSmilesList: List = CommonInputForm.splitInputSmiles(inputStr)
-            if fileInputList is not None:
-                inputSmilesList.extend(fileInputList)
+            inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
+            if fileInputSet is not None:
+                inputSmilesList.extend(fileInputSet)
         else:
-            if fileInputList is not None:
-                inputSmilesList = fileInputList
+            if fileInputSet is not None:
+                inputSmilesList = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
-
-        inputSmilesList = CommonInputForm.filterInputSmiles(inputSmilesList)
 
         # clean smiles
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)
