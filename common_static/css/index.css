@@ -8,7 +8,7 @@
     background: white;
     box-shadow: 0 0 16px 0 rgba(0,0,0,0.20);
     border-radius: 8px;
-    margin-top: -16%;
+    margin-top: -12%;
     margin-bottom: 6vh;
 }
 .input-area textarea{
@@ -107,7 +107,7 @@ body a {
   text-decoration: none;
   color: inherit;
 }
-/*清楚浮动*/
+/*æ¸…æ¥šæµ®åŠ¨*/
 .clearfix {
   zoom: 1
 }
@@ -129,7 +129,7 @@ textarea:focus {
 }
 .crumbs .service-type-items a li{
     /*width: 200px;*/
-    /* model 选择框宽度 */
+    /* model é€‰æ‹©æ¡†å®½åº¦ */
     width: calc(25% - 8px);
     height: 38px;
     line-height: 32px;
@@ -159,7 +159,7 @@ textarea:focus {
     font-size: 2.5vmin;
     line-height: 4vh;
     padding: 8vh 0;
-    /*把下面两行删了就没阴影了*/
+    /*æŠŠä¸‹é¢ä¸¤è¡Œåˆ äº†å°±æ²¡é˜´å½±äº†*/
     /*box-shadow: 0 0 16px 0 rgba(0,0,0,0.20);*/
     /*padding: 50px;*/
 }
