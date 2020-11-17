@@ -89,7 +89,7 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
     if len(modelPortDict) <= 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     # --- make client ---#
-    ret = []
+    retList = []
     # define smiles_index in order
     smilesDictList = []
     allSmilesDict = {}
@@ -130,8 +130,8 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
                 finishedTaskIds.clear()
             if len(taskInfoDict) == 0:
                 break
-        ret.append(retDict)
-    return ret, allSmilesDict
+        retList.append(retDict)
+    return retList, allSmilesDict
 
 
 def processOneTask(client: DMEClient, *args):
@@ -200,5 +200,5 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     return task_time, server_info, retUnitList, againDict
 
 
-def predictSBVS(modelTypes: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_SBVS)
+def predictSBVS(modelTypes: Sequence, smilesInfoList: List, pdbContent: str) -> List[Dict[str, PredictionTaskRet]]:
+    return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_SBVS, pdbContent)

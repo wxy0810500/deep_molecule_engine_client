@@ -5,15 +5,44 @@ const smileDrawerOptions = {
 
 const smilesDrawer = new SmilesDrawer.Drawer(smileDrawerOptions);
 
-function drawSmiles(input, canvasId) {
+function addCanvas() {
+  let smilesEleList, i;
+  smilesEleList = document.getElementsByClassName('cleaned-smiles');
+  let canvasEleList = new Array();
+  for (i = 0; i <smilesEleList.length; i++) {
+    const canvasEle = document.createElement('canvas');
+    const smilesEle = smilesEleList[i];
+    canvasEle.id = 'output-canvas-' + i;
+    canvasEle.className = 'smiles-canvas'
+    canvasEle.innerHTML = smilesEle.innerText;
+    smilesEle.appendChild(canvasEle);
+    canvasEleList.push(canvasEle);
+  }
+  return canvasEleList
+}
+
+function doDrawSmiles(input, canvasId) {
     SmilesDrawer.parse(input, function (tree) {
     smilesDrawer.draw(tree, canvasId, 'light', false);
     }, function (err) {
         console.log(err);
     });
+}
+function drawSmilesWithCanvasRet(input, canvasId) {
+    doDrawSmiles(input, canvasId)
     const canvas = document.getElementById(canvasId)
     canvas.setAttribute("style", "width: 48%;")
     return canvas
+}
+
+function drawAllResultSmiles() {
+  // add canvas
+  let canvasEleList = addCanvas()
+  for (let i = 0; i < canvasEleList.length; i++) {
+    const canvasEle = canvasEleList[i];
+    doDrawSmiles(canvasEle.innerHTML, canvasEle.id);
+    canvasEle.setAttribute("style", "width:48%");
+  }
 }
 
 const smilesImagesInstances = []
@@ -21,7 +50,7 @@ const smilesImagesInstances = []
 
 function drawRadarAndSmiles(input, canvasId, radarDivId, indicatorAndValueDict, dataName) {
 
-    const canvas = drawSmiles(input, canvasId)
+    const canvas = drawSmilesWithCanvasRet(input, canvasId)
     const radarDiv = document.getElementById(radarDivId);
     radarDiv.style.height = canvas.offsetHeight + 'px';
     radarDiv.style.width = canvas.offsetWidth +'px';

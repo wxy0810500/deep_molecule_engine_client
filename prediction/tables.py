@@ -2,46 +2,47 @@ import django_tables2 as tables
 
 
 class PredictionResultTable(tables.Table):
-    model = tables.Column(orderable=False, attrs={
+    id = tables.Column(verbose_name="", orderable=False, attrs={
         "th": {
-            "class": "model_th"
+            "class": "c-id"
         },
         "td": {
-            "class": "model_td"
+            "class": "c-id"
+        }
+    })
+    score = tables.Column(orderable=False, verbose_name="Score", attrs={
+        "th": {
+            "class": "c-score"
+        },
+        "td": {
+            "class": "c-score"
         }
     })
 
-    score = tables.Column(orderable=False, attrs={
+    input = tables.Column(orderable=False, verbose_name="Input{name|smiles}", attrs={
         "th": {
-            "class": "score_th"
+            "class": "c-input"
         },
         "td": {
-            "class": "score_td"
+            "class": "c-input"
         }
+    })
+    drugName = tables.Column(orderable=False, verbose_name="Drug name", attrs={
+        "th": {
+            "class": "c-drugName"
+        },
+        "td": {
+            "class": "c-drugName"
+        }
+    })
+    cleanedSmiles = tables.Column(orderable=False, verbose_name="Cleaned smiles", attrs={"td": {
+        "class": "cleaned-smiles"
+    }
     })
 
     class Meta:
         attrs = {
-            "class": "blueTable score"
-        }
-
-
-class PredictionResultSmilesInfoTable(tables.Table):
-    columns = ['Input(name|smiles)', 'DrugName', 'Cleaned smiles']
-    input = tables.Column(orderable=False, verbose_name="Input(name|smiles)")
-    drug_name = tables.Column(orderable=False, verbose_name="DrugName")
-    cleaned_smiles = tables.Column(verbose_name="Cleaned smiles", orderable=False, attrs={
-        "th": {
-            "class": "c-cs"
-        },
-        "td": {
-            "class": "c-cs"
-        }
-    })
-
-    class Meta:
-        attrs = {
-            "class": "blueTable smiles-info"
+            "class": "blueTable"
         }
 
 

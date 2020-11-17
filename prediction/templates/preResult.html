@@ -2,28 +2,22 @@
     {% block retTables %}
         {% if preRetTables is not None %}
             {% load django_tables2 %}
-            {% for retUnit in preRetTables %}
-                <div class="main-block">
+               {% for table in preRetTables %}
+                   <div class="main-block">
                     <div class="index-block">
-                        <b>Molecule {{ forloop.counter }}</b>
+                        <b>{{ table.modelType }}</b>
                     </div>
-                        {% render_table retUnit.smilesTable %}
-                        <canvas id="smiles-canvas-{{ forloop.counter }}"></canvas>
-                        <div class="smiles-radar" id="smiles-radar-{{ forloop.counter }}"></div>
-                        <script>
-                            drawRadarAndSmiles("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}",
-                                "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "data")
-                        </script>
-                    <div class="half-block">
-                        {% for category, tables in retUnit.result.items %}
-                            <div class="category-block">
-                                <div class="category-content">{{ category }}</div>
-                                {% render_table tables %}
-                            </div>
-                        {% endfor %}
+                    <div class="table-block">
+                        {% render_table table.tables %}
                     </div>
                 </div>
+{#                <h3></h3>#}
+{#                <h4>results</h4>#}
+{#                {% render_table table.tables %}#}
             {% endfor %}
+            <script>
+              drawAllResultSmiles()
+            </script>
         {% endif %}
         {% if invalidInputTable is not None %}
             <h3>invalid input</h3>

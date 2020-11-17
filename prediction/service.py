@@ -23,8 +23,8 @@ def processSBVS(request, inputForm: StructureModelInputForm):
         pdbContent = handleUploadedFile(request.FILES['uploadPDBFile'])
 
         modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictSBVS(modelTypes, smilesInfoList, pdbContent)
+        preRetList, allSmilesDict = predictSBVS(modelTypes, smilesInfoList, pdbContent)
     else:
-        preRet = None
-    return preRet, invalidInputList
+        preRetList = None
+    return preRetList, invalidInputList
 
