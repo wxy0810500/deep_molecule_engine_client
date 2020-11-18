@@ -176,6 +176,9 @@ textarea:focus {
     width: 80%;
     margin: 0 10% 8vh;
 }
+.doc {
+    text-indent: 3vw;
+}
 
 .intro t1 {
     display: block;
