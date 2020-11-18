@@ -165,7 +165,7 @@ def processOneTask(client: DMEClient, *args):
             retUnitList.append(PredictedRetUnit.errorOne(sampleId,
                                                          PredictedRetUnit.queue_full_unit_label, smilesInfo))
     # # sort result
-    # retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
+    retUnitList = sorted(retUnitList, key=lambda unit: unit.score, reverse=True)
     modelRet = PredictionTaskRet(task_time, server_info, retUnitList)
     return modelRet
 
