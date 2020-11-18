@@ -176,11 +176,15 @@ textarea:focus {
 }
 .intro img {
     width: 80%;
-    margin: 0 10% 8vh;
+    margin: 8vh 10% 0;
+}
+.caption {
+    margin-bottom: 4vh;
+    text-align: center;
 }
 
-.intro t1 {
-    display: block;
+.doc {
+    text-indent: 3vw;
 }
 .intro .title {
     font-size: 4.5vmin;
