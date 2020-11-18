@@ -42,7 +42,10 @@
 #id_categorys li {
     line-height: 4vh;
 }
-
+.statement {
+    padding-left: 1vw;
+    line-height: 2.5vh;
+}
 .input-area input[type="submit"] {
     height: 7vh;
     width: 7vw;
@@ -57,9 +60,8 @@
     margin: 3vh 1vw 0;
 }
 div.button-area {
-    position: relative;
     margin: 3vh 0;
-    padding-left: 1vmin;
+    padding-left: 1vw;
     height: 4vh;
 }
 

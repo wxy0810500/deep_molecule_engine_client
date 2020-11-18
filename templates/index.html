@@ -10,6 +10,8 @@
 <div class="inner intro">
 
     <div class="input-area">
+        <b class="statement">To systematically assess the structure based model properties:</b>
+        <p class="statement">1. Please paste your SMILES list or upload a file here.</p>
         <form  enctype="multipart/form-data" action="service/prediction/submit/" method="post" name="dataForm"
             onsubmit="return checkAllInput()">
             {% csrf_token %}
@@ -24,13 +26,14 @@
                            document.getElementById('inputFileName').innerText='Select input file(*.csv,*.xls, *.xlsx)';">
                 <div class="upload" id="clear_div">Clear</div>
             </div>
-            {{ inputForm.modelTypes }}
-                <h5> Please upload the pdb file </h5>
+            <p class="statement">2. Select 1 or more model kinds listed below.</p>
+                {{ inputForm.modelTypes }}
+            <p class="statement">3. Please upload a pdb file here.</p>
             <div class="button-area">
-
                 {{ inputForm.uploadPDBFile }}
                 <div class="upload" id="pdbFileName">Select PDB file</div>
             </div>
+            <p class="statement">4. Select the output report type.</p>
             {{ inputForm.outputType }}
             <input type="submit" value="submit"/>
         </form>
