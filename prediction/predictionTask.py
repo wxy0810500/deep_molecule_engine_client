@@ -62,11 +62,12 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, smilesInfoList, taskType, aux_data=None) \
+def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, metric: str, smilesInfoList, taskType, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
     """
 
 
+    @param metric:
     @param modelTypeAndPortDict:
     @param categorys:
     @param smilesInfoList:
@@ -81,9 +82,11 @@ def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, smilesInfoList
         raise PredictionCommonException('We will support these model types as soon as possible!')
     modelPortDict = {}
     for category in categorys:
-        data = modelTypeAndPortDict.get(category, None)
-        if data is not None:
-            modelPortDict.update(data)
+        metricData = modelTypeAndPortDict.get(category, None)
+        if metricData is not None:
+            data = metricData.get(metric, None)
+            if data is not None:
+                modelPortDict.update(data)
     if len(modelPortDict) == 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     # --- make client ---#
@@ -91,12 +94,12 @@ def processTasks(modelTypeAndPortDict: Dict, categorys: Sequence, smilesInfoList
     # define smiles_index in order
     smilesDictList = []
     allSmilesDict = {}
-    for i, smilesInfo in enumerate(smilesInfoList):
-        if i % 20 == 0:
+    for sIndex, smilesInfo in enumerate(smilesInfoList):
+        if sIndex % 20 == 0:
             smilesDict = {}
             smilesDictList.append(smilesDict)
-        smilesDict[i] = smilesInfo
-        allSmilesDict[i] = smilesInfo
+        smilesDict[sIndex] = smilesInfo
+        allSmilesDict[sIndex] = smilesInfo
     for smilesDict in smilesDictList:
         # do tasks one by one
         processPool = getProcessPool()
@@ -198,5 +201,5 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     return task_time, server_info, retUnitList, againDict
 
 
-def predictADMET(categorys: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(ADMETModelAndPortDict, categorys, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)
+def predictADMET(categorys: Sequence, metric: str, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
+    return processTasks(ADMETModelAndPortDict, categorys, metric, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)

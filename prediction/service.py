@@ -3,9 +3,7 @@ from typing import Tuple, List
 from prediction.forms import ADMETModelInputForm
 from prediction.predictionTask import predictADMET
 from smiles.searchService import searchDrugReferenceByInputRequest
-import pandas as pd
 import os
-import numpy as np
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 
@@ -21,7 +19,8 @@ def processADMET(request, inputForm: ADMETModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         inputCategorys = inputForm.cleaned_data['categorys']
-        preRet, smilesDict = predictADMET(inputCategorys, smilesInfoList)
+        inputMetric = inputForm.cleaned_data['metric']
+        preRet, smilesDict = predictADMET(inputCategorys, inputMetric, smilesInfoList)
     else:
-        inputCategorys, smilesDict, preRet = None, None, None
+        inputCategorys, smilesDict, preRet = None, None, None, None
     return preRet, invalidInputList, inputCategorys, smilesDict
