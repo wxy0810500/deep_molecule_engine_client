@@ -28,10 +28,21 @@
             </div>
             <p class="statement">2. Select 1 or more model kinds listed below.</p>
                 {{ inputForm.modelTypes }}
+            <div id="pdbFileDiv">
             <p class="statement">3. Please upload a pdb file here.</p>
-            <div class="button-area">
-                {{ inputForm.uploadPDBFile }}
-                <div class="upload" id="pdbFileName">Select PDB file</div>
+                <div class="button-area">
+                    {{ inputForm.pdbFileType }}
+                    {{ inputForm.uploadPDBFile }}
+                    <div class="upload" id="pdbFileName">Select PDB file</div>
+                </div>
+                <div class="pdbXYZ" style="display: none">
+                    <a>x</a>
+                    {{ inputForm.cx }}
+                    <a>y</a>
+                    {{ inputForm.cy }}
+                    <a>z</a>
+                    {{ inputForm.cz }}
+                </div>
             </div>
             <p class="statement">4. Select the output report type.</p>
             {{ inputForm.outputType }}

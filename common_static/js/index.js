@@ -61,3 +61,15 @@ function checkAllInput() {
     return checkInputStringAndFile()
 }
 
+const ulElc = document.getElementById('id_pdbFileType_0')
+ulElc.onclick = function (event) {
+    const target = (event.target);
+    alert(target.innerHTML);
+        // alert($(this).text())
+}
+
+// $("id_pdbFileType").onclick = function (event) {
+//     const target = (event.target);
+//     alert(target.innerHTML);
+//         // alert($(this).text())
+// }

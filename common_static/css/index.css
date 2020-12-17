@@ -26,6 +26,11 @@
   margin: 0;
   padding-left: 1vw;
 }
+
+ul#id_pdbFileType {
+    padding: 0;
+    margin-bottom: 2.5vh;
+}
 .input-area ul li {
   list-style: none;
 }
@@ -45,6 +50,7 @@
 .statement {
     padding-left: 1vw;
     line-height: 2.5vh;
+    font-weight: bold;
 }
 .input-area input[type="submit"] {
     height: 7vh;
@@ -62,7 +68,7 @@
 div.button-area {
     margin: 3vh 0;
     padding-left: 1vw;
-    height: 4vh;
+    /* height: 4vh; */
 }
 
 /* input file */
@@ -198,3 +204,11 @@ textarea:focus {
     background-color: #1751E7;
 }
 
+.pdbXYZ {
+    padding-left: 1vw;
+}
+
+.pdbXYZ input {
+    width: 5vw;
+    margin-right: 0.5vw;
+}
