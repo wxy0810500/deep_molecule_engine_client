@@ -69,8 +69,8 @@ div.button-area {
 
 /* input file */
 .input-area .upload, .input-area input[type="file"]{
-    width: 15vw;
     height: inherit;
+    padding: 0 1vw;
 }
 
 .input-area input[type="file"] {

@@ -25,8 +25,8 @@ class CommonInputForm(forms.Form):
     }), required=False, label="", max_upload_size=2621440,)  # 2.5M
 
     outputType = forms.ChoiceField(widget=forms.RadioSelect, label="", required=True,
-                                   choices=[(OUTPUT_TYPE_FILE, 'download results as csv file'),
-                                            (OUTPUT_TYPE_WEB_PAGE, 'show results on the website')],
+                                   choices=[(OUTPUT_TYPE_FILE, 'Download predictive results as csv file '),
+                                            (OUTPUT_TYPE_WEB_PAGE, 'Show predictive results on the website')],
                                    initial=[OUTPUT_TYPE_WEB_PAGE], )
 
     @classmethod
