@@ -185,6 +185,7 @@ textarea:focus {
 
 .doc {
     text-indent: 3vw;
+    font-size: 3vmin;
 }
 .intro .title {
     font-size: 4.5vmin;
