@@ -115,7 +115,12 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
         for category in PREDICTION_CATEGORYS_IN_RADAR:
             resultsOfCategory = resultsOfSingleSmiles.get(category, None)
             if resultsOfCategory is not None:
-                aveScore = np.mean(list(map(lambda x: float(x.get("score")), resultsOfCategory)))
+                # 雷达图上数值，用1-score之后再求平均值
+                aveScore = np.mean(
+                    list(
+                        map(lambda x: (1 - float(x.get("score"))), resultsOfCategory)
+                    )
+                )
             else:
                 aveScore = 0
             averageScoreDict[category] = '%.4f' % aveScore
