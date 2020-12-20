@@ -34,40 +34,42 @@ INPUT_TEMPLATE_FORMS = {
 }
 
 
-def _formatRetExcelBook(preRet: Dict[str, PredictionTaskRet], invalidInputList):
+def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], invalidInputList):
     sheets = {}
     headers = ['', 'Score', 'Input{name|smiles}', 'DrugName', 'CleanedSmiles']
-    if preRet:
-        for modelType, preRetRecord in preRet.items():
-            records = [[sid + 1,  # id
-                        '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,  # score
-                        preRetUnit.input,  # input
-                        preRetUnit.drugName,  # "drugName":
-                        preRetUnit.cleanedSmiles]  # "cleanedSmiles":
-                       for sid, preRetUnit in enumerate(preRetRecord.preResults)]
-            rows = [['time = %0.2fs' % preRetRecord.taskTime], headers] + records
-            sheets[modelType] = rows
+    if preRetList is not None and len(preRetList) > 0:
+        sheetDict = {modelType: [headers] for modelType in preRetList[0].keys()}
+        for preRet in preRetList:
+            for modelType, preRetRecord in preRet.items():
+                records = [[sid + 1,  # id
+                            '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,  # score
+                            preRetUnit.input,  # input
+                            preRetUnit.drugName,  # "drugName":
+                            preRetUnit.cleanedSmiles]  # "cleanedSmiles":
+                           for sid, preRetUnit in enumerate(preRetRecord.preResults)]
+                rows = [['time = %0.2fs' % preRetRecord.taskTime], headers] + records
+                sheetDict[modelType] = rows
+        sheets = sheetDict
     if invalidInputList and len(invalidInputList) > 0:
         sheets['invalidInputs'] = [[invalidInput] for invalidInput in invalidInputList]
     return Book(sheets)
 
 
-def _formatRetTables(preRet: Dict[str, PredictionTaskRet]):
-    if preRet is None:
+def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]]):
+    if preRetList is None or len(preRetList) == 0:
         return None
-    ctx = []
-    for modelType, preRetRecord in preRet.items():
-        modelCtx = {'modelType': modelType,
-                    'time': 'time = %0.2fs' % preRetRecord.taskTime}
+    ctxDict = {modelType: [] for modelType in preRetList[0].keys()}
 
-        rlt = [{"id": sid + 1,
-                "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
-                "input": preRetUnit.input,
-                "drugName": preRetUnit.drugName,
-                "cleanedSmiles": preRetUnit.cleanedSmiles}
-               for sid, preRetUnit in enumerate(preRetRecord.preResults)]
-        modelCtx['tables'] = PredictionResultTable(rlt)
-        ctx.append(modelCtx)
+    for preRet in preRetList:
+        for modelType, preRetRecord in preRet.items():
+            rlt = [{"id": sid + 1,
+                    "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
+                    "input": preRetUnit.input,
+                    "drugName": preRetUnit.drugName,
+                    "cleanedSmiles": preRetUnit.cleanedSmiles}
+                   for sid, preRetUnit in enumerate(preRetRecord.preResults)]
+            ctxDict[modelType] += rlt
+    ctx = [{'modelType': modelType, 'tables': PredictionResultTable(rlt)} for modelType, rlt in ctxDict.items()]
     return ctx
 
 
@@ -147,32 +149,26 @@ def predict(request, sType: str):
         if not inputForm.is_valid():
             return return400ErrorPage(request, inputForm)
         try:
-            preRet, invalidInputList = processLigand(request, inputForm)
+            preRetList, invalidInputList = processLigand(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
         if len(request.FILES) > 0:
-            inputFile = True
-            retBook = _formatRetExcelBook(preRet, invalidInputList)
+            retBook = __formatRetExcelBook(preRetList, invalidInputList)
         else:
-            inputFile = False
-            preRetTables = _formatRetTables(preRet)
+            preRetTables = __formatRetTables(preRetList)
         retTemplate = 'preResult.html'
     elif PREDICTION_TYPE_STRUCTURE == sType:
         inputForm = StructureModelInputForm(request.POST, request.FILES)
         if not inputForm.is_valid():
             return return400ErrorPage(request, inputForm)
-
         try:
-            preRet, invalidInputList = processStructure(request, inputForm)
-
+            preRetList, invalidInputList = processStructure(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
         if len(request.FILES) > 1:
-            inputFile = True
-            retBook = _formatRetExcelBook(preRet, invalidInputList)
+            retBook = __formatRetExcelBook(preRetList, invalidInputList)
         else:
-            inputFile = False
-            preRetTables = _formatRetTables(preRet)
+            preRetTables = __formatRetTables(preRetList)
         retTemplate = 'preResult.html'
 
     elif PREDICTION_TYPE_NETWORK == sType:
@@ -185,19 +181,16 @@ def predict(request, sType: str):
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
         if len(request.FILES) > 0:
-            inputFile = True
             retBook = _formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
         else:
-            inputFile = False
             preRetTables, rawRetTables = _formatNetworkRetTables(preRetDF, rawRetDF)
 
         retTemplate = 'networkBasedResult.html'
     else:
         return HttpResponseBadRequest()
-    if inputFile:
-        return make_response(retBook, file_type='csv',
-                             file_name=f'{sType}PredictionResult')
-    else:
+
+    outputType = inputForm.cleaned_data['outputType']
+    if outputType == CommonInputForm.OUTPUT_TYPE_WEB_PAGE:
         retDict = {
             "backURL": reverse('prediction_index', args=[sType]),
             "pageTitle": "Prediction Result"
@@ -210,6 +203,9 @@ def predict(request, sType: str):
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
         return render(request, retTemplate, retDict)
+    else:
+        return make_response(retBook, file_type='csv',
+                             file_name=f'{sType}PredictionResult')
 
 
 def predictionIndex(request, sType: str):

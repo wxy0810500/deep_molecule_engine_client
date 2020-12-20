@@ -38,7 +38,6 @@ def searchDrugReferenceExactlyByName(nameList: List):
 
 def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
     """
-
     @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
     """
     inputType = inputForm.cleaned_data['inputType']
@@ -51,7 +50,7 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if inputStr:
-            inputDrugNameList: List = CommonInputForm.splitInputDrugNamesStr(inputStr)
+            inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
             if fileInputList is not None:
                 inputDrugNameList.extend(fileInputList)
         else:
@@ -59,7 +58,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
                 inputDrugNameList = fileInputList
             else:
                 raise CommonException("both input string and file are empty")
-        inputDrugNameList = CommonInputForm.filterInputDrugNames(inputDrugNameList)
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         if len(inputDrugNameList) == drugRefDF.size:
             # 完全匹配，加入input 列
@@ -70,12 +68,10 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
                 drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
             # 未查到对应的smiles
             validList = drugRefDF['drug_name'].to_list()
-            for validName in validList:
-                inputDrugNameList.remove(validName.lower())
-            invalidInputList = inputDrugNameList
+            invalidInputList = [dName for dName in inputDrugNameList if dName not in validList]
     else:
         if inputStr:
-            inputSmilesList: List = CommonInputForm.splitInputSmiles(inputStr)
+            inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
             if fileInputList is not None:
                 inputSmilesList.extend(fileInputList)
         else:
@@ -83,8 +79,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
                 inputSmilesList = fileInputList
             else:
                 raise CommonException("both input string and file are empty")
-
-        inputSmilesList = CommonInputForm.filterInputSmiles(inputSmilesList)
 
         # clean smiles
         cleanedSmiles: List[tuple] = cleanSmilesListSimply(inputSmilesList)

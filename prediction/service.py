@@ -22,10 +22,10 @@ def processLigand(request, inputForm: LigandModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictLigand(modelTypes, smilesInfoList)
+        preRetList = predictLigand(modelTypes, smilesInfoList)
     else:
-        preRet = None
-    return preRet, invalidInputList
+        preRetList = None
+    return preRetList, invalidInputList
 
 
 def processStructure(request, inputForm: StructureModelInputForm):
@@ -36,14 +36,15 @@ def processStructure(request, inputForm: StructureModelInputForm):
         pdbContent = handleUploadedFile(request.FILES['uploadPDBFile'])
 
         modelTypes = inputForm.cleaned_data['modelTypes']
-        preRet = predictStructure(modelTypes, smilesInfoList, pdbContent)
+        preRetList = predictStructure(modelTypes, smilesInfoList, pdbContent)
     else:
-        preRet = None
-    return preRet, invalidInputList
+        preRetList = None
+    return preRetList, invalidInputList
 
 
-NETWORK_RESULT_DF: pd.DataFrame = pd.read_csv(os.path.join(DB_FILE_BASE_DIR, 'training_viral_network_final_result.csv'),
-                                              float_precision='high')
+NETWORK_TRAINING_RESULT_DF: pd.DataFrame = pd.read_csv(os.path.join(DB_FILE_BASE_DIR,
+                                                       'training_viral_network_final_result.csv'),
+                                                       float_precision='high')
 
 
 def processNetWork(request, inputForm: NetworkModelInputForm):
@@ -57,7 +58,7 @@ def processNetWork(request, inputForm: NetworkModelInputForm):
     drugRefDF = drugRefDF.loc[:, ['input', 'drug_name', 'cleaned_smiles']]
     drugRefDF.reset_index(drop=True, inplace=True)
     cleanedSmilesDF = drugRefDF.loc[:, ['input', 'cleaned_smiles']]
-    searchRetDF: pd.DataFrame = cleanedSmilesDF.merge(NETWORK_RESULT_DF, on='cleaned_smiles', how='left')
+    searchRetDF: pd.DataFrame = cleanedSmilesDF.merge(NETWORK_TRAINING_RESULT_DF, on='cleaned_smiles', how='left')
     numberRetDF: pd.DataFrame = searchRetDF[searchRetDF.columns[3:]]
     # filter raw result: float number > 10
     predictRetDF = numberRetDF.applymap(lambda x: x if float(x) < 10.0 else np.nan)

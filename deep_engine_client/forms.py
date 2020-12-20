@@ -14,6 +14,8 @@ structureModelChoices = tuple([(model, data[0]) for model, data in
 class CommonInputForm(forms.Form):
     INPUT_TYPE_DRUG_NAME = 'drugName'
     INPUT_TYPE_SMILES = 'raw_smiles'
+    OUTPUT_TYPE_FILE = 'file'
+    OUTPUT_TYPE_WEB_PAGE = 'webPage'
     INPUT_NAME_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
     INPUT_SMILES_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n| '
     MAX_SMILES_LEN: int = 500
@@ -29,18 +31,16 @@ class CommonInputForm(forms.Form):
         "onchange": "document.getElementById('inputFileName').innerText=this.files[0].name"
     }), required=False, label="", max_upload_size=2621440,)  # 2.5M
 
-    @classmethod
-    def splitInputSmiles(cls, smiles: str) -> List[str]:
-        return re.split(cls.INPUT_SMILES_STR_SEPARATOR_RX, smiles.strip())
+    outputType = forms.ChoiceField(widget=forms.RadioSelect, label="", required=True,
+                                   choices=[(OUTPUT_TYPE_FILE, 'download results as csv file'),
+                                            (OUTPUT_TYPE_WEB_PAGE, 'show results on the website')],
+                                   initial=[OUTPUT_TYPE_WEB_PAGE], )
 
     @classmethod
-    def splitInputDrugNamesStr(cls, drugNames: str) -> List[str]:
-        return re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip())
+    def splitAndFilterInputSmiles(cls, smiles: str) -> List[str]:
+        return [smiles.strip() for smiles in set(re.split(cls.INPUT_SMILES_STR_SEPARATOR_RX, smiles.strip()))
+                if (cls.MAX_SMILES_LEN > len(smiles) > 0)]
 
     @classmethod
-    def filterInputDrugNames(cls, nameList: Iterable[str]):
-        return [name.strip().lower() for name in set(nameList)]
-
-    @classmethod
-    def filterInputSmiles(cls, smilesList: Iterable[str]):
-        return [smiles.strip() for smiles in set(smilesList) if (cls.MAX_SMILES_LEN > len(smiles) > 0)]
+    def splitAndFilterInputDrugNamesStr(cls, drugNames: str) -> List[str]:
+        return [name.strip().lower() for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]

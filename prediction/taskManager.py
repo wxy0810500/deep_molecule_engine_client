@@ -2,6 +2,7 @@ import os
 from multiprocessing import Process, JoinableQueue as Queue, Manager
 from typing import Dict
 from .thrift.client import DMEClient
+import traceback
 
 
 def _processWorker(processor, inputQueue: Queue, outputDict: Dict):
@@ -12,7 +13,13 @@ def _processWorker(processor, inputQueue: Queue, outputDict: Dict):
             continue
         #
         # print(inputArg)
-        ret = processor(client, *inputArg['args'])
+        try:
+            ret = processor(client, *inputArg['args'])
+            inputQueue.task_done()
+        except Exception:
+            ret = {"errorCode": inputArg['errorCode'],
+                   "errorMessage": traceback.format_exc()}
+
         outputDict[inputArg['taskId']] = ret
 
 

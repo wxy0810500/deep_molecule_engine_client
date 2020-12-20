@@ -4,6 +4,7 @@ from typing import Sequence, List, Dict
 from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 from utils.timeUtils import sleepWithSwitchInterval
 from deep_engine_client.exception import PredictionCommonException
+from utils.debug import printDebug
 from .taskManager import getProcessPool
 
 default_dme_server_host = SERVER_CONFIG_DICT.get("host")
@@ -77,46 +78,57 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
     """
     if modelTypes is None or len(modelTypes) == 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
-    portModelTypeDict = {}
+    modelPortDict = {}
     for modelType in modelTypes:
-        data = modelTypeAndPortDict.get(modelType, None)
-        if data is not None and data[1] != 0:
-            portModelTypeDict[data[1]] = data[0]
-    if len(portModelTypeDict) > 0:
-        # --- make client ---#
-        ret = {}
-        # define sample_id in order
-        smilesDict = {}
-        for i, smilesInfo in enumerate(smilesInfoList):
-            smilesDict[i] = smilesInfo
-
+        port = modelTypeAndPortDict.get(modelType, None)
+        if port is not None:
+            modelPortDict[modelType] = port
+    if len(modelPortDict) <= 0:
+        raise PredictionCommonException('We will support these model types as soon as possible!')
+    # --- make client ---#
+    retList = []
+    # define smiles_index in order
+    smilesDictList = []
+    allSmilesDict = {}
+    for i, smilesInfo in enumerate(smilesInfoList):
+        if i % 20 == 0:
+            smilesDict = {}
+            smilesDictList.append(smilesDict)
+        smilesDict[i] = smilesInfo
+        allSmilesDict[i] = smilesInfo
+    for smilesDict in smilesDictList:
         # do tasks one by one
         processPool = getProcessPool()
-        taskIdList = []
-        for port, modelName in portModelTypeDict.items():
+        taskInfoDict: dict = {}
+        for modelName, port in modelPortDict.items():
             taskId = uuid.uuid1()
-            taskIdList.append((taskId, modelName))
+            taskInfoDict[taskId] = modelName
             taskArgs = {
                 "taskId": taskId,
-                "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data)
+                "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data),
+                "errorCode": "failed"
             }
             processPool.putTask(taskArgs)
+        retDict = {}
         while True:
             sleepWithSwitchInterval(10)
-            finishedIds = []
-            for taskId, modelName in taskIdList:
+            finishedTaskIds = []
+            for taskId, modelName in taskInfoDict.items():
                 taskRet = processPool.getTaskRet(taskId)
                 if taskRet:
-                    ret[modelName] = taskRet
-                    finishedIds.append((taskId, modelName))
-            if len(finishedIds) > 0:
-                for finishedId in finishedIds:
-                    taskIdList.remove(finishedId)
-            if len(taskIdList) == 0:
+                    if type(taskRet) == PredictionTaskRet:
+                        retDict[modelName] = taskRet
+                    else:
+                        printDebug(taskRet.get("errorMessage", None))
+                    finishedTaskIds.append(taskId)
+            if len(finishedTaskIds) > 0:
+                for taskId in finishedTaskIds:
+                    taskInfoDict.pop(taskId)
+                finishedTaskIds.clear()
+            if len(taskInfoDict) == 0:
                 break
-        return ret
-    else:
-        raise PredictionCommonException('We will support these model types as soon as possible!')
+        retList.append(retDict)
+    return retList, allSmilesDict
 
 
 def processOneTask(client: DMEClient, *args):
@@ -156,31 +168,33 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     againDict = {}
     # 根据err_code分别处理
     for i, record in enumerate(predicted_results):
+        smilesIndex = int(record.sample_id)
+        smiles = smilesDict[smilesIndex]
         if record.err_code == 0:
-            retUnitList.append(PredictedRetUnit.commonOne(record.sample_id, record.result, smilesDict[i]))
+            retUnitList.append(PredictedRetUnit.commonOne(record.sample_id, record.result, smiles))
             # 根据RetUnit中的classIdx排序
         elif record.err_code == 1:
-            # input queue full, dict again
-            againDict[i] = smilesDict[i]
+            # input queue full, do prediction again
+            againDict[smilesIndex] = smiles
         elif record.err_code == 2:
             # invalid smiles
             retUnitList.append(PredictedRetUnit.errorOne(record.sample_id,
-                                                         PredictedRetUnit.invalid_smiles_unit_label, smilesDict[i]))
+                                                         PredictedRetUnit.invalid_smiles_unit_label, smiles))
         elif record.err_code == 3:
             # time out for task
             retUnitList.append(PredictedRetUnit.errorOne(record.sample_id,
-                                                         PredictedRetUnit.task_timeout_unit_label, smilesDict[i]))
+                                                         PredictedRetUnit.task_timeout_unit_label, smiles))
         else:
             retUnitList.append(PredictedRetUnit.errorOne(record.sample_id,
-                                                         PredictedRetUnit.server_error_unit_label, smilesDict[i]))
+                                                         PredictedRetUnit.server_error_unit_label, smiles))
 
     return task_time, server_info, retUnitList, againDict
 
 
-def predictStructure(modelTypes: Sequence, smilesInfoList: List, pdbContent) -> Dict[str, PredictionTaskRet]:
+def predictStructure(modelTypes: Sequence, smilesInfoList: List, pdbContent) -> List[Dict[str, PredictionTaskRet]]:
     return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_STRUCTURE,
                         pdbContent)
 
 
-def predictLigand(modelTypes: Sequence, smilesInfoList: List) -> Dict[str, PredictionTaskRet]:
+def predictLigand(modelTypes: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
     return processTasks(LigandModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_LIGAND)
