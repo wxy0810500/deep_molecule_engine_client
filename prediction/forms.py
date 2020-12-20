@@ -25,9 +25,9 @@ class StructureModelInputForm(CommonInputForm):
     uploadPDBFile = forms.FileField(widget=forms.FileInput(attrs={
         "onchange": "document.getElementById('pdbFileName').innerText=this.files[0].name"
     }), label="", required=True, error_messages={'required': 'Please select a pdb file'})
-    cx = forms.CharField()
-    cy = forms.CharField()
-    cz = forms.CharField()
+    cx = forms.FloatField(required=False)
+    cy = forms.FloatField(required=False)
+    cz = forms.FloatField(required=False)
 
     # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
     # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']

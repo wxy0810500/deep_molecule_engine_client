@@ -11,7 +11,8 @@
 
     <div class="input-area">
         <b class="statement">To systematically assess the structure based model properties:</b>
-        <p class="statement">1. Please paste your SMILES list or upload a file here.</p>
+        <p class="statement">1.	Please paste your SMILES list, Drug Name list or upload a file here. <a href="{% static "file/example.csv" %}" target="_blank" style="text-decoration: underline;color:blue"><span>(example)</span></a>
+Each query can handle 100 compounds at most.</p>
         <form  enctype="multipart/form-data" action="service/prediction/submit/" method="post" name="dataForm"
             onsubmit="return checkAllInput()">
             {% csrf_token %}
@@ -26,7 +27,7 @@
                            document.getElementById('inputFileName').innerText='Select input file(*.csv,*.xls, *.xlsx)';">
                 <div class="upload" id="clear_div">Clear</div>
             </div>
-            <p class="statement">2. Select 1 or more model kinds listed below.</p>
+            <p class="statement">2. Select 1 or more property category listed below.</p>
                 {{ inputForm.modelTypes }}
             <div id="pdbFileDiv">
             <p class="statement">3. Please upload a pdb file here.</p>
@@ -52,7 +53,7 @@
 
     <div class="title">Model Documentation</div>
     <h3>Structure based (none-docking) AI model</h3>
-    <p class="doc">The structure-based AI model was constructed based on GHDDI’s in-house developed HAG-net. The model is universal for all targets with 3D structures. The model was evaluated using the DUD.E benchmark set with an average AUC of 0.99; after removal of computer generated decoys, the model showed an average AUC of 0.94 over 2 million protein-ligand interactions of over 200 protein targets, outperforming state-of-the-art virtual screening tools. Given a target 3D structure, preferably the binding pocket with a radius of 15 Å, and screening library SMILES list as input, we are able to screen 14 million compounds per day on a single GPU, saving over 1000 times of computational cost compared to traditional docking tools. The model output is a probability distribution between 0 and 1 where a predicted value closer to 1 predicts a greater probability of docking.</p>
+    <p class="doc">The structure-based AI model was constructed based on GHDDI’s in-house developed HAG-net. The model is universal for all targets with 3D structures. The model was evaluated using the DUD.E benchmark set with an average AUC of 0.99; after removal of computer generated decoys, the model showed an average AUC of 0.945. The performance is based on 2 million protein-ligand interactions of over 185 protein targets. Given a target 3D structure, preferably the binding pocket with a radius of 15 Å, and screening library SMILES list as input, we are able to screen 14 million compounds per day on a single GPU, saving over 1000 times of computational cost compared to traditional docking tools. The model output is a probability distribution between 0 and 1 where a predicted value closer to 1 predicts a greater probability of docking.</p>
 
     {% load static %}
     <img class="" src="{% static "imgs/structure_based_index.png" %}" width="100%">

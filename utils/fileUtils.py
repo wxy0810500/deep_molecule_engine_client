@@ -7,6 +7,9 @@ def handleUploadedFile(fs) -> str:
     return ','.join(ret)
 
 
+MAX_INPUT_SET_LENGTH_BY_FILE = 100
+
+
 # 当前处理是读取数据的Set，有效值100个
 def getInputDataSetFromUploadedExcel(fileHandler):
     if fileHandler is not None:
@@ -16,7 +19,7 @@ def getInputDataSetFromUploadedExcel(fileHandler):
             if record is not None:
                 smilesSet.add(str(record[0]))
                 i = i + 1
-                if i == 100:
+                if i == MAX_INPUT_SET_LENGTH_BY_FILE:
                     break
         return smilesSet
     else:
@@ -31,3 +34,4 @@ def file_iterator(file, chunk_size=512):
                 yield c
             else:
                 break
+

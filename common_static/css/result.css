@@ -124,7 +124,7 @@ div.smiles-radar {
     margin-bottom: 1%;
     font-size: 1.5vw;
     background-color: #1C6EA4;
-    padding-left: 1%;
+    padding: 0 1%;
     border-radius: 7px;
     color: #FFFFFF;
     overflow: auto;
