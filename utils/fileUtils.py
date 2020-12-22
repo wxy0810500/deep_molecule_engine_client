@@ -15,12 +15,17 @@ def getInputDataSetFromUploadedExcel(fileHandler):
     if fileHandler is not None:
         smilesSet = set()
         i = 0
+        # j = 0
         for record in fileHandler.iget_array():
             if record is not None:
-                smilesSet.add(str(record[0]))
-                i = i + 1
-                if i == MAX_INPUT_SET_LENGTH_BY_FILE:
-                    break
+                if len(record) > 0:
+                    smilesSet.add(str(record[0]))
+                    i = i + 1
+                    if i == MAX_INPUT_SET_LENGTH_BY_FILE:
+                        break
+        #         else:
+        #             j = j + 1
+        # print(j)
         return smilesSet
     else:
         return None
