@@ -1,3 +1,18 @@
+$(document).ready(function() {
+//protein pdb type, hidden pdbxyz
+    $("#id_pdbFileType_0").click(
+        function () {
+            $("#pdbXYZ").css("display", "none")
+        }
+    );
+
+    $("#id_pdbFileType_1").click(
+        function () {
+            $("#pdbXYZ").css("display", "block")
+        }
+    );
+})
+
 window.alert = function(content) {
 	// 做个弹窗元素
     const alertBox = document.createElement("alertBox");
@@ -60,16 +75,3 @@ function checkAllInput() {
     }
     return checkInputStringAndFile()
 }
-
-const ulElc = document.getElementById('id_pdbFileType_0')
-ulElc.onclick = function (event) {
-    const target = (event.target);
-    alert(target.innerHTML);
-        // alert($(this).text())
-}
-
-// $("id_pdbFileType").onclick = function (event) {
-//     const target = (event.target);
-//     alert(target.innerHTML);
-//         // alert($(this).text())
-// }

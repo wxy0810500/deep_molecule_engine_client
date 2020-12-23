@@ -172,7 +172,7 @@ textarea:focus {
     /*padding: 50px;*/
 }
 .intro h3
- {
+{
     margin-top: 5vh;
 }
 .intro h4 {
@@ -191,11 +191,13 @@ textarea:focus {
 .intro t1 {
     display: block;
 }
+
 .intro .title {
     font-size: 4.5vmin;
     position: relative;
     padding-left: 5vh;
 }
+
 .intro .title:before {
     content: '';
     position: absolute;
@@ -206,11 +208,11 @@ textarea:focus {
     background-color: #1751E7;
 }
 
-.pdbXYZ {
+#pdbXYZ {
     padding-left: 1vw;
 }
 
-.pdbXYZ input {
+#pdbXYZ input {
     width: 5vw;
     margin-right: 0.5vw;
 }

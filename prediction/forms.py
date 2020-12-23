@@ -15,9 +15,7 @@ class StructureModelInputForm(CommonInputForm):
                                            required=True,
                                            choices=structureModelChoices,
                                            initial=structureModelChoices[0])
-    pdbFileType = forms.ChoiceField(widget=forms.RadioSelect(attrs={
-                                        'onclick': "alert('foo !');",
-                                    }), label="", required=True,
+    pdbFileType = forms.ChoiceField(widget=forms.RadioSelect, label="", required=True,
                                     choices=[(PDB_FILE_TYPE_PROTEIN, "protein pdb"),
                                              (PDB_FILE_TYPE_POCKET, "pocket pdb + pocket center coordinate (x, y, z)")],
                                     initial=[PDB_FILE_TYPE_PROTEIN],)
