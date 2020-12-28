@@ -1,7 +1,7 @@
 from typing import Tuple, List
 
-from prediction.forms import LigandModelInputForm, StructureModelInputForm, NetworkModelInputForm
-from prediction.predictionTask import predictLigand, predictStructure
+from prediction.forms import LigandModelInputForm, NetworkModelInputForm
+from prediction.predictionTask import predictLigand
 from smiles.searchService import searchDrugReferenceByInputRequest
 from utils.fileUtils import handleUploadedFile, handleUploadedExcelFile
 import pandas as pd
@@ -11,7 +11,7 @@ import numpy as np
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 
 
-def _getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dict], List[str]]:
+def __getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dict], List[str]]:
     drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, inputForm)
     if drugRefDF.size == 0:
         return None, invalidInputList
@@ -19,24 +19,10 @@ def _getCleanedSmilesInfoListFromInputForm(request, inputForm) -> Tuple[List[dic
 
 
 def processLigand(request, inputForm: LigandModelInputForm):
-    smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
+    smilesInfoList, invalidInputList = __getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']
         preRetList = predictLigand(modelTypes, smilesInfoList)
-    else:
-        preRetList = None
-    return preRetList, invalidInputList
-
-
-def processStructure(request, inputForm: StructureModelInputForm):
-    # get smiles
-    smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
-    if smilesInfoList:
-        # get pdbFile
-        pdbContent = handleUploadedFile(request.FILES['uploadPDBFile'])
-
-        modelTypes = inputForm.cleaned_data['modelTypes']
-        preRetList = predictStructure(modelTypes, smilesInfoList, pdbContent)
     else:
         preRetList = None
     return preRetList, invalidInputList

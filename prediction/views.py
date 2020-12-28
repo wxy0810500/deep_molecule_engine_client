@@ -3,7 +3,7 @@
 from django.shortcuts import reverse
 from django.http import HttpResponseBadRequest
 
-from .service import processLigand, processStructure, processNetWork
+from .service import processLigand, processNetWork
 from .tables import *
 from .predictionTask import PredictionTaskRet
 from .forms import *
@@ -20,11 +20,6 @@ INPUT_TEMPLATE_FORMS = {
         'inputForm': LigandModelInputForm(),
         'plStatus': "active",
         "pageTitle": "Ligand Based",
-    },
-    PREDICTION_TYPE_STRUCTURE: {
-        'inputForm': StructureModelInputForm(),
-        'psStatus': "active",
-        "pageTitle": "Structure Based",
     },
     PREDICTION_TYPE_NETWORK: {
         'inputForm': NetworkModelInputForm(),
@@ -73,7 +68,7 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]]):
     return ctx
 
 
-def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, invalidInputList: pd.DataFrame):
+def __formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, invalidInputList: pd.DataFrame):
     sheets = {}
     if preRetDF is not None:
         rows = [preRetDF.columns] + preRetDF.values.tolist()
@@ -89,7 +84,7 @@ def _formatNetworkExcelBook(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame, inva
     return Book(sheets)
 
 
-def _formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
+def __formatNetworkRetTables(preRetDF: pd.DataFrame, rawRetDF: pd.DataFrame):
     if preRetDF is not None:
         # predicion table:
         retDictList: List[Dict] = preRetDF.to_dict('records')
@@ -157,19 +152,6 @@ def predict(request, sType: str):
         else:
             preRetTables = __formatRetTables(preRetList)
         retTemplate = 'preResult.html'
-    elif PREDICTION_TYPE_STRUCTURE == sType:
-        inputForm = StructureModelInputForm(request.POST, request.FILES)
-        if not inputForm.is_valid():
-            return return400ErrorPage(request, inputForm)
-        try:
-            preRetList, invalidInputList = processStructure(request, inputForm)
-        except CommonException as e:
-            return HttpResponseBadRequest(e.message)
-        if len(request.FILES) > 1:
-            retBook = __formatRetExcelBook(preRetList, invalidInputList)
-        else:
-            preRetTables = __formatRetTables(preRetList)
-        retTemplate = 'preResult.html'
 
     elif PREDICTION_TYPE_NETWORK == sType:
         inputForm = NetworkModelInputForm(request.POST, request.FILES)
@@ -181,9 +163,9 @@ def predict(request, sType: str):
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
         if len(request.FILES) > 0:
-            retBook = _formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
+            retBook = __formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
         else:
-            preRetTables, rawRetTables = _formatNetworkRetTables(preRetDF, rawRetDF)
+            preRetTables, rawRetTables = __formatNetworkRetTables(preRetDF, rawRetDF)
 
         retTemplate = 'networkBasedResult.html'
     else:

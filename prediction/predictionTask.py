@@ -11,7 +11,6 @@ default_dme_server_host = SERVER_CONFIG_DICT.get("host")
 default_dme_conn_timeout = SERVER_CONFIG_DICT.get("timeout")
 
 LigandModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('ligand')
-StructureModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('structure')
 
 PREDICTION_TASK_TYPE_LIGAND = "LBVS"
 PREDICTION_TASK_TYPE_STRUCTURE = "SBVS"
@@ -140,13 +139,13 @@ def processOneTask(client: DMEClient, *args):
     smilesDict: dict = args[4]
     aux_data = args[5]
     client_worker = client.make_worker(host, port, timeout)
-    task_time, server_info, retUnitList, againDict = _predictOnce(client, client_worker, taskType, smilesDict, aux_data)
+    task_time, server_info, retUnitList, againDict = __predictOnce(client, client_worker, taskType, smilesDict, aux_data)
 
     # again的 再处理一次 处理5次，若还不行，则放弃处理
     times = 1
     while len(againDict) > 0 and times <= 5:
         a_task_time, a_server_info, a_retUnitList, againDict = \
-            _predictOnce(client, client_worker, taskType, smilesDict, aux_data)
+            __predictOnce(client, client_worker, taskType, smilesDict, aux_data)
         if len(a_retUnitList) > 0:
             retUnitList.extend(a_retUnitList)
         times += 1
@@ -161,7 +160,7 @@ def processOneTask(client: DMEClient, *args):
     return modelRet
 
 
-def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_data):
+def __predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_data):
     task_time, server_info, predicted_results = client.do_task(client_worker, task, smilesDict, aux_data)
     # print(predicted_results)
     retUnitList = []
@@ -189,11 +188,6 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
                                                          PredictedRetUnit.server_error_unit_label, smiles))
 
     return task_time, server_info, retUnitList, againDict
-
-
-def predictStructure(modelTypes: Sequence, smilesInfoList: List, pdbContent) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_STRUCTURE,
-                        pdbContent)
 
 
 def predictLigand(modelTypes: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
