@@ -1,10 +1,12 @@
 {% extends "input.html" %}
+{% block psStatus %}active{% endblock %}
+{% block pageTitle %}Advanced Search | {% endblock %}
+{% block first_statement %}To systematically use the advanced search service:{% endblock %}
 {% block modelDescription %}
     {% load static %}
         <div class="title">Documentation</div>
 
-        <h4>C. Advanced Search on Antiviral Phenotypic Network</h4>
-        <t1>We have curated over 9000 antiviral compounds and respective virus species available for search based on in vitro viral infection assay results (EC50<=1uM) and in vivo results</t1>
-        <img class="" src="{% static "imgs/antiviral_data_analysis.png" %}" width="100%">
-
+        <h3>C. Advanced Search on Antiviral Phenotypic Network</h3>
+        <p>We have curated over 9000 antiviral compounds and respective virus species available for search based on in vitro viral infection assay results (EC50<=1uM) and in vivo results</p>
+        <img class="" src="{% static "imgs/antiviral_data_analysis.png" %}">
 {% endblock %}

@@ -1,12 +1,7 @@
 from django import forms
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
 import re
-from typing import List, Iterable
+from typing import List
 from .fields import RestrictedFileField
-
-# format  [(value1, name1), (value1, name1)]
-ligandModelChoices = tuple([(model, data[0]) for model, data in
-                            SERVER_CONFIG_DICT.get("modelAndPort").get("ligand").items()])
 
 
 class CommonInputForm(forms.Form):

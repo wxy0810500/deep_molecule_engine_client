@@ -2,15 +2,12 @@
 <!-- saved from url=(0030)http://127.0.0.1:8000/covid19/ -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>
-        {% if pageTitle is not None %}
-        {{ pageTitle }} |
-        {% endif %}
-        GHDDI COVID-19 AI Engine</title>
+        {% block pageTitle %}{% endblock %}GHDDI COVID-19 AI Engine</title>
     {% load static %}
     <link rel="icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon" />
     <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
-    <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
     <link rel="stylesheet" type="text/css" href="{% static  "css/alert.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/public.css" %} ">
     <script src="{% static 'js/main.js' %}"></script>
     {% block custom-head %}
     {% endblock %}
@@ -30,14 +27,14 @@
             </h1>
             <nav class="crumbs">
                 <ul class="service-type-items clearfix">
-                    <a href="{% url 'prediction_index' sType='ligand'%}"><li class="service-type-item">Ligand Based Engine</li></a>
-                    <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {{ pnStatus }}">Network Based Engine</li></a>
-                    <a href="{% url 'search_index'%}"><li class="service-type-item {{ sStatus }}">Advanced Search Engine</li></a>
+                    <a href="{% url 'prediction_index' sType='ligand'%}"><li class="service-type-item {% block plStatus%}{% endblock %}" >Ligand Based Engine</li></a>
+                    <a href="{% url 'prediction_index' sType='network'%}"><li class="service-type-item {% block pnStatus%}{% endblock %}" >Network Based Engine</li></a>
+                    <a href="{% url 'search_index'%}"><li class="service-type-item {% block psStatus%}{% endblock %}">Advanced Search Engine</li></a>
                 </ul>
             </nav>
         </div>
     </div>
-    <div class="inner">
+    <div class="inner intro">
         {% block content %}
         {% endblock %}
     </div>

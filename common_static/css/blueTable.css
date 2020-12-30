@@ -8,11 +8,8 @@ table.blueTable {
 
 table.blueTable td, table.blueTable th {
 	border: 1px solid #AAAAAA;
-	padding: 3px 2px;
-	font-size: 15px;
-	min-width: 60px;
-    max-width: 160px;
-	word-break: break-word;
+	padding: 0.5vh 0.5vw;
+	font-size: 2vmin;
 }
 
 
@@ -33,33 +30,6 @@ table.blueTable thead th {
 
 table.blueTable thead th:first-child {
 	border-left: none;
-}
-
-table.blueTable tfoot {
-	font-size: 12px;
-	font-weight: normal;
-	color: #FFFFFF;
-	background: #D0E4F5;
-	background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
-	background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
-	background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
-	border-top: 2px solid #444444;
-}
-
-table.blueTable tfoot td {
-	font-size: 10px;
-}
-
-table.blueTable tfoot .links {
-	text-align: right;
-}
-
-table.blueTable tfoot .links a {
-	display: inline-block;
-	background: #1C6EA4;
-	color: #FFFFFF;
-	padding: 2px 8px;
-	border-radius: 5px;
 }
 
 

@@ -1,34 +1,36 @@
 {
-  "host": "47.111.179.211",
-  "timeout": 10,
-  "modelAndPort": {
-    "ligand": {
-      "A-Heterogeneous antiviral": [
-        "A.1 Ligand based Heterogeneous antiviral AI model",
-        7000
-      ],
-      "A-Phenotypic antiviral": [
-        "A.2 Ligand based Phenotypic antiviral AI model",
-        7001
-      ],
-      "A-RNA-dependent-RNA-polymerase": [
-        "A.3 Ligand based RNA-dependent RNA polymerase AI model",
-        7002
-      ],
-      "A-Helicase": [
-        "A.4 Ligand based Helicase AI model",
-        7003
-      ],
-      "A-3C-like-protease": [
-        "A.5 Ligand based  3C-like protease AI model",
-        7004
-      ]
-    },
-    "network": {
-      "B-Network-based": [
-        "B. Network based AI model",
-        7006
-      ]
+  "prediction": {
+    "serverHost": "47.111.179.211",
+    "timeout": 180,
+    "modelCfg": {
+      "ligand": {
+        "A-Heterogeneous antiviral": [
+          "A.1 Ligand based Heterogeneous antiviral AI model",
+          7000
+        ],
+        "A-Phenotypic antiviral": [
+          "A.2 Ligand based Phenotypic antiviral AI model",
+          7001
+        ],
+        "A-RNA-dependent-RNA-polymerase": [
+          "A.3 Ligand based RNA-dependent RNA polymerase AI model",
+          7002
+        ],
+        "A-Helicase": [
+          "A.4 Ligand based Helicase AI model",
+          7003
+        ],
+        "A-3C-like-protease": [
+          "A.5 Ligand based  3C-like protease AI model",
+          7004
+        ]
+      },
+      "network": {
+        "B-Network-based": [
+          "B. Network based AI model",
+          7006
+        ]
+      }
     }
   }
 }

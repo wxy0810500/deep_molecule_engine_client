@@ -26,14 +26,14 @@ function openTable(obj, tableName, contentClass, tabLinksClass) {
   const canvasEleList = tableEle.getElementsByClassName('smiles-canvas')
   for (let i = 0; i < canvasEleList.length; i++) {
     const canvasEle = canvasEleList[i];
-    draw(canvasEle.innerHTML, canvasEle.id);
-      canvasEle.setAttribute("style", "width:100%");
+    doDrawSmiles(canvasEle.innerHTML, canvasEle.id);
+      canvasEle.setAttribute("style", "width:70%");
   }
 
   obj.className += " active";
 }
 
-function draw(input, canvasId) {
+function doDrawSmiles(input, canvasId) {
   // let t = performance.now();
 
   SmilesDrawer.parse(input, function (tree) {
@@ -59,12 +59,12 @@ function addCanvas() {
   return canvasEleList
 }
 
-function drawSmiles() {
+function drawAllResultSmiles() {
   // add canvas
   let canvasEleList = addCanvas()
   for (let i = 0; i < canvasEleList.length; i++) {
     const canvasEle = canvasEleList[i];
-    draw(canvasEle.innerHTML, canvasEle.id);
-      canvasEle.setAttribute("style", "width:100%");
+    doDrawSmiles(canvasEle.innerHTML, canvasEle.id);
+    canvasEle.setAttribute("style", "width:70%");
   }
 }

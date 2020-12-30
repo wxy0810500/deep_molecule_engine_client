@@ -1,56 +1,96 @@
-<!DOCTYPE html>
-<!-- saved from url=(0063)http://127.0.0.1:8000/covid19/service/prediction/ligand/submit/ -->
-<html lang="en">
-   <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>{% if pageTitle is not None %}
-               {{ pageTitle }} |
-             {% endif %}
-          GHDDI COVID-19 AI Engine</title>
-       {% load static %}
-       <link rel="icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon" />
-       <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
-       <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">
-       <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
-       <script  type="text/javascript" src="{% static 'js/smiles-drawer.min.js' %}"></script>
-       <script  type="text/javascript" src="{% static 'js/result.js' %}"></script>
-   </head>
-   <body>
-      <div class="result-top">
-            <a href="http://www.ghddi.org">
-                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
-            </a>
-            <span>
-                <a href="{% url 'main' %}">
-                    GHDDI's Free AI Virtual Screening Service for COVID-19
-                </a>
-            </span>
-      </div>
-      <div class="results">
-        <button class="return">
-            <a href="{{ backURL }}">
-                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
-            </a>
-        </button>
-            {% block tables %}
-            {% endblock %}
-         {% if invalidInputTable is not None %}
-            <h3>invalid input</h3>
-            {% load django_tables2 %}
-            {% render_table invalidInputTable %}
-        {% endif %}
-      </div>
-      <div class="footer">
-        <button class="return">
-             <a href="{{ backURL }}">
-                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
-             </a>
-         </button>
-        <p>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：
-            <a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;">
-                <span>京ICP备16047874号</span>
-            </a>
-        </p>
-      </div>
-   </body>
-</html>
+{% extends 'publicTopAndFooter.html' %}
+{% block custom-head %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static  "css/result.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
+    <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
+    <script src="{% static 'js/result.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="shadow">
+  <div class="content">
+    <button class="return">
+        <a href="{{ backURL }}">
+            <img class="" src="{% static "imgs/arrow_back.svg" %}">&emsp;Back
+        </a>
+    </button>
+    {% block retTables %}
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}
+{% block footer-content %}
+<button class="return">
+    <a href="{{ backURL }}">
+        <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
+    </a>
+</button>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+{#<!DOCTYPE html>#}
+{#<!-- saved from url=(0063)http://127.0.0.1:8000/covid19/service/prediction/ligand/submit/ -->#}
+{#<html lang="en">#}
+{#   <head>#}
+{#      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">#}
+{#      <title>{% if pageTitle is not None %}#}
+{#               {{ pageTitle }} |#}
+{#             {% endif %}#}
+{#          GHDDI COVID-19 AI Engine</title>#}
+{#       {% load static %}#}
+{#       <link rel="icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon" />#}
+{#       <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">#}
+{#       <link rel="stylesheet" type="text/css" href="{% static  "css/main.css" %} ">#}
+{#       <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">#}
+{#       <script  type="text/javascript" src="{% static 'js/smiles-drawer.min.js' %}"></script>#}
+{#       <script  type="text/javascript" src="{% static 'js/result.js' %}"></script>#}
+{#   </head>#}
+{#   <body>#}
+{#      <div class="result-top">#}
+{#            <a href="http://www.ghddi.org">#}
+{#                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">#}
+{#            </a>#}
+{#            <span>#}
+{#                <a href="{% url 'main' %}">#}
+{#                    GHDDI's Free AI Virtual Screening Service for COVID-19#}
+{#                </a>#}
+{#            </span>#}
+{#      </div>#}
+{#      <div class="results">#}
+{#        <button class="return">#}
+{#            <a href="{{ backURL }}">#}
+{#                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back#}
+{#            </a>#}
+{#        </button>#}
+{#            {% block tables %}#}
+{#            {% endblock %}#}
+{#         {% if invalidInputTable is not None %}#}
+{#            <h3>invalid input</h3>#}
+{#            {% load django_tables2 %}#}
+{#            {% render_table invalidInputTable %}#}
+{#        {% endif %}#}
+{#      </div>#}
+{#      <div class="footer">#}
+{#        <button class="return">#}
+{#             <a href="{{ backURL }}">#}
+{#                <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back#}
+{#             </a>#}
+{#         </button>#}
+{#        <p>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：#}
+{#            <a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;">#}
+{#                <span>京ICP备16047874号</span>#}
+{#            </a>#}
+{#        </p>#}
+{#      </div>#}
+{#   </body>#}
+{#</html>#}

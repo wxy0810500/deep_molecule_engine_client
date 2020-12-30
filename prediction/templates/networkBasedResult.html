@@ -1,37 +1,42 @@
-   {% extends "resultPublic.html" %}
-    {% block tables %}
-        {% if preRetTables is not None and rawRetTables is not None%}
-            {% load django_tables2 %}
-            <div class="wholeTable">
-                <h3>Antiviral compound-phenotype link prediction</h3>
-                <div class="tab">
-                    {% for table in preRetTables %}
-                    <button class="tablinks pTabLinks" onclick='openPreTable(this, "p{{ table.virusName }}")'>{{ table.virusName }}</button>
-                    {% endfor %}
-                </div>
-                <!-- prediction result table -->
+{% extends "resultPublic.html" %}
+{% block retTables %}
+    {% if preRetTables is not None and rawRetTables is not None%}
+        {% load django_tables2 %}
+        <div class="wholeTable main-block">
+            <div class="index-block">
+                <b>Antiviral compound-phenotype link prediction</b>
+            </div>
+            <div class="tab">
                 {% for table in preRetTables %}
-                    <div id="p{{ table.virusName }}" class="tabcontent pTabContent" style="display: none;">
-                        {% render_table table.tables %}
-                    </div>
+                <button class="tablinks pTabLinks" onclick='openPreTable(this, "p{{ table.virusName }}")'>{{ table.virusName }}</button>
                 {% endfor %}
             </div>
-            <!-- raw table -->
-            <div class="wholeTable">
-                <h3>Initial in vitro viral / in vivo infection assay data</h3>
-                <div class="tab">
-                    {% for table in rawRetTables %}
-                    <button class="tablinks rTabLinks" onclick='openRawTable(this, "r{{ table.virusName }}")'>{{ table.virusName }}</button>
-                    {% endfor %}
+            <!-- prediction result table -->
+            {% for table in preRetTables %}
+                <div id="p{{ table.virusName }}" class="tabcontent pTabContent" style="display: none;">
+                    {% render_table table.tables %}
                 </div>
+            {% endfor %}
+        </div>
+        <!-- raw table -->
+        <div class="wholeTable main-block">
+
+            <div class="index-block">
+                <b>Initial in vitro viral / in vivo infection assay data</b>
+            </div>
+            <div class="tab">
                 {% for table in rawRetTables %}
-                    <div id="r{{ table.virusName }}" class="tabcontent rTabContent" style="display: none;">
-                        {% render_table table.tables %}
-                    </div>
+                <button class="tablinks rTabLinks" onclick='openRawTable(this, "r{{ table.virusName }}")'>{{ table.virusName }}</button>
                 {% endfor %}
             </div>
-            <script>
-                addCanvas()
-            </script>
-        {% endif %}
-    {% endblock %}
+            {% for table in rawRetTables %}
+                <div id="r{{ table.virusName }}" class="tabcontent rTabContent" style="display: none;">
+                    {% render_table table.tables %}
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            addCanvas()
+        </script>
+    {% endif %}
+{% endblock %}

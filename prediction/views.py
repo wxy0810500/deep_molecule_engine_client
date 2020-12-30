@@ -7,7 +7,7 @@ from .service import processLigand, processNetWork
 from .tables import *
 from .predictionTask import PredictionTaskRet
 from .forms import *
-from deep_engine_client.sysConfig import *
+from configuration.sysConfig import *
 from deep_engine_client.exception import *
 from deep_engine_client.tables import InvalidInputsTable
 from pyexcel import Book
@@ -18,13 +18,9 @@ from typing import Dict, List
 INPUT_TEMPLATE_FORMS = {
     PREDICTION_TYPE_LIGAND: {
         'inputForm': LigandModelInputForm(),
-        'plStatus': "active",
-        "pageTitle": "Ligand Based",
     },
     PREDICTION_TYPE_NETWORK: {
         'inputForm': NetworkModelInputForm(),
-        'pnStatus': "active",
-        "pageTitle": "Network Based",
     }
 }
 
@@ -54,16 +50,19 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]]):
     if preRetList is None or len(preRetList) == 0:
         return None
     ctxDict = {modelType: [] for modelType in preRetList[0].keys()}
-
+    index = 1
     for preRet in preRetList:
+        count = 0
         for modelType, preRetRecord in preRet.items():
-            rlt = [{"id": sid + 1,
-                    "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else None,
+            rlt = [{"id": index + i,
+                    "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else "error",
                     "input": preRetUnit.input,
                     "drugName": preRetUnit.drugName,
                     "cleanedSmiles": preRetUnit.cleanedSmiles}
-                   for sid, preRetUnit in enumerate(preRetRecord.preResults)]
+                   for i, preRetUnit in enumerate(preRetRecord.preResults)]
             ctxDict[modelType] += rlt
+            count = len(preRetRecord.preResults)
+        index = index + count
     ctx = [{'modelType': modelType, 'tables': PredictionResultTable(rlt)} for modelType, rlt in ctxDict.items()]
     return ctx
 
@@ -147,26 +146,28 @@ def predict(request, sType: str):
             preRetList, invalidInputList = processLigand(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
-        if len(request.FILES) > 0:
-            retBook = __formatRetExcelBook(preRetList, invalidInputList)
-        else:
+        outputType = inputForm.cleaned_data['outputType']
+        if outputType == CommonInputForm.OUTPUT_TYPE_WEB_PAGE:
             preRetTables = __formatRetTables(preRetList)
+        else:
+            retBook = __formatRetExcelBook(preRetList, invalidInputList)
+
         retTemplate = 'preResult.html'
 
     elif PREDICTION_TYPE_NETWORK == sType:
         inputForm = NetworkModelInputForm(request.POST, request.FILES)
-
         if not inputForm.is_valid():
             return return400ErrorPage(request, inputForm)
         try:
             preRetDF, rawRetDF, invalidInputList = processNetWork(request, inputForm)
         except CommonException as e:
             return HttpResponseBadRequest(e.message)
-        if len(request.FILES) > 0:
-            retBook = __formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
-        else:
-            preRetTables, rawRetTables = __formatNetworkRetTables(preRetDF, rawRetDF)
 
+        outputType = inputForm.cleaned_data['outputType']
+        if outputType == CommonInputForm.OUTPUT_TYPE_WEB_PAGE:
+            preRetTables, rawRetTables = __formatNetworkRetTables(preRetDF, rawRetDF)
+        else:
+            retBook = __formatNetworkExcelBook(preRetDF, rawRetDF, invalidInputList)
         retTemplate = 'networkBasedResult.html'
     else:
         return HttpResponseBadRequest()
@@ -177,7 +178,7 @@ def predict(request, sType: str):
             "backURL": reverse('prediction_index', args=[sType]),
             "pageTitle": "Prediction Result"
         }
-        if preRetTables:
+        if preRetTables is not None:
             retDict['preRetTables'] = preRetTables
         # just for network based
         if PREDICTION_TYPE_NETWORK == sType and rawRetTables is not None:

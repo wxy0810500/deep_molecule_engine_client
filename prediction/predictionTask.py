@@ -1,19 +1,20 @@
 from .thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
+from .config import *
 from utils.timeUtils import sleepWithSwitchInterval
 from deep_engine_client.exception import PredictionCommonException
 from utils.debug import printDebug
 from .taskManager import getProcessPool
 
-default_dme_server_host = SERVER_CONFIG_DICT.get("host")
-default_dme_conn_timeout = SERVER_CONFIG_DICT.get("timeout")
+default_dme_server_host = PREDICTION_SERVER_HOST
+default_dme_conn_timeout = PREDICTION_SERVER_TIMEOUT
 
-LigandModelTypeAndPortDict = SERVER_CONFIG_DICT.get("modelAndPort").get('ligand')
+LigandModelTypeAndPortDict = {modelType: cfgData[1] for modelType, cfgData in
+                              PREDICTION_SERVER_MODEL_CFG.get(PREDICTION_TYPE_LIGAND).items()}
 
-PREDICTION_TASK_TYPE_LIGAND = "LBVS"
-PREDICTION_TASK_TYPE_STRUCTURE = "SBVS"
+__PREDICTION_TASK_TYPE_LIGAND = "LBVS"
+__PREDICTION_TASK_TYPE_STRUCTURE = "SBVS"
 
 
 class PredictedRetUnit:
@@ -88,13 +89,11 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
     retList = []
     # define smiles_index in order
     smilesDictList = []
-    allSmilesDict = {}
     for i, smilesInfo in enumerate(smilesInfoList):
         if i % 20 == 0:
             smilesDict = {}
             smilesDictList.append(smilesDict)
         smilesDict[i] = smilesInfo
-        allSmilesDict[i] = smilesInfo
     for smilesDict in smilesDictList:
         # do tasks one by one
         processPool = getProcessPool()
@@ -127,7 +126,7 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
             if len(taskInfoDict) == 0:
                 break
         retList.append(retDict)
-    return retList, allSmilesDict
+    return retList
 
 
 def processOneTask(client: DMEClient, *args):
@@ -139,7 +138,8 @@ def processOneTask(client: DMEClient, *args):
     smilesDict: dict = args[4]
     aux_data = args[5]
     client_worker = client.make_worker(host, port, timeout)
-    task_time, server_info, retUnitList, againDict = __predictOnce(client, client_worker, taskType, smilesDict, aux_data)
+    task_time, server_info, retUnitList, againDict = __predictOnce(client, client_worker, taskType, smilesDict,
+                                                                   aux_data)
 
     # again的 再处理一次 处理5次，若还不行，则放弃处理
     times = 1
@@ -191,4 +191,4 @@ def __predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_
 
 
 def predictLigand(modelTypes: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(LigandModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_LIGAND)
+    return processTasks(LigandModelTypeAndPortDict, modelTypes, smilesInfoList, __PREDICTION_TASK_TYPE_LIGAND)

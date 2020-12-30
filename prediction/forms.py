@@ -1,12 +1,13 @@
 from django import forms
-from deep_engine_client.sysConfig import SERVER_CONFIG_DICT
+from .config import *
 from deep_engine_client.forms import CommonInputForm
 
 # format  [(value1, name1), (value1, name1)]
 ligandModelChoices = tuple([(model, data[0]) for model, data in
-                            SERVER_CONFIG_DICT.get("modelAndPort").get("ligand").items()])
+                            PREDICTION_SERVER_MODEL_CFG.get(PREDICTION_TYPE_LIGAND).items()])
+# format  [(value1, name1), (value1, name1)]
 networkModelChoices = tuple([(model, data[0]) for model, data in
-                             SERVER_CONFIG_DICT.get("modelAndPort").get("network").items()])
+                             PREDICTION_SERVER_MODEL_CFG.get(PREDICTION_TYPE_NETWORK).items()])
 
 
 class LigandModelInputForm(CommonInputForm):

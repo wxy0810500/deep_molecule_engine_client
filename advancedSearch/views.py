@@ -1,5 +1,5 @@
 from django.shortcuts import render, reverse
-from deep_engine_client.sysConfig import *
+from configuration.sysConfig import *
 from .service import *
 from .tables import SearchResultTable
 from django.http import HttpResponse
@@ -11,10 +11,7 @@ from pyexcel import Book
 # Create your views here.
 INPUT_TEMPLATE_FORMS = {
     SERVICE_TYPE_SEARCH: {
-        'inputForm': CommonInputForm(),
-        'specialClass': "search-page",
-        'sStatus': "active",
-        "pageTitle": "Advanced Search"
+        'inputForm': CommonInputForm()
     }
 }
 
