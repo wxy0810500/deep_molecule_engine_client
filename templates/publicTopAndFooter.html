@@ -18,12 +18,15 @@
 <body>
     <div class="top">
         <div class="header">
-            <a href="http://www.ghddi.org">
-                <img class="" src="{% static "imgs/Logo.png" %}" width="150px">
+            <a href="http://www.ghddi.org" id="ghddi_logo">
+                <img class="" src="{% static "imgs/Logo.png" %}">
+            </a>
+            <a href="/" id="aidd_logo">
+                <img class="" src="{% static "imgs/AIDD_logo.png" %}">
             </a>
         </div>
             <h1>
-            <a href="{% url 'main' %}">
+            <a href="{% url 'sbvs_index' %}">
                 GHDDI's Free Structure based Prediction Service
             </a>
             </h1>
