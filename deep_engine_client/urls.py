@@ -22,9 +22,8 @@ BASE_URL = r'covid19/'
 PREDICTION_BASE_URL = r'service/prediction/<str:sType>/'
 SEARCH_BASE_URL = r'service/advancedSearch/'
 urlpatterns = [
-    path(r'', views.tempRoot, name='main'),
     path(BASE_URL, include([
-        path(r'', views.index),
+        path(r'', views.index, name="covid19_index"),
         path(PREDICTION_BASE_URL, include('prediction.urls')),
         path(SEARCH_BASE_URL, include('advancedSearch.urls'))
         ])
