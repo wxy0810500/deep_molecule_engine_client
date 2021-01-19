@@ -45,7 +45,11 @@ def getModelPortCfg():
         raise CommonException("can not get model_port configuration!")
 
 
-PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
+cmd = os.environ.get('RUNTIME_COMMAND')
+if cmd and cmd == 'runserver':
+    PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
 
-if __name__ == '__main__':
-    print(PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT)
+PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
+#
+# if __name__ == '__main__':
+#     print(PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT)
