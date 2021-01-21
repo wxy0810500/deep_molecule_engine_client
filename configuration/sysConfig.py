@@ -33,9 +33,9 @@ def getModelPortCfg():
         lines = content.splitlines()
         csvReader = csv.reader(lines)
         # init category dict
-        modelPortDict = dict((category, {}) for category in PREDICTION_CATEGORY_NAME_DICT.keys())
+        modelPortDict = dict((cate, {}) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
         modelCategoryDict = {}
-        categoryModelDict = dict((category, []) for category in PREDICTION_CATEGORY_NAME_DICT.keys())
+        categoryModelDict = dict((cate, []) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
         for row in csvReader:
             modelPortDict[row[0]][row[1]] = int(row[2])
             categoryModelDict[row[0]].append(row[1])
@@ -48,8 +48,17 @@ def getModelPortCfg():
 cmd = os.environ.get('RUNTIME_COMMAND')
 if cmd and cmd == 'runserver':
     PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
+    AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
+    with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as f:
+        for line in f.readlines():
+            rawData: list = line.strip().split(',')
+            category_model: list = rawData[0].split('_')
+            category = category_model[0]
+            model = category_model[1]
+            operation = int(rawData[1])
+            AverageOperation_IN_RADAR_DICT[category][model] = operation
 
-PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
+
 #
 # if __name__ == '__main__':
 #     print(PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT)

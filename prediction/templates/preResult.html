@@ -10,6 +10,7 @@
                         {% render_table retUnit.smilesTable %}
                         <canvas id="smiles-canvas-{{ forloop.counter }}"></canvas>
                         <div class="smiles-radar" id="smiles-radar-{{ forloop.counter }}"></div>
+                        <p class="druglike-score">Druglike Score = {{ retUnit.druglikeScore }} </p>
                         <script>
                             drawRadarAndSmiles("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}",
                                 "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "data")

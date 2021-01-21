@@ -59,7 +59,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
                 inputDrugNameList = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
-        inputDrugNameList = CommonInputForm.filterInputDrugNames(inputDrugNameList)
         drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
         if len(inputDrugNameList) == drugRefDF.size:
             # 完全匹配，加入input 列
