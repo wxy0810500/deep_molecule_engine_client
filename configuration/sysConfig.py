@@ -58,7 +58,7 @@ if cmd and cmd == 'runserver':
             operation = int(rawData[1])
             AverageOperation_IN_RADAR_DICT[category][model] = operation
 else:
-    PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None
+    PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
     AverageOperation_IN_RADAR_DICT = None
 #
 # if __name__ == '__main__':
