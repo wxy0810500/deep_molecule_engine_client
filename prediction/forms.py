@@ -8,7 +8,7 @@ from deep_engine_client.forms import CommonInputForm
 
 class ADMETModelInputForm(CommonInputForm):
     __ADMET_categorys = tuple([(tag, category) for tag, category in PREDICTION_CATEGORY_NAME_DICT.items()])
-    __ADMET_metrics = tuple([(name, metrics) for metrics, name in PREDICTION_METRICS_NAME_DICT.items()])
+    __ADMET_metrics = tuple([(metrics, name) for metrics, name in PREDICTION_METRICS_NAME_DICT.items()])
 
     categorys = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                           label="",

@@ -6,14 +6,25 @@
     height: 60%;
 }
 .top .header {
-    padding: 3% 50px;
+    padding: 3% 10%;
 }
 .top h1 {
-    font-size: 5.5vh;
+    font-size: 5vh;
     color: white;
     /*line-height: 70px;*/
     width: 70%;
     margin: 3% auto 3% auto;
+}
+
+a#aidd_logo {
+    margin-left: 2%;
+}
+#ghddi_logo img {
+    width: 10%;
+}
+#aidd_logo img {
+    width: 9%;
+    padding-bottom: 0.22%;
 }
 
 /*.top {*/

@@ -107,7 +107,10 @@ div.smiles-radar {
     float: right;
 }
 
-
+p.druglike-score {
+    margin-left: 65%;
+    margin-top: 0;
+}
 .main-block {
 	width: 96%;
 	padding: 1%;
