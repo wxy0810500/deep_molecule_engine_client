@@ -18,7 +18,7 @@ if env == 'prod':
     RUNTIME_ENV = 'prod'
 elif env == 'prod_test':
     from .prod_test import *
-    RUNTIME_ENV = 'prod'
+    RUNTIME_ENV = 'prod_test'
 else:
     from .local_test import *
     RUNTIME_ENV = 'test'
