@@ -19,14 +19,14 @@ class PredictionResultTable(tables.Table):
             "class": "score_td"
         }
     })
-    scoreForAve = tables.Column(orderable=False, attrs={
-        "th": {
-            "class": "score_th"
-        },
-        "td": {
-            "class": "score_td"
-        }
-    })
+    # scoreForAve = tables.Column(orderable=False, attrs={
+    #     "th": {
+    #         "class": "score_th"
+    #     },
+    #     "td": {
+    #         "class": "score_td"
+    #     }
+    # })
 
     class Meta:
         attrs = {
