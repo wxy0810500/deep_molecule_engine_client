@@ -1,15 +1,15 @@
 A_Caco2,1
 A_HIA,1
 A_HOB,1
-A_PgpI,-1
-A_PgpS,1
 A_SLB,1
+D_PgpI,-1
+D_PgpS,0
 D_BBB,0
 D_PPBhuman,1
 D_PPBmix,1
 D_PPBmouse,1
 D_PPBrat,1
-E_OCT1i,-1
+E_OCT1I,-1
 E_OCT2I,-1
 M_CYP1A2I,-1
 M_CYP2C19I,-1
@@ -47,3 +47,4 @@ T_CytotoxVero,-1
 T_DILT,-1
 T_LD50,-1
 T_hERG,-1
+T_CytotoxMix,-1

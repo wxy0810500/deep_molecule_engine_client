@@ -94,7 +94,14 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             for preRetUnit in preRetRecord.preResults:
                 smilesIndex: int = int(preRetUnit.sampleId)
                 aveOptDict = AverageOperation_IN_RADAR_DICT.get(category)
-                aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
+                aveOperatedScore = 0
+                if aveOptDict is not None:
+                    aveOpt = aveOptDict.get(modelType)
+                    if aveOpt is not None:
+                        aveOperatedScore = float(preRetUnit.score) * aveOpt
+                    else:
+                        print(f'{category}_{modelType}')
+                # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
                 retDict[smilesIndex][category].append({
                     "model": modelType,
                     "score": "%.4f" % preRetUnit.score,
