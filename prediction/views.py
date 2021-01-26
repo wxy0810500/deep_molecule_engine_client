@@ -143,7 +143,8 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
-                "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category), PredictionResultTable(result))
+                "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category),
+                                PredictionResultTable(sorted(result, key=lambda x: x.get("model"))))
                                for category, result in results.items()),
                 "radarData": json.dumps(aveScoreDict),
                 "druglikeScore": "%.4f" % np.mean(list(aveScoreDict.values()))
