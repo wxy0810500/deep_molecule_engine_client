@@ -59,7 +59,9 @@ function drawRadarAndSmiles(input, canvasId, radarDivId, indicatorAndValueDict, 
                 areaStyle: {
                     color:  ['#FFF','#D0E4F5']
                 }
-            }
+            },
+            radius: "60%"
+
         },
         series: [{
             name: 's-radar',

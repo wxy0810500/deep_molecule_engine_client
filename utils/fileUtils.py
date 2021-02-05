@@ -24,7 +24,7 @@ def file_iterator(file, chunk_size=512):
                 break
 
 
-MAX_INPUT_SET_LENGTH_BY_FILE = 100
+MAX_INPUT_SET_LENGTH_BY_FILE = 50
 
 
 # 当前处理是读取数据的Set，有效值100个

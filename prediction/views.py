@@ -133,7 +133,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 )
             else:
                 aveScore = 0
-            averageScoreDict[category] = float('%.4f' % aveScore)
+            averageScoreDict[PREDICTION_CATEGORY_NAME_DICT.get(category)] = float('%.4f' % aveScore)
         return averageScoreDict
 
     ctx = []

@@ -107,7 +107,7 @@ body {
     height: 100%;
 }
 
-body a {
+.top a {
   text-decoration: none;
   color: inherit;
 }
@@ -175,8 +175,7 @@ textarea:focus {
     margin: 4vh 0 2vh 0 ;
 }
 .intro img {
-    width: 80%;
-    margin: 8vh 10% 0;
+    margin-top: 8vh;
 }
 .caption {
     margin-bottom: 4vh;
@@ -202,4 +201,3 @@ textarea:focus {
     top: 0;
     background-color: #1751E7;
 }
-
