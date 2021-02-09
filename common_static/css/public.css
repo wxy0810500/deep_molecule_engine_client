@@ -40,18 +40,18 @@ a#aidd_logo {
 
 
 /*================*/
-/*-----------footer-------------*/
-.footer {
+/*-----------body_footer-------------*/
+.body_footer {
     font-size: 2vh;
     text-align: center;
     color: #757575;
     line-height: 5vh;
     padding: 6vh 0;
 }
-.footer a:link {text-decoration:none;}
-.footer a:active {color: red; }
-.footer a:visited {color:blue;text-decoration:none;}
-.footer a:hover {color: red; text-decoration:underline;}
+.body_footer a:link {text-decoration:none;}
+.body_footer a:active {color: red; }
+.body_footer a:visited {color:blue;text-decoration:none;}
+.body_footer a:hover {color: red; text-decoration:underline;}
 /*=========================*/
 @media (max-width: 480px) {
     .inner {

@@ -13,17 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 
 from deep_engine_client import views
 from django.urls import path, include
+import prediction.dashbroad.lbvs
 
-BASE_URL = r'admet/'
+BASE_URL = r'targetfishing/'
 PREDICTION_BASE_URL = r'service/prediction/'
 urlpatterns = [
     path(BASE_URL, include([
         path(r'', views.index, name='main'),
-        path(PREDICTION_BASE_URL, include('prediction.urls'))
+        path(PREDICTION_BASE_URL, include('prediction.urls')),
+        path(r'dash/', include("django_plotly_dash.urls"))
         ])
     )
 ]

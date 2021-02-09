@@ -5,7 +5,7 @@
         {% if pageTitle is not None %}
         {{ pageTitle }} |
         {% endif %}
-        GHDDI's Free ADMET Prediction Service</title>
+        GHDDI's Free Human Target Fishing Prediction Service</title>
     <meta name="renderer" content="webkit"/>
     <meta name="force-rendering" content="webkit"/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="{% static 'imgs/favicon.ico' %}" type="image/vnd.microsoft.icon">
 
     <link rel="stylesheet" type="text/css" href="{% static  "css/public.css" %} ">
-    {% block custom-css-script %}
+    {% block custom-header %}
     {% endblock %}
 </head>
 <body>
@@ -28,7 +28,7 @@
         </div>
             <h1>
             <a href="{% url 'main' %}">
-                GHDDI's Free ADMET Prediction Service
+                GHDDI's Free Human Target Fishing Prediction Service
             </a>
             </h1>
 {#            <nav class="crumbs">#}
@@ -42,7 +42,7 @@
     </div>
     {% block content %}
     {% endblock %}
-    <div class="footer">
+    <div class="body_footer">
         {% block footer-content %}
         {% endblock %}
         <div>
@@ -52,4 +52,6 @@
         <div>Copyright © GHDDI. &nbsp;All rights reserved. 备案/许可证编号为：<a href="http://beian.miit.gov.cn/" target="_blank" style="text-decoration: underline;"><span>京ICP备16047874号</span></a></div>
     </div>
 </body>
+{% block footer %}
+{% endblock %}
 </html>

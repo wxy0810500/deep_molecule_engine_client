@@ -1,4 +1,5 @@
 {
   "predictionServerHost": "47.111.179.211",
+  "predictionServerCfgPort": 6666,
   "timeout": 3600
 }

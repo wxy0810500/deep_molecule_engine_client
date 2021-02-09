@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'django_tables2',
     'webpack_loader'
 ]
@@ -47,6 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django_plotly_dash.middleware.BaseMiddleware',
 ]
 
 ROOT_URLCONF = 'deep_engine_client.urls'
@@ -64,8 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
-]
+    },]
 
 
 # Database
@@ -129,7 +131,7 @@ STATICFILES_FINDERS = (
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-STATIC_URL = '/admet/static/'
+STATIC_URL = '/targetfishing/static/'
 
 # 其它 存放静态文件的文件夹，可以用来存放项目中公用的静态文件，里面不能包含 STATIC_ROOT
 # 如果不想用 STATICFILES_DIRS 可以不用，都放在 app 里的 common_static 中也可以
@@ -140,3 +142,5 @@ STATICFILES_DIRS = (
 
 # # frontend configuration
 # FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+# plot dash
+X_FRAME_OPTIONS = 'SAMEORIGIN'

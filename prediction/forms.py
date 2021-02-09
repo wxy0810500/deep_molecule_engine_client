@@ -1,12 +1,12 @@
 from django import forms
-from configuration.sysConfig import PREDICTION_CATEGORY_NAME_DICT
+from configuration.sysConfig import PREDICTION_CATEGORY_MODEL_DICT
 from deep_engine_client.forms import CommonInputForm
 
 # format  [(value1, name1), (value1, name1)]
-ADMET_categorys = tuple([(tag, category) for tag, category in PREDICTION_CATEGORY_NAME_DICT.items()])
+ADMET_categorys = tuple([(category, category) for category in PREDICTION_CATEGORY_MODEL_DICT.keys()])
 
 
-class ADMETModelInputForm(CommonInputForm):
+class TFModelInputForm(CommonInputForm):
     categorys = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
                                           label="",
                                           required=True,

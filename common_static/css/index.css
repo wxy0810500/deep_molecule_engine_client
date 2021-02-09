@@ -203,3 +203,11 @@ textarea:focus {
     background-color: #1751E7;
 }
 
+.dashboard-block {
+	min-height: 200px;
+	padding: 3vmin;
+	background: white;
+	box-shadow: 0 0 16px 0 rgba(0,0,0,0.20);
+	border-radius: 8px;
+	margin: 5% auto 5% auto;
+}

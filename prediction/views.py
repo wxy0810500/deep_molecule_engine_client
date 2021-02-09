@@ -11,12 +11,9 @@ from deep_engine_client.exception import *
 from deep_engine_client.tables import InvalidInputsTable
 from .forms import *
 from .predictionTask import PredictionTaskRet
-from configuration.sysConfig import PREDICTION_CATEGORY_NAME_DICT, PREDICTION_MODEL_CATEGORY_DICT, \
-    PREDICTION_CATEGORYS_IN_RADAR, AverageOperation_IN_RADAR_DICT
-from .service import processADMET
+from configuration.sysConfig import PREDICTION_MODEL_CATEGORY_DICT
+from .service import processTF
 from .tables import *
-import numpy as np
-import json
 
 
 def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], invalidInputList):
@@ -93,14 +90,9 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 continue
             for preRetUnit in preRetRecord.preResults:
                 smilesIndex: int = int(preRetUnit.sampleId)
-                aveOptDict = AverageOperation_IN_RADAR_DICT.get(category)
-                aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
                 retDict[smilesIndex][category].append({
                     "model": modelType,
-                    "score": "%.4f" % preRetUnit.score,
-                    "scoreForAve":
-                        float('%.4f' % (
-                            aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore)) if aveOperatedScore != 0 else None
+                    "score": "%.4f" % preRetUnit.score
                 })
 
     # [
@@ -115,31 +107,28 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
     #         }
     #     }
     # ]
-    def getAverageScoreForEachCategory(resultsOfSingleSmiles):
-        averageScoreDict = {}
-        for category in PREDICTION_CATEGORYS_IN_RADAR:
-            resultsOfCategory = resultsOfSingleSmiles.get(category, None)
-            if resultsOfCategory is not None:
-                # 雷达图上数值，用1-score之后再求平均值
-                aveScore = np.mean(
-                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
-                )
-            else:
-                aveScore = 0
-            averageScoreDict[category] = float('%.4f' % aveScore)
-        return averageScoreDict
+    # def getAverageScoreForEachCategory(resultsOfSingleSmiles):
+    #     averageScoreDict = {}
+    #     for category in PREDICTION_CATEGORYS_IN_RADAR:
+    #         resultsOfCategory = resultsOfSingleSmiles.get(category, None)
+    #         if resultsOfCategory is not None:
+    #             # 雷达图上数值，用1-score之后再求平均值
+    #             aveScore = np.mean(
+    #                 [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
+    #             )
+    #         else:
+    #             aveScore = 0
+    #         averageScoreDict[category] = float('%.4f' % aveScore)
+    #     return averageScoreDict
 
     ctx = []
     for index, results in retDict.items():
-        aveScoreDict = getAverageScoreForEachCategory(results)
         ctx.append(
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
-                "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category), PredictionResultTable(result))
-                               for category, result in results.items()),
-                "radarData": json.dumps(aveScoreDict),
-                "druglikeScore": "%.4f" % np.mean(list(aveScoreDict.values()))
+                "result": dict((category, PredictionResultTable(result))
+                               for category, result in results.items())
             }
         )
     return ctx
@@ -149,12 +138,12 @@ def predict(request):
     if not request.POST:
         return HttpResponseBadRequest()
 
-    inputForm = ADMETModelInputForm(request.POST, request.FILES)
+    inputForm = TFModelInputForm(request.POST, request.FILES)
 
     if not inputForm.is_valid():
         return return400ErrorPage(request, inputForm)
     try:
-        preRet, invalidInputList, inputCategorys, smilesDict = processADMET(request, inputForm)
+        preRet, invalidInputList, inputCategorys, smilesDict = processTF(request, inputForm)
     except CommonException as e:
         return HttpResponseBadRequest(e.message)
 
@@ -174,4 +163,4 @@ def predict(request):
     else:
         retBook = __formatRetExcelBook(preRet, invalidInputList)
         return make_response(retBook, file_type='csv',
-                             file_name=f'ADMET_PredictionResult')
+                             file_name=f'TargetFishing_PredictionResult')
