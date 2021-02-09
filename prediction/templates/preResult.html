@@ -15,7 +15,7 @@
 						</div>
                         <script>
                             drawRadarAndSmiles("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}",
-                                "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "data")
+                                "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "drug-like score contribution")
                         </script>
                     <div class="half-block">
                         {% for category, tables in retUnit.result.items %}

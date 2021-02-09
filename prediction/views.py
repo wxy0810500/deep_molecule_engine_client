@@ -103,11 +103,12 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                         print(f'{category}_{modelType}')
                 # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
                 retDict[smilesIndex][category].append({
-                    "model": modelType,
+                    "model": modelType if aveOperatedScore != 0 else f"{modelType} *",
                     "score": "%.4f" % preRetUnit.score,
                     "scoreForAve":
                         float('%.4f' % (
-                            aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore)) if aveOperatedScore != 0 else None
+                            aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore))
+                        if aveOperatedScore != 0 else ""
                 })
 
     # [
@@ -129,11 +130,12 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             if resultsOfCategory is not None:
                 # 雷达图上数值，用1-score之后再求平均值
                 aveScore = np.mean(
-                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
+                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') != ""]
                 )
+                aveScore = float('%.4f' % aveScore)
             else:
                 aveScore = 0
-            averageScoreDict[PREDICTION_CATEGORY_NAME_DICT.get(category)] = float('%.4f' % aveScore)
+            averageScoreDict[PREDICTION_CATEGORY_NAME_DICT.get(category)] = aveScore
         return averageScoreDict
 
     ctx = []
@@ -147,7 +149,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                                 PredictionResultTable(sorted(result, key=lambda x: x.get("model"))))
                                for category, result in results.items()),
                 "radarData": json.dumps(aveScoreDict),
-                "druglikeScore": "%.4f" % np.mean(list(aveScoreDict.values()))
+                "druglikeScore": "%.4f" % np.mean([s for s in aveScoreDict.values() if s > 0])
             }
         )
     return ctx

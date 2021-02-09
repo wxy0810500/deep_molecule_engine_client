@@ -2,7 +2,7 @@ import django_tables2 as tables
 
 
 class PredictionResultTable(tables.Table):
-    model = tables.Column(orderable=False, attrs={
+    model = tables.Column(orderable=False, verbose_name="model", attrs={
         "th": {
             "class": "model_th"
         },
@@ -11,7 +11,7 @@ class PredictionResultTable(tables.Table):
         }
     })
 
-    score = tables.Column(orderable=False, attrs={
+    score = tables.Column(orderable=False, verbose_name="probability", attrs={
         "th": {
             "class": "score_th"
         },
@@ -19,7 +19,7 @@ class PredictionResultTable(tables.Table):
             "class": "score_td"
         }
     })
-    scoreForAve = tables.Column(orderable=False, verbose_name="score for average", attrs={
+    scoreForAve = tables.Column(orderable=False, verbose_name="drug-like score contribution", attrs={
         "th": {
             "class": "score_th"
         },
