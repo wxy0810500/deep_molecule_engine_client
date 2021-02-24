@@ -4,8 +4,10 @@ from prediction.forms import StructureModelInputForm
 from smiles.searchService import searchDrugReferenceByInputRequest
 import os
 from utils.fileUtils import handleUploadedFile
-from prediction.predictionTask import predictSBVS
+from prediction.predictionTask import processTasks, StructureModelTypeAndPortDict, \
+    PREDICTION_TASK_TYPE_SBVS, PredictionTaskRet
 import numpy as np
+from typing import Sequence, List, Dict
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 
@@ -27,7 +29,6 @@ def __distanceMatrix(pts1, pts2):
 
 
 def __getPocket(rawPDBContent, cxyz: tuple, cutoff_r=15):
-
     lns = rawPDBContent.splitlines()
 
     xyz = []
@@ -49,6 +50,11 @@ def __getPocket(rawPDBContent, cxyz: tuple, cutoff_r=15):
     return '\n'.join(pocketList)
 
 
+def predictSBVS(modelTypes: Sequence, smilesInfoList: List, pdbContent: str) -> List[Dict[str, PredictionTaskRet]]:
+    return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_SBVS,
+                        pdbContent)
+
+
 def processSBVS(request, inputForm: StructureModelInputForm):
     smilesInfoList, invalidInputList = __getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
@@ -64,4 +70,3 @@ def processSBVS(request, inputForm: StructureModelInputForm):
     else:
         preRetList = None
     return preRetList, invalidInputList
-

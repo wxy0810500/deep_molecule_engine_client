@@ -28,7 +28,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'prediction.apps.PredictionConfig',
+    'infectiousDisease.apps.PredictionConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -129,7 +129,7 @@ STATICFILES_FINDERS = (
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-STATIC_URL = '/sbvs/static/'
+STATIC_URL = '/static/'
 
 # 其它 存放静态文件的文件夹，可以用来存放项目中公用的静态文件，里面不能包含 STATIC_ROOT
 # 如果不想用 STATICFILES_DIRS 可以不用，都放在 app 里的 common_static 中也可以

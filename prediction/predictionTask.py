@@ -1,8 +1,7 @@
-from .thrift.client import DMEClient
-from _collections import deque
+from infectiousDisease.thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from .config import *
+from infectiousDisease.config import *
 from utils.timeUtils import sleepWithSwitchInterval
 from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException
@@ -13,6 +12,7 @@ default_dme_conn_timeout = PREDICTION_SERVER_TIMEOUT
 
 
 PREDICTION_TASK_TYPE_SBVS = "SBVS"
+PREDICTION_TASK_TYPE_SBVS = "LBVS"
 StructureModelTypeAndPortDict = {modelType: cfgData[1] for modelType, cfgData in
                                  PREDICTION_SERVER_MODEL_CFG.get(PREDICTION_TYPE_STRUCTURE_BASED).items()}
 
@@ -183,7 +183,7 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
             retUnitList.append(PredictedRetUnit.commonOne(record.sample_id, record.result, smiles))
             # 根据RetUnit中的classIdx排序
         elif record.err_code == 1:
-            # input queue full, do prediction again
+            # input queue full, do infectiousDisease again
             againDict[smilesIndex] = smiles
         elif record.err_code == 2:
             # invalid smiles
@@ -198,7 +198,3 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
                                                          PredictedRetUnit.server_error_unit_label, smiles))
 
     return task_time, server_info, retUnitList, againDict
-
-
-def predictSBVS(modelTypes: Sequence, smilesInfoList: List, pdbContent: str) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(StructureModelTypeAndPortDict, modelTypes, smilesInfoList, PREDICTION_TASK_TYPE_SBVS, pdbContent)
