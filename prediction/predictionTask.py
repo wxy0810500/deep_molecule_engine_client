@@ -6,15 +6,10 @@ from utils.timeUtils import sleepWithSwitchInterval
 from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException
 from .taskManager import getProcessPool
+from .config import *
 
-default_dme_server_host = PREDICTION_SERVER_HOST
-default_dme_conn_timeout = PREDICTION_SERVER_TIMEOUT
-
-
-PREDICTION_TASK_TYPE_SBVS = "SBVS"
-PREDICTION_TASK_TYPE_SBVS = "LBVS"
-StructureModelTypeAndPortDict = {modelType: cfgData[1] for modelType, cfgData in
-                                 PREDICTION_SERVER_MODEL_CFG.get(PREDICTION_TYPE_STRUCTURE_BASED).items()}
+__default_dme_server_host = PREDICTION_SERVER_HOST
+__default_dme_conn_timeout = PREDICTION_SERVER_TIMEOUT
 
 
 class PredictedRetUnit:
@@ -64,11 +59,13 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoList, taskType, aux_data=None) \
+def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, metric: str,
+                 smilesInfoList, taskType, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
     """
 
 
+    @param metric:
     @param modelTypes:
     @param modelTypeAndPortDict:
     @param smilesInfoList:
@@ -83,9 +80,11 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
         raise PredictionCommonException('We will support these model types as soon as possible!')
     modelPortDict = {}
     for modelType in modelTypes:
-        port = modelTypeAndPortDict.get(modelType, None)
-        if port is not None:
-            modelPortDict[modelType] = port
+        metricAndPort = modelTypeAndPortDict.get(modelType, None)
+        if metricAndPort is not None:
+            port = metricAndPort.get(metric, None)
+            if port is not None:
+                modelPortDict[modelType] = port
     if len(modelPortDict) <= 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     # --- make client ---#
@@ -108,7 +107,7 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, smilesInfoLis
             taskInfoDict[taskId] = modelName
             taskArgs = {
                 "taskId": taskId,
-                "args": (default_dme_server_host, port, default_dme_conn_timeout, taskType, smilesDict, aux_data),
+                "args": (__default_dme_server_host, port, __default_dme_conn_timeout, taskType, smilesDict, aux_data),
                 "errorCode": "failed"
             }
             processPool.putTask(taskArgs)

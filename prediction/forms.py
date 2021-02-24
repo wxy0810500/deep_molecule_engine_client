@@ -1,7 +1,8 @@
 from django import forms
 import re
-from typing import List, Iterable
-from .fields import RestrictedFileField
+from typing import List, Tuple
+from deep_engine_client.fields import RestrictedFileField
+from smiles.searchService import searchDrugReferenceByInputRequest
 
 
 class CommonInputForm(forms.Form):
@@ -38,3 +39,8 @@ class CommonInputForm(forms.Form):
     def splitAndFilterInputDrugNamesStr(cls, drugNames: str) -> List[str]:
         return [name.strip().lower() for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]
 
+    def getCleanedSmilesInfoListFromInputForm(self, request) -> Tuple[List[dict], List[str]]:
+        drugRefDF, invalidInputList = searchDrugReferenceByInputRequest(request, self)
+        if drugRefDF.size == 0:
+            return None, invalidInputList
+        return drugRefDF[['input', 'drug_name', 'cleaned_smiles']].to_dict(orient='records'), invalidInputList

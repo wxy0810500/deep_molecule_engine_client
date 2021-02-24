@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from deep_engine_client.forms import CommonInputForm
+from prediction.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
 from typing import List, Tuple, Set
 import numpy as np

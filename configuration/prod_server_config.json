@@ -1,14 +1,6 @@
 {
   "prediction": {
     "serverHost": "192.168.1.28",
-    "timeout": 180,
-    "modelCfg" : {
-      "structure": {
-        "B-Structure-based-(none-docking)": [
-          "Structure based (none-docking) AI model",
-          7005
-        ]
-      }
-    }
+    "timeout": 3600
   }
 }

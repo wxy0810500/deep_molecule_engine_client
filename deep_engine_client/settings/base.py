@@ -28,7 +28,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'infectiousDisease.apps.PredictionConfig',
+    'infectiousDisease.apps.InfectiousDiseaseConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
