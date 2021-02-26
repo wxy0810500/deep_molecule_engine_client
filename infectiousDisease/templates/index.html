@@ -1,19 +1,19 @@
 {% extends "publicTopAndFooter.html" %}
 {% block custom-head %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static  "css/index.css" %} ">
-<link rel="stylesheet" type="text/css" href="{% static  "css/alert.css" %} ">
+<link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/index.css" %} ">
+<link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/alert.css" %} ">
 
-    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'infectiousDisease/js/index.js' %}"></script>
 {% endblock %}
 {% block content %}
 <div class="inner intro">
 
     <div class="input-area">
-        <b class="statement">To systematically assess the structure based model properties:</b>
+        <p class="statement"><strong>The following steps are to submit your job and profile your own compounds with anti-mtb phenotypic activity or anti-malaria phenotypic activity.</strong></p>
         <p class="statement">1.	Please paste your SMILES list, Drug Name list or upload a file here. <a href="{% static "file/example.csv" %}" target="_blank" style="text-decoration: underline;color:blue"><span>(example)</span></a>
 Each query can handle 100 compounds at most.</p>
-        <form  enctype="multipart/form-data" action="service/prediction/submit/" method="post" name="dataForm"
+        <form  enctype="multipart/form-data" action="{% url 'infectiousDisease_submit' %}" method="post" name="dataForm"
             onsubmit="return checkAllInput()">
             {% csrf_token %}
             {{ inputForm.inputType }}
@@ -27,35 +27,35 @@ Each query can handle 100 compounds at most.</p>
                            document.getElementById('inputFileName').innerText='Select input file(*.csv,*.xls, *.xlsx)';">
                 <div class="upload" id="clear_div">Clear</div>
             </div>
-            <p class="statement">2. Select 1 or more property category listed below.</p>
-                {{ inputForm.modelTypes }}
-            <div id="pdbFileDiv">
-            <p class="statement">3. Please upload a pdb file here.</p>
-                <div class="button-area">
-                    {{ inputForm.pdbFileType }}
-                    {{ inputForm.uploadPDBFile }}
-                    <div class="upload" id="pdbFileName">Select PDB file</div>
-                </div>
-                <div id="pdbXYZ" style="display: none">
-                    <a>x</a>
-                    {{ inputForm.cx }}
-                    <a>y</a>
-                    {{ inputForm.cy }}
-                    <a>z</a>
-                    {{ inputForm.cz }}
-                </div>
-            </div>
-            <p class="statement">4. Select the output report type.</p>
+            <p class="statement">2. Select 1 or more model listed below.</p>
+            {{ inputForm.modelTypes }}
+            <p class="statement">3. Select the output report type.</p>
             {{ inputForm.outputType }}
             <input type="submit" value="submit"/>
         </form>
     </div>
 
     <div class="title">Model Documentation</div>
-    <h3>Structure based (none-docking) AI model</h3>
-    <p class="doc">The structure-based AI model was constructed based on GHDDI’s in-house developed HAG-net. The model is universal for all targets with 3D structures. The model was evaluated using the DUD.E benchmark set with an average AUC of 0.99; after removal of computer generated decoys, the model showed an average AUC of 0.945. The performance is based on 2 million protein-ligand interactions of over 185 protein targets. Given a target 3D structure, preferably the binding pocket with a radius of 15 Å, and screening library SMILES list as input, we are able to screen 14 million compounds per day on a single GPU, saving over 1000 times of computational cost compared to traditional docking tools. The model output is a probability distribution between 0 and 1 where a predicted value closer to 1 predicts a greater probability of docking.</p>
-
+    <p class="doc">GHDDI Internal Infectious Disease Service is open internal to GHDDIers. This service will continuously open the AI models involving global health, e.g. mtb and malaria.</p>
+    <p class="doc"> Currently, 3 models are online including TB18K_10uM, TB13K_1uM and Malaria16K_nochiral. Details about their training sets and 5-fold cross validation performance are illustrated below.
+        Other version of AI models for mtb and malaria will be updated and maintained regularly.
+    </p>
+    <p class="doc">TB18K_10uM: The training set is obtained from Thomas’s work published in 2018 [1]. 10uM is used as cutoff for mtb activity.</p>
+    <p class="doc">TB13K_1uM: *This training set is prepared using <=1uM as positive and >10uM as negative. As the mtb phenotype activity has initial assay error range, data from 1uM to 10uM is removed from the training set, which improves the performance.</p>
+    <p class="doc">Malaria16K_nochiral: Malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active.</p>
+    <p class="doc">The AI models were constructed using the most-up-to-data GHDDI’s internal HAG-Net method [3] with the best performance algorithm version 4v4 set with cfg2 hyper-parameter configuration. AuPR is the area under the precision and recall curve, which balances both measurements. Thus, AuPR is calculated to measure the AI model performance during 5-fold cross validation and used as the measurement to choose the best models in this service.</p>
     {% load static %}
-    <img class="" src="{% static "imgs/structure_based_index.png" %}" width="100%">
+    <img class="" src="{% static "infectiousDisease/imgs/statement1.png" %}" width="100%">
+    <p>[1] Comparing and validating machine learning models for Mycobacterium tuberculosis drug discovery. Molecular pharmaceutics, 2018, 15(10): 4346-4360.
+    <br>[2] Diversity-oriented synthesis yields novel multistage antimalarial inhibitors. Nature, 2016, 538(7625):344-349.
+    <br>[3] Enhance Information Propagation for Graph Neural Network by Heterogeneous Aggregations. arXiv:2102.04064,2021.</p>
+
+    <b>Other function:</b>
+    <p>AI Virtual Screening Service for COVID19 (http://aidd.ghddi.org/covid19/)
+        <br>Anti-virus Spectrum Prediction (http://aidd.ghddi.org/covid19/service/prediction/network/ )
+        <br>Structure based Prediction Service (http://aidd.ghddi.org/sbvs/ )
+        <br>ADMET Prediction Service (http://aidd.ghddi.org/admet/ )
+        <br>Human target fishing (under construction)
+        <br>Mtb target fishing (under construction)</p>
 </div>
 {% endblock %}

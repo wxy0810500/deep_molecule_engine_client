@@ -1,7 +1,6 @@
 from infectiousDisease.thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from infectiousDisease.config import *
 from utils.timeUtils import sleepWithSwitchInterval
 from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException

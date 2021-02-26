@@ -1,6 +1,7 @@
 from prediction.predictionTask import processTasks, PredictionTaskRet
 from prediction.config import PREDICTION_TASK_TYPE_LBVS, PREDICTION_METRIC_TYPE_AUPR
 from .forms import InfectiousDiseaseInputForm
+from prediction.service import getCleanedSmilesInfoListFromInputForm
 from typing import Sequence, List, Dict
 from .modelConfig import MODEL_METRIC_PORT_DICT
 
@@ -13,7 +14,7 @@ def doPrediction(modelTypes: Sequence, metric: str, smilesInfoList: List) \
 
 
 def processInfectiousDisease(request, inputForm: InfectiousDiseaseInputForm):
-    smilesInfoList, invalidInputList = inputForm.getCleanedSmilesInfoListFromInputForm(request)
+    smilesInfoList, invalidInputList = getCleanedSmilesInfoListFromInputForm(inputForm, request)
     if smilesInfoList:
         modelTypes = inputForm.cleaned_data['modelTypes']
         # inputMetric = inputForm.cleaned_data['metric']

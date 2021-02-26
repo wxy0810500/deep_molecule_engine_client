@@ -49,8 +49,7 @@ ul#id_pdbFileType {
 }
 .statement {
     padding-left: 1vw;
-    line-height: 2.5vh;
-    font-weight: bold;
+    /*line-height: 2.5vh;*/
 }
 .input-area input[type="submit"] {
     height: 7vh;
@@ -178,10 +177,10 @@ textarea:focus {
 .intro h4 {
     margin: 4vh 0 2vh 0 ;
 }
-.intro img {
-    width: 80%;
-    margin: 0 10% 8vh;
-}
+/*.intro img {*/
+/*    width: 80%;*/
+/*    margin: 0 10% 8vh;*/
+/*}*/
 .doc {
     text-indent: 3vw;
     font-size: 3vmin;

@@ -18,7 +18,7 @@ from django.contrib import admin
 from . import views
 from django.urls import path, include
 
-BASE_URL = r'infectiousDisease/'
+BASE_URL = r'infectious_disease/'
 
 urlpatterns = [
     path(BASE_URL, include([

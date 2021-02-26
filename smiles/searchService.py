@@ -1,11 +1,11 @@
 import pandas as pd
 import os
-from prediction.forms import CommonInputForm
 from .cleanSmiles import cleanSmilesListSimply
 from typing import List, Tuple, Set
 import numpy as np
 from utils.fileUtils import getInputDataSetFromUploadedExcel
 from deep_engine_client.exception import CommonException
+from prediction.forms import CommonInputForm
 
 DB_FILE_BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db')
 # [drug_name,DrugBank ID,CID,smiles,canonical_smiles,cleaned_smiles,scaffolds]
