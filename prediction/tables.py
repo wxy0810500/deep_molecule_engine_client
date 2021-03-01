@@ -35,10 +35,10 @@ class PredictionResultTable(tables.Table):
 
 
 class PredictionResultSmilesInfoTable(tables.Table):
-    columns = ['Input(name|smiles)', 'DrugName', 'Cleaned smiles']
+    columns = ['Input(name|smiles)', 'Drug Name', 'Cleaned SMILES']
     input = tables.Column(orderable=False, verbose_name="Input(name|smiles)")
-    drug_name = tables.Column(orderable=False, verbose_name="DrugName")
-    cleaned_smiles = tables.Column(verbose_name="Cleaned smiles", orderable=False, attrs={
+    drug_name = tables.Column(orderable=False, verbose_name="Drug Name")
+    cleaned_smiles = tables.Column(verbose_name="Cleaned SMILES", orderable=False, attrs={
         "th": {
             "class": "c-cs"
         },

@@ -11,7 +11,7 @@
                         <canvas id="smiles-canvas-{{ forloop.counter }}"></canvas>
                         <div class="smiles-radar" id="smiles-radar-{{ forloop.counter }}"></div>
                         <div class="druglike-score">
-							<span class="tooltip tooltip--left" data-tooltip="Drug-like score = avg(Score(A)+Score(D)+Score(M)+Score(E)+Score(T))">Druglike Score = {{ retUnit.druglikeScore }}</span>
+							<span class="tooltip tooltip--left" data-tooltip="ADMET Druglike Score = avg(Score(A)+Score(D)+Score(M)+Score(E)+Score(T))">ADMET Druglike Score = {{ retUnit.druglikeScore }}</span>
 						</div>
                         <script>
                             drawRadarAndSmiles("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}",
