@@ -9,7 +9,14 @@ class PredictionResultTable(tables.Table):
     # def render_counter(self):
     #     self.row_counter = getattr(self, 'row_counter', itertools.count())
     #     return next(self.row_counter)
-
+    modelName = tables.Column(orderable=False, verbose_name="Model Name", attrs={
+        "th": {
+            "class": "modelName_th"
+        },
+        "td": {
+            "class": "modelName_td"
+        }
+    })
     score = tables.Column(orderable=False, verbose_name="Score", attrs={
         "th": {
             "class": "c-score"
