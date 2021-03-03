@@ -11,7 +11,7 @@
 
     <div class="input-area">
         <p class="statement"><strong>The following steps are to submit your job and profile your own compounds with anti-mtb phenotypic activity or anti-malaria phenotypic activity.</strong></p>
-        <p class="statement">1.	Please paste your SMILES list, Drug Name list or upload a file here. <a href="{% static "file/example.csv" %}" target="_blank" style="text-decoration: underline;color:blue"><span>(example)</span></a>
+        <p class="statement">1.	Please paste your SMILES list, Drug Name list or upload a file here. <a href="{% static "file/example.csv" %}" target="_blank"><span>(example)</span></a>
 Each query can handle 100 compounds at most.</p>
         <form  enctype="multipart/form-data" action="{% url 'infectiousDisease_submit' %}" method="post" name="dataForm"
             onsubmit="return checkAllInput()">
