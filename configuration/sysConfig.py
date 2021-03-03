@@ -65,7 +65,7 @@ def getModelPortCfg():
 cmd = os.environ.get('RUNTIME_COMMAND')
 if cmd and cmd == 'runserver':
     PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
-    AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
+    AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORYS_IN_RADAR)
     with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as f:
         for line in f.readlines():
             rawData: list = line.strip().split(',')

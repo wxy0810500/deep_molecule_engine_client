@@ -13,18 +13,18 @@ class PredictionResultTable(tables.Table):
 
     score = tables.Column(orderable=False, verbose_name="probability", attrs={
         "th": {
-            "class": "score_th"
+            "class": "probability_th"
         },
         "td": {
-            "class": "score_td"
+            "class": "probability_td"
         }
     })
     scoreForAve = tables.Column(orderable=False, verbose_name="drug-like score contribution", attrs={
         "th": {
-            "class": "score_th"
+            "class": "drug_like_score_th"
         },
         "td": {
-            "class": "score_td"
+            "class": "drug_like_score_td"
         }
     })
 

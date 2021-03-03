@@ -103,12 +103,12 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                         print(f'{category}_{modelType}')
                 # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
                 retDict[smilesIndex][category].append({
-                    "model": modelType if aveOperatedScore != 0 else f"{modelType} *",
+                    "model": modelType,
                     "score": "%.4f" % preRetUnit.score,
                     "scoreForAve":
                         float('%.4f' % (
                             aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore))
-                        if aveOperatedScore != 0 else ""
+                        if aveOperatedScore != 0 else None
                 })
 
     # [
