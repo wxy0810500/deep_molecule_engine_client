@@ -43,7 +43,7 @@ Each query can handle 100 compounds at most.</p>
     <p class="doc">TB18K_10uM: The training set is obtained from Thomas’s work published in 2018 [1]. 10uM is used as cutoff for mtb activity.</p>
     <p class="doc">TB13K_1uM: *This training set is prepared using <=1uM as positive and >10uM as negative. As the mtb phenotype activity has initial assay error range, data from 1uM to 10uM is removed from the training set, which improves the performance.</p>
     <p class="doc">Malaria16K_nochiral: Malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active.</p>
-    <p class="doc">The AI models were constructed using the most-up-to-data GHDDI’s internal HAG-Net method [3] with the best performance algorithm version 4v4 set with cfg2 hyper-parameter configuration. AuPR is the area under the precision and recall curve, which balances both measurements. Thus, AuPR is calculated to measure the AI model performance during 5-fold cross validation and used as the measurement to choose the best models in this service.</p>
+    <p class="doc">The AI models were constructed using the most-up-to-date GHDDI’s internal HAG-Net method [3] with the best performance algorithm version 4v4 set with cfg2 hyper-parameter configuration. AuPR is the area under the precision and recall curve, which balances both measurements. Thus, AuPR is calculated to measure the AI model performance during 5-fold cross validation and used as the measurement to choose the best models in this service.</p>
     {% load static %}
     <img class="" src="{% static "imgs/statement1.png" %}" width="100%">
     <p>[1] Comparing and validating machine learning models for Mycobacterium tuberculosis drug discovery. Molecular pharmaceutics, 2018, 15(10): 4346-4360.
@@ -51,10 +51,10 @@ Each query can handle 100 compounds at most.</p>
     <br>[3] Enhance Information Propagation for Graph Neural Network by Heterogeneous Aggregations. arXiv:2102.04064,2021.</p>
 
     <b>Other function:</b>
-    <p>AI Virtual Screening Service for COVID19 (http://aidd.ghddi.org/covid19/)
-        <br>Anti-virus Spectrum Prediction (http://aidd.ghddi.org/covid19/service/prediction/network/ )
-        <br>Structure based Prediction Service (http://aidd.ghddi.org/sbvs/ )
-        <br>ADMET Prediction Service (http://aidd.ghddi.org/admet/ )
+    <p><a href="http://aidd.ghddi.org/covid19/">AI Virtual Screening Service for COVID19</a>
+        <br><a href="http://aidd.ghddi.org/covid19/service/prediction/network/">Anti-virus Spectrum Prediction</a>
+        <br><a href="http://aidd.ghddi.org/sbvs/">Structure based Prediction Service</a>
+        <br><a href="http://aidd.ghddi.org/admet/ ">ADMET Prediction Service</a>
         <br>Human target fishing (under construction)
         <br>Mtb target fishing (under construction)</p>
 </div>
