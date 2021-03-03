@@ -132,6 +132,10 @@ body a {
   text-decoration: underline;
   color: inherit;
 }
+
+.top a {
+    text-decoration: none;
+}
 /*清楚浮动*/
 .clearfix {
   zoom: 1
