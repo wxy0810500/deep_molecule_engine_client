@@ -65,6 +65,23 @@ ul#id_pdbFileType {
     font-size: 3vmin;
     margin: 3vh 1vw 0;
 }
+/* alert-box */
+.alert-box{
+    text-align: center;
+    border: 1px solid #eee;
+    width: 400px;
+    height: 130px;
+    border-radius: 5px;
+    box-shadow: 5px 5px 10px #ccc;
+    position: absolute;
+    z-index: 99999;
+    top: 100%;
+    left: calc(50% - 200px);
+    background-color: white;
+}
+
+.btn-area{border-top: 1px solid #eee; padding: 15px;}
+input[type="button"]{width: 65px; height: 35px;}
 div.button-area {
     margin: 3vh 0;
     padding-left: 1vw;
