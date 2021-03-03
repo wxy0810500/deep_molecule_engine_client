@@ -133,9 +133,9 @@ STATIC_URL = '/static/'
 
 # 其它 存放静态文件的文件夹，可以用来存放项目中公用的静态文件，里面不能包含 STATIC_ROOT
 # 如果不想用 STATICFILES_DIRS 可以不用，都放在 app 里的 common_static 中也可以
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "common_static"),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "common_static"),
+# )
 
 
 # # frontend configuration
