@@ -1,18 +1,18 @@
 {% extends 'publicTopAndFooter.html' %}
 {% block custom-head %}
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/result.css" %} ">
-    <link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/blueTable.css" %} ">
-    <script src="{% static 'infectiousDisease/js/echarts.min.js' %}"></script>
-    <script src="{% static 'infectiousDisease/js/smiles-drawer.min.js' %}"></script>
-    <script src="{% static 'infectiousDisease/js/result.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static  "css/result.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
+    <script src="{% static 'js/result.js' %}"></script>
 {% endblock %}
 {% block content %}
 <div class="shadow">
   <div class="content">
     <button class="return">
         <a href="{{ backURL }}">
-            <img class="" src="{% static "infectiousDisease/imgs/arrow_back.svg" %}">&emsp;Back
+            <img class="" src="{% static "imgs/arrow_back.svg" %}">&emsp;Back
         </a>
     </button>
     {% block retTables %}
@@ -23,7 +23,7 @@
 {% block footer-content %}
 <button class="return">
     <a href="{{ backURL }}">
-        <img class="" src="{% static "infectiousDisease/imgs/arrow_back.svg" %}" width="">&emsp;Back
+        <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
     </a>
 </button>
 {% endblock %}

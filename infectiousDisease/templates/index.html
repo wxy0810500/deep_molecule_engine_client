@@ -1,10 +1,10 @@
 {% extends "publicTopAndFooter.html" %}
 {% block custom-head %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/index.css" %} ">
-<link rel="stylesheet" type="text/css" href="{% static  "infectiousDisease/css/alert.css" %} ">
+<link rel="stylesheet" type="text/css" href="{% static  "css/index.css" %} ">
+<link rel="stylesheet" type="text/css" href="{% static  "css/alert.css" %} ">
 
-    <script src="{% static 'infectiousDisease/js/index.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}
 {% block content %}
 <div class="inner intro">
@@ -45,7 +45,7 @@ Each query can handle 100 compounds at most.</p>
     <p class="doc">Malaria16K_nochiral: Malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active.</p>
     <p class="doc">The AI models were constructed using the most-up-to-data GHDDI’s internal HAG-Net method [3] with the best performance algorithm version 4v4 set with cfg2 hyper-parameter configuration. AuPR is the area under the precision and recall curve, which balances both measurements. Thus, AuPR is calculated to measure the AI model performance during 5-fold cross validation and used as the measurement to choose the best models in this service.</p>
     {% load static %}
-    <img class="" src="{% static "infectiousDisease/imgs/statement1.png" %}" width="100%">
+    <img class="" src="{% static "imgs/statement1.png" %}" width="100%">
     <p>[1] Comparing and validating machine learning models for Mycobacterium tuberculosis drug discovery. Molecular pharmaceutics, 2018, 15(10): 4346-4360.
     <br>[2] Diversity-oriented synthesis yields novel multistage antimalarial inhibitors. Nature, 2016, 538(7625):344-349.
     <br>[3] Enhance Information Propagation for Graph Neural Network by Heterogeneous Aggregations. arXiv:2102.04064,2021.</p>
