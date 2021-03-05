@@ -39,6 +39,7 @@ Each query can handle 100 compounds at most.</p>
     <p class="doc"> Currently, 3 models are online including TB18K_10uM, TB13K_1uM and Malaria16K_nochiral. Details about their training sets and 5-fold cross validation performance are illustrated below.
         Other version of AI models for mtb and malaria will be updated and maintained regularly.
     </p>
+    <img src="{% static "imgs/statement2.jpg" %}" width="100%">
     <p class="doc">TB18K_10uM: The training set is obtained from Thomas’s work published in 2018 [1]. 10uM is used as cutoff for mtb activity.</p>
     <p class="doc">TB13K_1uM: *This training set is prepared using <=1uM as positive and >10uM as negative. As the mtb phenotype activity has initial assay error range, data from 1uM to 10uM is removed from the training set, which improves the performance.</p>
     <p class="doc">Malaria16K_nochiral: Malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active.</p>
