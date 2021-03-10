@@ -18,10 +18,15 @@ def generateModelPortCfgFile():
     modelNameField = 'uniprot_id'
     rawDF = pd.read_csv(os.path.join(BASE_DIR, "prediction/db/LBVS_size200_auroc50_reviewed.csv"))
     cfgDF = rawDF[[modelNameField, categoryField]].drop_duplicates()
+    cfgDF['value'] = 1
+    metricsDF = pd.DataFrame({"metrics": ['aupr'], "value": [1]})
+    cfgDF = pd.merge(cfgDF, metricsDF, how='left', on='value')
     cfgDF.reset_index(inplace=True, drop=True)
-    portDF = pd.DataFrame({"port": [str(i) for i in range(4500, 4500 + len(cfgDF.index), 1)]})
+    portDF = pd.DataFrame({"port": [str(i) for i in range(7300, 7300 + len(cfgDF.index), 1)]})
     cfgDF = cfgDF.join(portDF)
-    cfgDF.to_csv(os.path.join(BASE_DIR, "configuration/targetFishing_model_port.csv"), index=False, header=False)
+    cfgDF.reset_index(inplace=True, drop=True)
+    cfgDF.to_csv(os.path.join(BASE_DIR, "configuration/targetFishing_model_port.csv"),
+                 columns=[categoryField, 'metrics', modelNameField, 'port'], index=False, header=False)
 
 
 def getModelPortCfg():
@@ -29,20 +34,34 @@ def getModelPortCfg():
         csvReader = csv.reader(csvFile)
         modelCategoryDict = {}
         categoryModelDict = {}
-        cateAndModelPortDict = {}
+        cateMetricModelPortDict = {}
+        # init category dict
+        # {
+        #     category: {
+        #         metrics:{
+        #             model:port
+        #         }
+        #     }
+        # }
+
         for row in csvReader:
-            cate = row[1]
-            modelName = row[0]
-            port = row[2]
+            cate = row[0]
+            metric = row[1]
+            modelName = row[2]
+            port = int(row[3])
             modelCategoryDict[modelName] = cate
-            modelPortDict = cateAndModelPortDict.get(cate, None)
-            if modelPortDict is None:
-                cateAndModelPortDict[cate] = {}
+            metricModelPortDict = cateMetricModelPortDict.get(cate, None)
+            if metricModelPortDict is None:
+                metricModelPortDict = {}
+                cateMetricModelPortDict[cate] = metricModelPortDict
                 categoryModelDict[cate] = []
             categoryModelDict[cate].append(modelName)
-            cateAndModelPortDict[cate][modelName] = port
+            modelPortDict = metricModelPortDict.get(metric)
+            if modelPortDict is None:
+                cateMetricModelPortDict[cate][metric] = {}
+            cateMetricModelPortDict[cate][metric][modelName] = port
 
-    return cateAndModelPortDict, modelCategoryDict, categoryModelDict
+    return cateMetricModelPortDict, modelCategoryDict, categoryModelDict
 
     # def getModelPortCfg():
 
@@ -67,10 +86,10 @@ def getModelPortCfg():
 #         raise CommonException("can not get model_port configuration!")
 
 
-# cmd = os.environ.get('RUNTIME_COMMAND')
-# if cmd and cmd == 'runserver':
-PREDICTION_CATE_AND_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT \
-    = getModelPortCfg()
+cmd = os.environ.get('RUNTIME_COMMAND')
+if cmd and cmd == 'runserver':
+    PREDICTION_CATE_METRIC_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT \
+        = getModelPortCfg()
 # AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
 # with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as f:
 #     for line in f.readlines():
@@ -83,6 +102,6 @@ PREDICTION_CATE_AND_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_
 # else:
 #     PREDICTION_CATE_AND_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
 #     # AverageOperation_IN_RADAR_DICT = None
-
+#
 if __name__ == '__main__':
-    print(getModelPortCfg())
+    generateModelPortCfgFile()

@@ -1,5 +1,20 @@
-   {% extends "resultPublic.html" %}
-    {% block retTables %}
+{% extends 'publicTopAndFooter.html' %}
+{% block custom-header %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static  "css/result.css" %} ">
+    <link rel="stylesheet" type="text/css" href="{% static  "css/blueTable.css" %} ">
+    <script src="{%  static 'js/echarts.min.js' %}"></script>
+    <script src="{% static 'js/smiles-drawer.min.js' %}"></script>
+    <script src="{% static 'js/result.js' %}"></script>
+{% endblock %}
+{% block content %}
+<div class="shadow">
+  <div class="content">
+    <button class="return">
+        <a href="{{ backURL }}">
+            <img class="" src="{% static "imgs/arrow_back.svg" %}">&emsp;Back
+        </a>
+    </button>
         {% if preRetTables is not None %}
             {% load django_tables2 %}
             {% for retUnit in preRetTables %}
@@ -30,4 +45,13 @@
             {% render_table invalidInputTable %}
             </div>
         {% endif %}
-    {% endblock %}
+  </div>
+</div>
+{% endblock %}
+{% block footer-content %}
+<button class="return">
+    <a href="{{ backURL }}">
+        <img class="" src="{% static "imgs/arrow_back.svg" %}" width="">&emsp;Back
+    </a>
+</button>
+{% endblock %}

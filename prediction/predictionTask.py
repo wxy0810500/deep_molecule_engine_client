@@ -1,7 +1,7 @@
 from .thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_CATE_AND_MODEL_PORT_DICT
+from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_CATE_METRIC_MODEL_PORT_DICT
 from utils.timeUtils import sleepWithSwitchInterval
 from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException
@@ -10,7 +10,7 @@ from .taskManager import getProcessPool
 default_dme_server_host = PREDICTION_HOST
 default_dme_conn_timeout = SYSTEM_CONFIG_DICT.get("timeout")
 
-TFModelAndPortDict = PREDICTION_CATE_AND_MODEL_PORT_DICT
+TFModelAndPortDict = PREDICTION_CATE_METRIC_MODEL_PORT_DICT
 PREDICTION_TASK_TYPE_LBVS = "LBVS"
 PREDICTION_TYPE_TF = "targetFishing"
 
@@ -62,12 +62,13 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def processTasks(cateAndModelPortDict: Dict, categorys: Sequence, smilesInfoList, taskType, aux_data=None) \
+def processTasks(cateMetricModelPortDict: Dict, categorys: Sequence, metric: str, smilesInfoList, taskType, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
     """
 
 
-    @param cateAndModelPortDict:
+    @param metric:
+    @param cateMetricModelPortDict:
     @param categorys:
     @param smilesInfoList:
     @param taskType:
@@ -81,9 +82,11 @@ def processTasks(cateAndModelPortDict: Dict, categorys: Sequence, smilesInfoList
         raise PredictionCommonException('We will support these model types as soon as possible!')
     modelPortDict = {}
     for category in categorys:
-        data = cateAndModelPortDict.get(category, None)
-        if data is not None:
-            modelPortDict.update(data)
+        metricData = cateMetricModelPortDict.get(category, None)
+        if metricData is not None:
+            data = metricData.get(metric, None)
+            if data is not None:
+                modelPortDict.update(data)
     if len(modelPortDict) == 0:
         raise PredictionCommonException('We will support these model types as soon as possible!')
     retList = []
@@ -197,5 +200,5 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     return task_time, server_info, retUnitList, againDict
 
 
-def predictTF(categorys: Sequence, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(TFModelAndPortDict, categorys, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)
+def predictTF(categorys: Sequence, metric: str, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
+    return processTasks(TFModelAndPortDict, categorys, metric, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)

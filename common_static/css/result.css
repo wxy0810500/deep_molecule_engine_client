@@ -90,12 +90,9 @@ div.category-content {
   color: #FFFFFF;
 }
 
-table.score thead{
-    display:none;
-}
 
 table.score th, table.score td {
-    width: 50%;
+    width: 33%;
     text-align: left;
 }
 

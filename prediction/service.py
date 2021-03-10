@@ -19,7 +19,8 @@ def processTF(request, inputForm: TFModelInputForm):
     smilesInfoList, invalidInputList = _getCleanedSmilesInfoListFromInputForm(request, inputForm)
     if smilesInfoList:
         inputCategorys = inputForm.cleaned_data['categorys']
-        preRet, smilesDict = predictTF(inputCategorys, smilesInfoList)
+        metric = "aupr"
+        preRet, smilesDict = predictTF(inputCategorys, metric, smilesInfoList)
     else:
         inputCategorys, smilesDict, preRet = None, None, None
     return preRet, invalidInputList, inputCategorys, smilesDict

@@ -81,6 +81,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
     #         ]
     #     }
     # }
+    # 返回页面：所有预测结果按照score排序，
     retDict = dict((smilesIndex, dict((category, []) for category in inputCategorys))
                    for smilesIndex in smilesDict.keys())
     for preRet in preRetList:
@@ -159,7 +160,7 @@ def predict(request):
         # just for network based
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
-        return render(request, "preResult.html", retDict)
+        return render(request, "result.html", retDict)
     else:
         retBook = __formatRetExcelBook(preRet, invalidInputList)
         return make_response(retBook, file_type='csv',
