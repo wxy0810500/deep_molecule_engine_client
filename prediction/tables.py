@@ -10,14 +10,14 @@ class PredictionResultTable(tables.Table):
             "class": "model_td"
         }
     })
-    category = tables.Column(orderable=False, verbose_name="Category", attrs={
-        "th": {
-            "class": "category_th"
-        },
-        "td": {
-            "class": "category_td"
-        }
-    })
+    # category = tables.Column(orderable=False, verbose_name="Category", attrs={
+    #     "th": {
+    #         "class": "category_th"
+    #     },
+    #     "td": {
+    #         "class": "category_td"
+    #     }
+    # })
 
     score = tables.Column(orderable=False, verbose_name="Score", attrs={
         "th": {
@@ -38,7 +38,7 @@ class PredictionResultTable(tables.Table):
 
     class Meta:
         attrs = {
-            "class": "blueTable"
+            "class": "blueTable score"
         }
 
 

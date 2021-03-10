@@ -103,5 +103,5 @@ if cmd and cmd == 'runserver':
 #     PREDICTION_CATE_AND_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
 #     # AverageOperation_IN_RADAR_DICT = None
 #
-if __name__ == '__main__':
-    generateModelPortCfgFile()
+# if __name__ == '__main__':
+#     generateModelPortCfgFile()
