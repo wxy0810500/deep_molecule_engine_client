@@ -105,3 +105,25 @@ function resizeRadar() {
 }
 
 window.addEventListener('resize', resizeRadar)
+
+function addHelpTools() {
+    // probability
+    let THEleList = document.getElementsByClassName("probability_th")
+    for (let THEle of THEleList) {
+        let div = document.createElement("div")
+        div.className="help-tip"
+        let p = document.createElement("p")
+        p.innerText = "For each ADMET property, positive, toxic, or active compounds were labeled 1, while negative, nontoxic, or inactive ones were labeled 0. Probability is the predicted score for class 1."
+        div.appendChild(p)
+        THEle.appendChild(div)
+    }
+    THEleList = document.getElementsByClassName("drug_like_score_th")
+    for (let THEle of THEleList) {
+        let div = document.createElement("div")
+        div.className="help-tip"
+        let p = document.createElement("p")
+        p.innerText = "Considering the drug likeness contribution, the ADMET models were divided into 3 class, positive contribution, negative contribution and uncertain contribution (shown as“-”). For example, HIA is a positive contribution property with predicted probability as drug-like contribution score. CYP inhibition is a negative contribution property with predicted probability shifted (1-probability). BBB is an uncertain contribution property according to drug class. For nervous system drugs, passing BBB is good to having efficacy, while passing BBB for other system drugs may induce side effects."
+        div.appendChild(p)
+        THEle.appendChild(div)
+    }
+}

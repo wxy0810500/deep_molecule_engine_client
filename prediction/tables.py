@@ -11,22 +11,24 @@ class PredictionResultTable(tables.Table):
         }
     })
 
-    score = tables.Column(orderable=False, verbose_name="probability", attrs={
-        "th": {
-            "class": "probability_th"
-        },
-        "td": {
-            "class": "probability_td"
-        }
-    })
-    scoreForAve = tables.Column(orderable=False, verbose_name="drug-like score contribution", attrs={
-        "th": {
-            "class": "drug_like_score_th"
-        },
-        "td": {
-            "class": "drug_like_score_td"
-        }
-    })
+    score = tables.Column(orderable=False, verbose_name="probability",
+                          attrs={
+                              "th": {
+                                  "class": "probability_th"
+                              },
+                              "td": {
+                                  "class": "probability_td"
+                              }
+                          })
+    scoreForAve = tables.Column(orderable=False, verbose_name="drug-like score contribution",
+                                attrs={
+                                    "th": {
+                                        "class": "drug_like_score_th"
+                                    },
+                                    "td": {
+                                        "class": "drug_like_score_td"
+                                    }
+                                })
 
     class Meta:
         attrs = {
@@ -51,5 +53,3 @@ class PredictionResultSmilesInfoTable(tables.Table):
         attrs = {
             "class": "blueTable smiles-info"
         }
-
-

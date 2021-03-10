@@ -130,7 +130,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             if resultsOfCategory is not None:
                 # 雷达图上数值，用1-score之后再求平均值
                 aveScore = np.mean(
-                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') != ""]
+                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
                 )
                 aveScore = float('%.4f' % aveScore)
             else:
