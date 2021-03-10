@@ -90,6 +90,9 @@ cmd = os.environ.get('RUNTIME_COMMAND')
 if cmd and cmd == 'runserver':
     PREDICTION_CATE_METRIC_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT \
         = getModelPortCfg()
+else:
+    PREDICTION_CATE_METRIC_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = \
+        None, None, None
 # AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORY_NAME_DICT.keys())
 # with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as f:
 #     for line in f.readlines():
@@ -99,8 +102,7 @@ if cmd and cmd == 'runserver':
 #         model = category_model[1]
 #         operation = int(rawData[1])
 #         AverageOperation_IN_RADAR_DICT[category][model] = operation
-# else:
-#     PREDICTION_CATE_AND_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
+
 #     # AverageOperation_IN_RADAR_DICT = None
 #
 # if __name__ == '__main__':
