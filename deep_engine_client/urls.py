@@ -18,7 +18,7 @@ from deep_engine_client import views
 from django.urls import path, include
 import prediction.dashbroad.lbvs
 
-BASE_URL = r'targetfishing/'
+BASE_URL = r'target_fishing/'
 PREDICTION_BASE_URL = r'service/prediction/'
 urlpatterns = [
     path(BASE_URL, include([
