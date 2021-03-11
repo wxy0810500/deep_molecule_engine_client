@@ -95,7 +95,7 @@ if cmd and cmd == 'runserver':
     MODEL_INFO_DICT = getModelInfo()
 else:
     PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
-    AverageOperation_IN_RADAR_DICT, MODEL_INFO_DICT = None
+    AverageOperation_IN_RADAR_DICT, MODEL_INFO_DICT = None, None
 #
 # if __name__ == '__main__':
 #     print(PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT)
