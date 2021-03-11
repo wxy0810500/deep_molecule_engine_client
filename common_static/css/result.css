@@ -97,7 +97,7 @@ div.category-content {
 
 table.score th, table.score td {
     width: 25%;
-    /*text-align: left;*/
+    text-align: left;
 }
 
 table.smiles-info th, table.smiles-info td {
@@ -250,7 +250,7 @@ div.smiles-radar {
 	line-height: 1.4;
 }
 .probability_th .help-tip p {
-    right: 38.7vw;
+    right: 33.1vw;
 }
 
 .drug_like_score_th .help-tip p {

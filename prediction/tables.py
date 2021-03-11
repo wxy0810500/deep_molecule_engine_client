@@ -10,7 +10,14 @@ class PredictionResultTable(tables.Table):
             "class": "model_td"
         }
     })
-
+    fullModelName = tables.Column(orderable=False, verbose_name="name", attrs={
+        "th": {
+            "class": "fullModelName_th"
+        },
+        "td": {
+            "class": "fullModelName_td"
+        }
+    })
     score = tables.Column(orderable=False, verbose_name="probability",
                           attrs={
                               "th": {
