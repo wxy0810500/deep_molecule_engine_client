@@ -16,6 +16,10 @@ print(f"DME_EMV : {env}")
 if env == 'prod':
     from .prod import *
     RUNTIME_ENV = 'prod'
+elif env == 'prod_test':
+    from .prod_test import *
+
+    RUNTIME_ENV = 'prod'
 else:
     from .local_test import *
     RUNTIME_ENV = 'test'
