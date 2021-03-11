@@ -12,7 +12,7 @@ from deep_engine_client.tables import InvalidInputsTable
 from .forms import *
 from .predictionTask import PredictionTaskRet
 from configuration.sysConfig import PREDICTION_CATEGORY_NAME_DICT, PREDICTION_MODEL_CATEGORY_DICT, \
-    PREDICTION_CATEGORYS_IN_RADAR, AverageOperation_IN_RADAR_DICT
+    PREDICTION_CATEGORYS_IN_RADAR, AverageOperation_IN_RADAR_DICT, MODEL_INFO_DICT
 from .service import processADMET
 from .tables import *
 import numpy as np
@@ -102,14 +102,16 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                     else:
                         print(f'{category}_{modelType}')
                 # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
-                retDict[smilesIndex][category].append({
+                retTable: dict = {
                     "model": modelType,
                     "score": "%.4f" % preRetUnit.score,
                     "scoreForAve":
                         float('%.4f' % (
                             aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore))
                         if aveOperatedScore != 0 else None
-                })
+                }
+                retTable.update(MODEL_INFO_DICT.get(modelType))
+                retDict[smilesIndex][category].append(retTable)
 
     # [
     #     {
@@ -146,7 +148,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
                 "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category),
-                                PredictionResultTable(sorted(result, key=lambda x: x.get("model"))))
+                                PredictionResultTable(sorted(result, key=lambda x: x.get("index"))))
                                for category, result in results.items()),
                 "radarData": json.dumps(aveScoreDict),
                 "druglikeScore": "%.4f" % np.mean([s for s in aveScoreDict.values() if s > 0])

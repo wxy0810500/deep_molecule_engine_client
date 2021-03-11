@@ -96,7 +96,7 @@ div.category-content {
 /*}*/
 
 table.score th, table.score td {
-    width: 25%;
+    /*width: 20%;*/
     text-align: left;
 }
 
@@ -250,7 +250,7 @@ div.smiles-radar {
 	line-height: 1.4;
 }
 .probability_th .help-tip p {
-    right: 33.1vw;
+    right: 33.8vw;
 }
 
 .drug_like_score_th .help-tip p {
@@ -275,4 +275,12 @@ div.smiles-radar {
 	position: absolute;
 	top:-40px;
 	left:0;
+}
+
+th.probability_th, td.probability_td {
+    width: 15%;
+}
+
+th.drug_like_score_th, .td.drug_like_score_td {
+    width: 26%;
 }

@@ -30,6 +30,19 @@ PREDICTION_METRICS_NAME_DICT = {"aupr": "AuPR",
                                 # "r": 'Recall'}
 
 
+def getModelInfo():
+    resultDict = {}
+    with open(os.path.join(CUSTOM_CONFIG_URL, 'ADMET_model_info.csv'), 'r') as mf:
+        for line in mf.readlines():
+            rawData: list = line.strip().split(',')
+            resultDict[rawData[1]] = {
+                "index": int(rawData[0]),
+                "modelName": rawData[2],
+                "cutoff": rawData[3]
+            }
+    return resultDict
+
+
 def getModelPortCfg():
     # get file from remote prediction-server by http
     response = requests.get(f'http://{PREDICTION_HOST}:{PREDICTION_CFG_PORT}/admet_model_port.csv')
@@ -62,21 +75,27 @@ def getModelPortCfg():
         raise CommonException("can not get model_port configuration!")
 
 
-cmd = os.environ.get('RUNTIME_COMMAND')
-if cmd and cmd == 'runserver':
-    PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
-    AverageOperation_IN_RADAR_DICT = dict((cate, {}) for cate in PREDICTION_CATEGORYS_IN_RADAR)
-    with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as f:
-        for line in f.readlines():
+def getOperationForDruglikeScore():
+    resultDict = dict((cate, {}) for cate in PREDICTION_CATEGORYS_IN_RADAR)
+    with open(os.path.join(CUSTOM_CONFIG_URL, 'average_operation_in_radar.csv'), 'r') as sf:
+        for line in sf.readlines():
             rawData: list = line.strip().split(',')
             category_model: list = rawData[0].split('_')
             category = category_model[0]
             model = category_model[1]
             operation = int(rawData[1])
-            AverageOperation_IN_RADAR_DICT[category][model] = operation
+            resultDict[category][model] = operation
+    return resultDict
+
+
+cmd = os.environ.get('RUNTIME_COMMAND')
+if cmd and cmd == 'runserver':
+    PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = getModelPortCfg()
+    AverageOperation_IN_RADAR_DICT = getOperationForDruglikeScore()
+    MODEL_INFO_DICT = getModelInfo()
 else:
     PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT, PREDICTION_CATEGORY_MODEL_DICT = None, None, None
-    AverageOperation_IN_RADAR_DICT = None
+    AverageOperation_IN_RADAR_DICT, MODEL_INFO_DICT = None
 #
 # if __name__ == '__main__':
 #     print(PREDICTION_MODEL_PORT_DICT, PREDICTION_MODEL_CATEGORY_DICT)

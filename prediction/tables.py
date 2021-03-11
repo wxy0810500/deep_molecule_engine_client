@@ -10,12 +10,20 @@ class PredictionResultTable(tables.Table):
             "class": "model_td"
         }
     })
-    fullModelName = tables.Column(orderable=False, verbose_name="name", attrs={
+    modelName = tables.Column(orderable=False, verbose_name="name", attrs={
         "th": {
-            "class": "fullModelName_th"
+            "class": "model_name_th"
         },
         "td": {
-            "class": "fullModelName_td"
+            "class": "model_name_td"
+        }
+    })
+    cutoff = tables.Column(orderable=False, verbose_name="cutoff", attrs={
+        "th": {
+            "class": "cutoff_th"
+        },
+        "td": {
+            "class": "cutoff_td"
         }
     })
     score = tables.Column(orderable=False, verbose_name="probability",
