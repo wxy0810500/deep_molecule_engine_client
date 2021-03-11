@@ -16,7 +16,7 @@ avaliable_diseases = df['disease_class_name'].unique()
 avaliable_protein_class = df['protein_class_name'].unique()
 avaliable_score_type = ['maximum', 'minimum', 'average', 'ratio']
 
-app = DjangoDash("LBVS")
+app = DjangoDash("target_fishing")
 
 app.layout = html.Div(children=[
     html.Label("Disease category:"),
