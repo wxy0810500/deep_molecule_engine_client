@@ -32,7 +32,7 @@ PREDICTION_METRICS_NAME_DICT = {"aupr": "AuPR",
 
 def getModelInfo():
     resultDict = {}
-    with open(os.path.join(CUSTOM_CONFIG_URL, 'ADMET_model_info.csv'), 'r') as mf:
+    with open(os.path.join(CUSTOM_CONFIG_URL, 'ADMET_model_info.csv'), 'r', encoding='utf-8') as mf:
         for line in mf.readlines():
             rawData: list = line.strip().split(',')
             resultDict[rawData[1]] = {
