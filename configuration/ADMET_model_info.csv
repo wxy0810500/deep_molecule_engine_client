@@ -3,10 +3,10 @@
 3,HOB,Human oral bioavailability model,%F>=80%
 4,SLB,Solubility model,>=100uM
 5,BBB,Blood-brain barrier model,lgBBB>=-1
-6,PPBhuman,Human plasma protein binding model,%fb>=80%
-8,PPBmouse,Mouse plasma protein binding model,%fb>=80%
-9,PPBrat,Rat plasma protein binding model,%fb>=80%
-7,PPBmix,Mix species plasma protein binding model,%fb>=80%
+6,PPBhuman,Human plasma protein binding model,%fb>=70%
+8,PPBmouse,Mouse plasma protein binding model,%fb>=70%
+9,PPBrat,Rat plasma protein binding model,%fb>=70%
+7,PPBmix,Mix species plasma protein binding model,%fb>=70%
 10,PgpI,P-glycoprotein inhibition model,<=10uM
 11,PgpS,P-glycoprotein substrate model,<=10uM
 12,CYP1A2I,CYP450 1A2 inhibition model,<=10uM
