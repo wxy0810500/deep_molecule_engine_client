@@ -1,13 +1,13 @@
 from django import forms
-from .modelConfig import MODEL_TYPE_STATMENT_DICT
+from .modelConfig import MODEL_TYPE_STATEMENT_DICT
 from prediction.forms import CommonInputForm
 
 
 # format  [(value1, name1), (value1, name1)]
 
 class InfectiousDiseaseInputForm(CommonInputForm):
-    __modelTypeChoices = tuple([(model, f'{model} : {statement}') for model, statement in
-                                MODEL_TYPE_STATMENT_DICT.items()])
+    __modelTypeChoices = tuple([(model, statement) for model, statement in
+                                MODEL_TYPE_STATEMENT_DICT.items()])
     # __metricsChoices = tuple([(metrics, name) for metrics, name in PREDICTION_METRICS_NAME_DICT.items()])
 
     modelTypes = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,

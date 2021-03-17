@@ -1,3 +1,4 @@
 TB18K_10uM,aupr,7010
 TB13K,aupr,7011
-Malaria16K,aupr,7012
+Malaria_16K_non-chiral,aupr,7012
+Malaria_93K_chiral,aupr,7013
