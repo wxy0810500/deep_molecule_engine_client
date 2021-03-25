@@ -7,7 +7,6 @@ from .fields import RestrictedFileField
 class CommonInputForm(forms.Form):
     INPUT_TYPE_DRUG_NAME = 'drugName'
     INPUT_TYPE_SMILES = 'raw_smiles'
-
     OUTPUT_TYPE_FILE = 'file'
     OUTPUT_TYPE_WEB_PAGE = 'webPage'
     INPUT_NAME_STR_SEPARATOR_RX = '!|,|;|\t|\n|\r\n'
@@ -40,4 +39,4 @@ class CommonInputForm(forms.Form):
 
     @classmethod
     def splitAndFilterInputDrugNamesStr(cls, drugNames: str) -> List[str]:
-        return [name.strip().lower() for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]
+        return [name.strip() for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]

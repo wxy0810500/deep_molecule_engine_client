@@ -78,6 +78,6 @@ function initialInputElements() {
         document.getElementById("id_inputStr").placeholder="CN(C)C(=N)NC(N)=NCC(=O)OC1=CC=CC=C1C(O)=O"
     }
     document.querySelector("#id_inputType_0").onclick = function () {
-        document.getElementById("id_inputStr").placeholder="Isoniazid\n" + "Pyrazinamide"
+        document.getElementById("id_inputStr").placeholder="metformin\n" + "aspirin"
     }
 }
