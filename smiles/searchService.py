@@ -36,6 +36,26 @@ def searchDrugReferenceExactlyByName(nameList: List or Set):
     return retDF
 
 
+def searchDrugReferenceFuzzilyByName(nameList: List):
+    """
+
+    @param nameList:
+    @return:
+
+    """
+
+    # retList = []
+    # for queryName in nameList:
+    #     ret = process.extractOne(queryName, DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES)
+    #     retList.append(ret)
+    return pd.DataFrame(([queryName, drugName, cleanedSmiles, scaffolds]
+                         for drugName, cleanedSmiles, scaffolds in
+                         zip(DRUG_REFERENCE_DB_DF['drug_name'], DRUG_REFERENCE_DB_DF['cleaned_smiles'],
+                             DRUG_REFERENCE_DB_DF['scaffolds']) for queryName in nameList if
+                         queryName.lower() in drugName.lower()),
+                        columns=['input', 'drug_name', 'cleaned_smiles', 'scaffolds'])
+
+
 def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
     """
 
@@ -48,7 +68,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     else:
         fileInputSet = None
 
-    invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if inputStr:
             inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
@@ -59,17 +78,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
                 inputDrugNameList = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
-        drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
-        if len(inputDrugNameList) == drugRefDF.size:
-            # 完全匹配，加入input 列
-            drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
-        else:
-            if drugRefDF.size != 0:
-                # 部分匹配，加入input列
-                drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
-            # 未查到对应的smiles
-            validList = drugRefDF['drug_name'].to_list()
-            invalidInputList = [dName for dName in inputDrugNameList if dName not in validList]
+        drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameList)
+        validList = set(drugRefDF['input'].to_list())
+        for validName in validList:
+            inputDrugNameList.remove(validName)
+        invalidInputList = inputDrugNameList
     else:
         if inputStr:
             inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)

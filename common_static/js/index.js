@@ -53,6 +53,16 @@ function checkInputStringAndFile() {
     return true
 }
 
+function submitPlaceHolderInInputString() {
+    // check textarea, inputFile
+    const textarea = document.querySelector("#id_inputStr");
+
+    if (textarea.value == "") {
+        textarea.value = textarea.placeholder
+    }
+    return true
+}
+
 
 function checkAllInput() {
 
@@ -73,5 +83,16 @@ function checkAllInput() {
             return false;
         }
     }
-    return checkInputStringAndFile()
+    return submitPlaceHolderInInputString()
+}
+
+function initialInputElements() {
+    document.getElementById("id_inputStr").placeholder = "CN(C)C(=N)NC(N)=NCC(=O)OC1=CC=CC=C1C(O)=O"
+    //raw smiles
+    document.querySelector("#id_inputType_1").onclick = function () {
+        document.getElementById("id_inputStr").placeholder="CN(C)C(=N)NC(N)=NCC(=O)OC1=CC=CC=C1C(O)=O"
+    }
+    document.querySelector("#id_inputType_0").onclick = function () {
+        document.getElementById("id_inputStr").placeholder="metformin\n" + "aspirin"
+    }
 }
