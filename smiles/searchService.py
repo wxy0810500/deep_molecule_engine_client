@@ -82,13 +82,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
             inputDrugNameList.remove(validName)
         invalidInputList = inputDrugNameList
     else:
-        if inputStr:
-            inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
-            if fileInputSet is not None:
-                inputSmilesList.extend(fileInputSet)
+        if fileInputSet is not None:
+            inputSmilesList = fileInputSet
         else:
-            if fileInputSet is not None:
-                inputSmilesList = fileInputSet
+            if inputStr:
+                inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
             else:
                 raise CommonException("both input string and file are empty")
 
