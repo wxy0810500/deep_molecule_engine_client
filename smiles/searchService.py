@@ -58,7 +58,6 @@ def searchDrugReferenceFuzzilyByName(nameList: List):
 
 def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
     """
-
     @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
     """
     inputType = inputForm.cleaned_data['inputType']
@@ -69,28 +68,27 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
         fileInputSet = None
 
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
-        if inputStr:
-            inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
-            if fileInputSet is not None:
-                inputDrugNameList.extend(fileInputSet)
+        if fileInputSet is not None:
+            inputDrugNameSet = fileInputSet
         else:
-            if fileInputSet is not None:
-                inputDrugNameList = fileInputSet
+            if inputStr:
+                inputDrugNameSet: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
             else:
                 raise CommonException("both input string and file are empty")
-        drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameList)
-        validList = set(drugRefDF['input'].to_list())
-        for validName in validList:
-            inputDrugNameList.remove(validName)
-        invalidInputList = inputDrugNameList
-    else:
-        if inputStr:
-            inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
-            if fileInputSet is not None:
-                inputSmilesList.extend(fileInputSet)
+        drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameSet)
+        validList = drugRefDF['input'].to_list()
+        if len(inputDrugNameSet) > len(validList):
+            for validName in validList:
+                inputDrugNameSet.remove(validName)
+            invalidInputList = inputDrugNameSet
         else:
-            if fileInputSet is not None:
-                inputSmilesList = fileInputSet
+            invalidInputList = None
+    else:
+        if fileInputSet is not None:
+            inputSmilesList = fileInputSet
+        else:
+            if inputStr:
+                inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
             else:
                 raise CommonException("both input string and file are empty")
 

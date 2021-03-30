@@ -125,6 +125,7 @@ dmypy.json
 .pyre/
 
 .idea/
+.vscode/
 
 # server-port-config
 configuration/model_port.csv
