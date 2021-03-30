@@ -69,13 +69,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
         fileInputSet = None
 
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
-        if inputStr:
-            inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
-            if fileInputSet is not None:
-                inputDrugNameList.extend(fileInputSet)
+        if fileInputSet is not None:
+            inputDrugNameList = fileInputSet
         else:
-            if fileInputSet is not None:
-                inputDrugNameList = fileInputSet
+            if inputStr:
+                inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
             else:
                 raise CommonException("both input string and file are empty")
         drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameList)
