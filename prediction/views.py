@@ -50,19 +50,15 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]]):
     if preRetList is None or len(preRetList) == 0:
         return None
     ctxDict = {modelType: [] for modelType in preRetList[0].keys()}
-    index = 1
     for preRet in preRetList:
-        count = 0
         for modelType, preRetRecord in preRet.items():
-            rlt = [{"id": index + i,
-                    "score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else "error",
+            rlt = [{"score": '%0.4f' % preRetUnit.score if preRetUnit.score >= 0 else "error",
                     "input": preRetUnit.input,
                     "drugName": preRetUnit.drugName,
                     "cleanedSmiles": preRetUnit.cleanedSmiles}
                    for i, preRetUnit in enumerate(preRetRecord.preResults)]
             ctxDict[modelType] += rlt
             count = len(preRetRecord.preResults)
-        index = index + count
     ctx = [{'modelType': modelType, 'tables': PredictionResultTable(rlt)} for modelType, rlt in ctxDict.items()]
     return ctx
 

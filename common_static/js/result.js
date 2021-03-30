@@ -53,6 +53,11 @@ function addCanvas() {
     canvasEle.id = 'output-canvas-' + i;
     canvasEle.className = 'smiles-canvas'
     canvasEle.innerHTML = smilesEle.innerText;
+    const smilesStrPle = document.createElement('p');
+    smilesStrPle.className = 'smiles-string'
+    smilesStrPle.innerText = smilesEle.innerText;
+    smilesEle.innerText = '';
+    smilesEle.appendChild(smilesStrPle);
     smilesEle.appendChild(canvasEle);
     canvasEleList.push(canvasEle);
   }

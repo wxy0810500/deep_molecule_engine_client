@@ -2,14 +2,7 @@ import django_tables2 as tables
 
 
 class PredictionResultTable(tables.Table):
-    id = tables.Column(verbose_name="", orderable=False, attrs={
-        "th": {
-            "class": "c-id"
-        },
-        "td": {
-            "class": "c-id"
-        }
-    })
+    counter = tables.TemplateColumn("{{ row_counter|add:1 }}", verbose_name="")
     score = tables.Column(orderable=False, verbose_name="Score", attrs={
         "th": {
             "class": "c-score"
