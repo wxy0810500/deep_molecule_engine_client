@@ -36,6 +36,26 @@ def searchDrugReferenceExactlyByName(nameList: List):
     return retDF
 
 
+def searchDrugReferenceFuzzilyByName(nameList: List):
+    """
+
+    @param nameList:
+    @return:
+
+    """
+
+    # retList = []
+    # for queryName in nameList:
+    #     ret = process.extractOne(queryName, DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES)
+    #     retList.append(ret)
+    return pd.DataFrame(([queryName, drugName, cleanedSmiles, scaffolds]
+                         for drugName, cleanedSmiles, scaffolds in
+                         zip(DRUG_REFERENCE_DB_DF['drug_name'], DRUG_REFERENCE_DB_DF['cleaned_smiles'],
+                             DRUG_REFERENCE_DB_DF['scaffolds']) for queryName in nameList if
+                         queryName.lower() in drugName.lower()),
+                        columns=['input', 'drug_name', 'cleaned_smiles', 'scaffolds'])
+
+
 def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
     """
     @return: drugRefDF [drug_name,smiles,canonical_smiles,cleaned_smiles,scaffolds], invalidInputList
@@ -43,40 +63,36 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     inputType = inputForm.cleaned_data['inputType']
     inputStr = inputForm.cleaned_data['inputStr']
     if request.FILES and request.FILES.get('uploadInputFile', None):
-        fileInputList = getInputDataSetFromUploadedExcel(request.FILES['uploadInputFile'])
+        fileInputSet = getInputDataSetFromUploadedExcel(request.FILES['uploadInputFile'])
     else:
-        fileInputList = None
+        fileInputSet = None
 
-    invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if inputStr:
-            inputDrugNameList: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
-            if fileInputList is not None:
-                inputDrugNameList.extend(fileInputList)
+            inputDrugNameSet: List = CommonInputForm.splitAndFilterInputDrugNamesStr(inputStr)
+            if fileInputSet is not None:
+                inputDrugNameSet.extend(fileInputSet)
         else:
-            if fileInputList is not None:
-                inputDrugNameList = fileInputList
+            if fileInputSet is not None:
+                inputDrugNameSet = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
-        drugRefDF: pd.DataFrame = searchDrugReferenceExactlyByName(inputDrugNameList)
-        if len(inputDrugNameList) == drugRefDF.size:
-            # 完全匹配，加入input 列
-            drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
+        drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameSet)
+        validList = drugRefDF['input'].to_list()
+        if len(inputDrugNameSet) > len(validList):
+            for validName in validList:
+                inputDrugNameSet.remove(validName)
+            invalidInputList = inputDrugNameSet
         else:
-            if drugRefDF.size != 0:
-                # 部分匹配，加入input列
-                drugRefDF.loc[:, 'input'] = drugRefDF['drug_name']
-            # 未查到对应的smiles
-            validList = drugRefDF['drug_name'].to_list()
-            invalidInputList = [dName for dName in inputDrugNameList if dName not in validList]
+            invalidInputList = None
     else:
         if inputStr:
             inputSmilesList: List = CommonInputForm.splitAndFilterInputSmiles(inputStr)
-            if fileInputList is not None:
-                inputSmilesList.extend(fileInputList)
+            if fileInputSet is not None:
+                inputSmilesList.extend(fileInputSet)
         else:
-            if fileInputList is not None:
-                inputSmilesList = fileInputList
+            if fileInputSet is not None:
+                inputSmilesList = fileInputSet
             else:
                 raise CommonException("both input string and file are empty")
 

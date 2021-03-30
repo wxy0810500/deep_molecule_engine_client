@@ -13,6 +13,9 @@ Each query can handle 100 compounds at most.</p>
             {% csrf_token %}
             {{ inputForm.inputType }}
             {{ inputForm.inputStr }}
+            <script>
+                initialInputElements()
+            </script>
             <div class="button-area">
                 {{ inputForm.uploadInputFile }}
                 <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
