@@ -128,3 +128,5 @@ dmypy.json
 
 # server-port-config
 configuration/model_port.csv
+
+.vscode/
