@@ -53,6 +53,7 @@ ul#id_pdbFileType {
     line-height: 2.5vh;
     font-weight: bold;
 }
+
 .input-area input[type="submit"] {
     height: 7vh;
     width: 7vw;
@@ -69,13 +70,13 @@ ul#id_pdbFileType {
 div.button-area {
     margin: 3vh 0;
     padding-left: 1vw;
-    /* height: 4vh; */
 }
 
 /* input file */
 .input-area .upload, .input-area input[type="file"]{
     width: 15vw;
-    height: inherit;
+    padding: 0 1vw;
+    height: 4vh;
 }
 
 .input-area input[type="file"] {
@@ -112,7 +113,7 @@ body {
     height: 100%;
 }
 
-body a {
+.top a {
   text-decoration: none;
   color: inherit;
 }

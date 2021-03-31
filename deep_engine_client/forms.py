@@ -36,5 +36,5 @@ class CommonInputForm(forms.Form):
 
     @classmethod
     def splitAndFilterInputDrugNamesStr(cls, drugNames: str) -> List[str]:
-        return [name.strip().lower() for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]
+        return [name for name in set(re.split(cls.INPUT_NAME_STR_SEPARATOR_RX, drugNames.strip()))]
 
