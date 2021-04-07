@@ -156,8 +156,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 #                 #                       满足这2个的模型名字。
                 "alertModles": ",".join([alertRetData.get("model") for alertRetData in
                                          # drug-like score 从低到高
-                                         sorted(alertDict.get(index), key=lambda x: x.get("drugLikeScore"),
-                                                reverse=True)[0:5]]),  # 前5个
+                                         sorted(alertDict.get(index), key=lambda x: x.get("drugLikeScore"))[0:5]]),  # 前5个
                 "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category),
                                 PredictionResultTable(sorted(singlePreRetList, key=lambda x: x.get("index"))))
                                for category, singlePreRetList in results.items()),
