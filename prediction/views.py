@@ -114,7 +114,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 singlePreRet.update(MODEL_INFO_DICT.get(modelType))
                 retDict[smilesIndex][category].append(singlePreRet)
                 # drug-like score contribution <=0.5
-                if drugLikeScore is not None and drugLikeScore <= 0.5:
+                if drugLikeScore is not None and drugLikeScore <= 0.2:
                     alertDict[smilesIndex].append(singlePreRet)
 
     def getAverageScoreForEachCategory(resultsOfSingleSmiles):
@@ -154,9 +154,10 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                 # alertModels:[] 1）drug-like score contribution <=0.5 的model name list；
                 #                 #                      2）drug-like score 从低到高，前5个。
                 #                 #                       满足这2个的模型名字。
-                "alertModles": ",".join([alertRetData.get("model") for alertRetData in
-                                         # drug-like score 从低到高
-                                         sorted(alertDict.get(index), key=lambda x: x.get("drugLikeScore"))[0:5]]),  # 前5个
+                "alertModles": ", ".join([alertRetData.get("model") for alertRetData in
+                                          # drug-like score 从低到高
+                                          sorted(alertDict.get(index), key=lambda x: x.get("drugLikeScore"))[0:5]]),
+                # 前5个
                 "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category),
                                 PredictionResultTable(sorted(singlePreRetList, key=lambda x: x.get("index"))))
                                for category, singlePreRetList in results.items()),

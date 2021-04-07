@@ -15,9 +15,12 @@
                                 "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "drug-like score contribution")
                         </script>
                     <div class="before-data-block">
+
                         <div class="alertModels">
+                            {% if retUnit.alertModles != "" %}
                             <span>Potential ADMET alerts for this compound include:</span>
                             <span><b>{{retUnit.alertModles}}</b></span>
+                            {% endif %}
                         </div>
                         <div class="druglike-score">
                             <span class="tooltip tooltip--left" data-tooltip="ADMET Druglike Score = avg(Score(A)+Score(D)+Score(M)+Score(E)+Score(T))">ADMET Druglike Score = {{ retUnit.druglikeScore }}</span>
