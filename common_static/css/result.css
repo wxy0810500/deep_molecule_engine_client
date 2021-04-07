@@ -131,11 +131,23 @@ div.smiles-radar {
     width: 18%;
     text-align: center;
 }
-
-.druglike-score {
+.before-data-block {
+	margin-bottom: 2%;
+	width:100%;
+	display: inline-flex;
+}
+.alertModels {
+	width:50%;
+}
+.alertModels span {
     position: relative;
-    margin-left: 65%;
-	margin-bottom: 2%
+	left:3vw;
+	font-size:1.2vw;
+	color:red;
+}
+.druglike-score {
+	left: 50%;
+	width:50%;
 }
 
 
@@ -157,6 +169,8 @@ div.smiles-radar {
     position: relative;
     z-index: 2;
     cursor: help;
+	left: 8vw;
+	font-size: 1.2vw;
 }
 
 [data-tooltip]:before {

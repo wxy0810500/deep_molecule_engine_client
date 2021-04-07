@@ -35,7 +35,7 @@ class PredictionResultTable(tables.Table):
                                   "class": "probability_td"
                               }
                           })
-    scoreForAve = tables.Column(orderable=False, verbose_name="drug-like score contribution",
+    drugLikeScore = tables.Column(orderable=False, verbose_name="drug-like score contribution",
                                 attrs={
                                     "th": {
                                         "class": "drug_like_score_th"

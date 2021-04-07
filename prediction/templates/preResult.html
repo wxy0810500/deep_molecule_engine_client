@@ -10,14 +10,20 @@
                         {% render_table retUnit.smilesTable %}
                         <canvas id="smiles-canvas-{{ forloop.counter }}"></canvas>
                         <div class="smiles-radar" id="smiles-radar-{{ forloop.counter }}"></div>
-                        <div class="druglike-score">
-							<span class="tooltip tooltip--left" data-tooltip="ADMET Druglike Score = avg(Score(A)+Score(D)+Score(M)+Score(E)+Score(T))">ADMET Druglike Score = {{ retUnit.druglikeScore }}</span>
-						</div>
                         <script>
                             drawRadarAndSmiles("{{ retUnit.cleanedSmiles }}", "smiles-canvas-{{ forloop.counter }}",
                                 "smiles-radar-{{ forloop.counter }}",{{ retUnit.radarData|safe }}, "drug-like score contribution")
                         </script>
-                    <div class="half-block">
+                    <div class="before-data-block">
+                        <div class="alertModels">
+                            <span>Potential ADMET alerts for this compound include:</span>
+                            <span><b>{{retUnit.alertModles}}</b></span>
+                        </div>
+                        <div class="druglike-score">
+                            <span class="tooltip tooltip--left" data-tooltip="ADMET Druglike Score = avg(Score(A)+Score(D)+Score(M)+Score(E)+Score(T))">ADMET Druglike Score = {{ retUnit.druglikeScore }}</span>
+						</div>
+                    </div>
+                    <div class="data-block">
                         {% for category, tables in retUnit.result.items %}
                             <div class="category-block">
                                 <div class="category-content">{{ category }}</div>

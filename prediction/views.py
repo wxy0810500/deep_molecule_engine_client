@@ -86,6 +86,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
     # }
     retDict = dict((smilesIndex, dict((category, []) for category in inputCategorys))
                    for smilesIndex in smilesDict.keys())
+    alertDict = dict((smilesIndex, []) for smilesIndex in smilesDict.keys())
     for preRet in preRetList:
         for modelType, preRetRecord in preRet.items():
             category = PREDICTION_MODEL_CATEGORY_DICT.get(modelType, None)
@@ -101,17 +102,35 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
                         aveOperatedScore = float(preRetUnit.score) * aveOpt
                     else:
                         print(f'{category}_{modelType}')
-                # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None else 0
-                retTable: dict = {
+                # aveOperatedScore = float(preRetUnit.score) * aveOptDict.get(modelType) if aveOptDict is not None
+                # else 0
+                drugLikeScore = float('%.4f' % (
+                    aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore)) if aveOperatedScore != 0 else None
+                singlePreRet: dict = {
                     "model": modelType,
                     "score": "%.4f" % preRetUnit.score,
-                    "scoreForAve":
-                        float('%.4f' % (
-                            aveOperatedScore + 1 if aveOperatedScore < 0 else aveOperatedScore))
-                        if aveOperatedScore != 0 else None
+                    "drugLikeScore": drugLikeScore
                 }
-                retTable.update(MODEL_INFO_DICT.get(modelType))
-                retDict[smilesIndex][category].append(retTable)
+                singlePreRet.update(MODEL_INFO_DICT.get(modelType))
+                retDict[smilesIndex][category].append(singlePreRet)
+                # drug-like score contribution <=0.5
+                if drugLikeScore is not None and drugLikeScore <= 0.5:
+                    alertDict[smilesIndex].append(singlePreRet)
+
+    def getAverageScoreForEachCategory(resultsOfSingleSmiles):
+        averageScoreDict = {}
+        for category in PREDICTION_CATEGORYS_IN_RADAR:
+            resultsOfCategory = resultsOfSingleSmiles.get(category, None)
+            if resultsOfCategory is not None:
+                # 雷达图上数值，用1-score之后再求平均值
+                aveScore = np.mean(
+                    [ret.get('drugLikeScore') for ret in resultsOfCategory if ret.get('drugLikeScore') is not None]
+                )
+                aveScore = float('%.4f' % aveScore)
+            else:
+                aveScore = 0
+            averageScoreDict[PREDICTION_CATEGORY_NAME_DICT.get(category)] = aveScore
+        return averageScoreDict
 
     # [
     #     {
@@ -125,21 +144,6 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
     #         }
     #     }
     # ]
-    def getAverageScoreForEachCategory(resultsOfSingleSmiles):
-        averageScoreDict = {}
-        for category in PREDICTION_CATEGORYS_IN_RADAR:
-            resultsOfCategory = resultsOfSingleSmiles.get(category, None)
-            if resultsOfCategory is not None:
-                # 雷达图上数值，用1-score之后再求平均值
-                aveScore = np.mean(
-                    [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
-                )
-                aveScore = float('%.4f' % aveScore)
-            else:
-                aveScore = 0
-            averageScoreDict[PREDICTION_CATEGORY_NAME_DICT.get(category)] = aveScore
-        return averageScoreDict
-
     ctx = []
     for index, results in retDict.items():
         aveScoreDict = getAverageScoreForEachCategory(results)
@@ -147,9 +151,16 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
+                # alertModels:[] 1）drug-like score contribution <=0.5 的model name list；
+                #                 #                      2）drug-like score 从低到高，前5个。
+                #                 #                       满足这2个的模型名字。
+                "alertModles": ",".join([alertRetData.get("model") for alertRetData in
+                                         # drug-like score 从低到高
+                                         sorted(alertDict.get(index), key=lambda x: x.get("drugLikeScore"),
+                                                reverse=True)[0:5]]),  # 前5个
                 "result": dict((PREDICTION_CATEGORY_NAME_DICT.get(category),
-                                PredictionResultTable(sorted(result, key=lambda x: x.get("index"))))
-                               for category, result in results.items()),
+                                PredictionResultTable(sorted(singlePreRetList, key=lambda x: x.get("index"))))
+                               for category, singlePreRetList in results.items()),
                 "radarData": json.dumps(aveScoreDict),
                 "druglikeScore": "%.4f" % np.mean([s for s in aveScoreDict.values() if s > 0])
             }
