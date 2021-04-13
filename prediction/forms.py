@@ -3,7 +3,10 @@ from deep_engine_client.forms import CommonInputForm
 from .models import LBVSPerformanceRaw
 import sys
 
-if sys.argv[1] == 'runserver':
+if len(sys.argv) > 0 and sys.argv[1] != 'runserver':
+    class TFModelInputForm(CommonInputForm):
+        pass
+else:
     # get all categorys and disease classes
     allCategorys = LBVSPerformanceRaw.objects.values_list('category').distinct()
     allDiseaseClass = LBVSPerformanceRaw.objects.values_list('diseaseClass', 'diseaseClassIndex').distinct()
@@ -11,6 +14,7 @@ if sys.argv[1] == 'runserver':
     # format  [(value1, name1), (value1, name1)]
     ADMET_categorys = tuple([(category[0], category[0]) for category in allCategorys])
     diseaseClassNameTuple = tuple([(record[1], record[0]) for record in allDiseaseClass])
+
 
     class TFModelInputForm(CommonInputForm):
         categorys = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
@@ -26,6 +30,3 @@ if sys.argv[1] == 'runserver':
 
         # field_order在html中体现了，使用{{ inputform.[fieldName] }}逐一展示
         # field_order = ['inputType', 'inputStr', 'uploadInputFile', 'modelTypes']
-else:
-    class TFModelInputForm(CommonInputForm):
-        pass
