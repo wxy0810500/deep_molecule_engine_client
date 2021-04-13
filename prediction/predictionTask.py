@@ -1,7 +1,7 @@
 from .thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
-from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_CATE_METRIC_MODEL_PORT_DICT
+from configuration.sysConfig import SYSTEM_CONFIG_DICT, PREDICTION_HOST, PREDICTION_METRIC_MODEL_PORT_DICT
 from utils.timeUtils import sleepWithSwitchInterval
 from utils.debug import printDebug
 from deep_engine_client.exception import PredictionCommonException
@@ -10,7 +10,6 @@ from .taskManager import getProcessPool
 default_dme_server_host = PREDICTION_HOST
 default_dme_conn_timeout = SYSTEM_CONFIG_DICT.get("timeout")
 
-TFModelAndPortDict = PREDICTION_CATE_METRIC_MODEL_PORT_DICT
 PREDICTION_TASK_TYPE_LBVS = "LBVS"
 PREDICTION_TYPE_TF = "targetFishing"
 
@@ -62,14 +61,12 @@ class PredictionTaskRet:
         self.preResults = preResults
 
 
-def processTasks(cateMetricModelPortDict: Dict, categorys: Sequence, metric: str, smilesInfoList, taskType, aux_data=None) \
+def processTasks(modelPortDict: Dict, modelNames: Sequence, smilesInfoList, taskType, aux_data=None) \
         -> Dict[str, PredictionTaskRet]:
     """
 
-
-    @param metric:
-    @param cateMetricModelPortDict:
-    @param categorys:
+    @param modelNames:
+    @param modelPortDict:
     @param smilesInfoList:
     @param taskType:
     @param aux_data:
@@ -78,17 +75,6 @@ def processTasks(cateMetricModelPortDict: Dict, categorys: Sequence, metric: str
                 modelName:PredictionTaskRet
             }
     """
-    if categorys is None or len(categorys) == 0:
-        raise PredictionCommonException('We will support these model types as soon as possible!')
-    modelPortDict = {}
-    for category in categorys:
-        metricData = cateMetricModelPortDict.get(category, None)
-        if metricData is not None:
-            data = metricData.get(metric, None)
-            if data is not None:
-                modelPortDict.update(data)
-    if len(modelPortDict) == 0:
-        raise PredictionCommonException('We will support these model types as soon as possible!')
     retList = []
     # define smiles_index in order
     smilesDictList = []
@@ -103,7 +89,10 @@ def processTasks(cateMetricModelPortDict: Dict, categorys: Sequence, metric: str
         # do tasks one by one
         processPool = getProcessPool()
         taskInfoDict: dict = {}
-        for modelName, port in modelPortDict.items():
+        for modelName in modelNames:
+            port = modelPortDict.get(modelName)
+            if port is None:
+                continue
             taskId = uuid.uuid1()
             taskInfoDict[taskId] = modelName
             taskArgs = {
@@ -200,5 +189,42 @@ def _predictOnce(client: DMEClient, client_worker, task, smilesDict: dict, aux_d
     return task_time, server_info, retUnitList, againDict
 
 
-def predictTF(categorys: Sequence, metric: str, smilesInfoList: List) -> List[Dict[str, PredictionTaskRet]]:
-    return processTasks(TFModelAndPortDict, categorys, metric, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)
+def predictTF(categorys: Sequence, inputDiseaseIndexes: Sequence, metric: str, smilesInfoList: List) -> \
+        List[Dict[str, PredictionTaskRet]]:
+    """
+
+    @param categorys:
+    @param inputDiseaseIndexes:
+    @param metric:
+    @param smilesInfoList:
+    @return:
+    """
+    if categorys is not None and len(categorys) > 0:
+        if inputDiseaseIndexes is not None and len(inputDiseaseIndexes) > 0:
+            qrCondition = f'''category in ("{'","'.join(categorys)}") and diseaseClassIndex in 
+                                ({','.join(inputDiseaseIndexes)}) '''
+        else:
+            qrCondition = f'''category in ("{'","'.join(categorys)}")'''
+    else:
+        if inputDiseaseIndexes is not None and len(inputDiseaseIndexes) > 0:
+            qrCondition = f"diseaseClassIndex in ({','.join(inputDiseaseIndexes)})"
+        else:
+            raise PredictionCommonException("None of the input category or inputDiseaseIndexes are valid ")
+    query = f"select id, model, category, geneName, geneSymbol, performance, " \
+            f"group_concat(diseaseClass, ';\n') as diseaseClass, sum(diseaseClassIndex) as diseaseClassIndex " \
+            f"from prediction_lbvsperformancefiltered " \
+            f"where {qrCondition} group by model;"
+
+    from .models import LBVSPerformanceFiltered
+    validPerformanceQSet = LBVSPerformanceFiltered.objects.raw(query)
+    validPerformanceDict = {}
+    modelNames = []
+    for record in validPerformanceQSet:
+        validPerformanceDict[record.model] = record
+        modelNames.append(record.model)
+    modelPortDict = PREDICTION_METRIC_MODEL_PORT_DICT.get(metric, None)
+    if modelPortDict is None:
+        raise PredictionCommonException("invalid metric type")
+
+    retList, allSmilesDict = processTasks(modelPortDict, modelNames, smilesInfoList, PREDICTION_TASK_TYPE_LBVS)
+    return validPerformanceDict, retList, allSmilesDict

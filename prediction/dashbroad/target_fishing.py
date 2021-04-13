@@ -7,7 +7,7 @@ from django_plotly_dash import DjangoDash
 import os
 from deep_engine_client.settings.base import BASE_DIR
 
-df = pd.read_csv(os.path.join(BASE_DIR, "prediction", "db", "LBVS_size200_auroc50_reviewed.csv"))
+df = pd.read_csv(os.path.join(BASE_DIR, "prediction", "db", "LBVS_performance_table.csv"))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 

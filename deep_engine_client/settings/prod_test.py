@@ -20,10 +20,10 @@ STATIC_ROOT = f"{SERVER_DEVELOPMENT_DIR}/static/"
 
 # DEBUG = True
 DEBUG = False
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'target_fishing_db.sqlite3'),
-    }
-}
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'target_fishing_sqlite3.db'),
+#     }
+# }

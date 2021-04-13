@@ -6,12 +6,13 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import reverse
 from django_excel import make_response
 from pyexcel import Book
+import pandas as pd
+from django.db.models import QuerySet
 
 from deep_engine_client.exception import *
 from deep_engine_client.tables import InvalidInputsTable
 from .forms import *
 from .predictionTask import PredictionTaskRet
-from configuration.sysConfig import PREDICTION_MODEL_CATEGORY_DICT
 from .service import processTF
 from .tables import *
 
@@ -58,44 +59,50 @@ def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], invalid
     return Book(sheets)
 
 
-def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCategorys: List[str],
-                     smilesDict: Dict[int, str]):
+def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerformanceDict: Dict,
+                      smilesDict: Dict[int, str], inputCategorys: List[str]):
+    """
+
+    @param preRetList:
+    @param smilesDict:
+    @return:
+    """
     # tables for each smiles
     # {
     #     smilesIndex: {
-    #         category1:[
+    #         category:[
     #             {
-    #                 "modelName":modelName,
-    #                 "score": score
-    #             },
-    #             {
-    #                 "modelName": modelName,
-    #                 "score": score
+    #                 "model":modelName,
+    #                 "score": score,
+    #                 "geneName":,
+    #                 "geneSymbol":,
+    #                 "performance":,
+    #                 "diseaseClasses":
     #             }
     #         ],
-    #         category2: [
-    #             {
-    #                 "modelName":modelName,
-    #                 "score": score
-    #             }
-    #         ]
     #     }
     # }
-    # 返回页面：所有预测结果按照score排序，
+
+    # result filter: prediction-score>=0.5
+    # sort: performance 列
     retDict = dict((smilesIndex, dict((category, []) for category in inputCategorys))
                    for smilesIndex in smilesDict.keys())
     for preRet in preRetList:
         for modelType, preRetRecord in preRet.items():
-            category = PREDICTION_MODEL_CATEGORY_DICT.get(modelType, None)
-            if category is None:
+            performance = validPerformanceDict.get(modelType, None)
+            if performance is None:
                 continue
+            category = performance.category
             for preRetUnit in preRetRecord.preResults:
                 smilesIndex: int = int(preRetUnit.sampleId)
                 retDict[smilesIndex][category].append({
+                    "score": "%.4f" % preRetUnit.score,
                     "model": modelType,
-                    "score": "%.4f" % preRetUnit.score
+                    "geneName": performance.geneName,
+                    "geneSymbol": performance.geneSymbol,
+                    "performance": performance.performance,
+                    "diseaseClasses": performance.diseaseClass,
                 })
-
     # [
     #     {
     #         "smilesTable": smilesTable,
@@ -116,7 +123,7 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
     #             # 雷达图上数值，用1-score之后再求平均值
     #             aveScore = np.mean(
     #                 [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
-    #             )
+    #             )`````````````
     #         else:
     #             aveScore = 0
     #         averageScoreDict[category] = float('%.4f' % aveScore)
@@ -128,8 +135,8 @@ def _formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], inputCatego
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
-                "result": dict((category, PredictionResultTable(result))
-                               for category, result in results.items())
+                "result": dict((category, PredictionResultTable(sorted(retOfCategory, key=lambda x: x.get('performance'))))
+                               for category, retOfCategory in results.items())
             }
         )
     return ctx
@@ -144,7 +151,7 @@ def predict(request):
     if not inputForm.is_valid():
         return return400ErrorPage(request, inputForm)
     try:
-        preRet, invalidInputList, inputCategorys, smilesDict = processTF(request, inputForm)
+        preRet, invalidInputList, validPerformanceDict, smilesDict, inputCategorys = processTF(request, inputForm)
     except CommonException as e:
         return HttpResponseBadRequest(e.message)
 
@@ -155,13 +162,13 @@ def predict(request):
             "pageTitle": "Prediction Result"
         }
         if preRet is not None:
-            preRetTables = _formatRetTables(preRet, inputCategorys, smilesDict)
+            preRetTables = __formatRetTables(preRet, validPerformanceDict, smilesDict, inputCategorys)
             retDict['preRetTables'] = preRetTables
         # just for network based
         if invalidInputList and len(invalidInputList) > 0:
             retDict['invalidInputTable'] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
         return render(request, "result.html", retDict)
     else:
-        retBook = __formatRetExcelBook(preRet, invalidInputList)
+        retBook = __formatRetExcelBook(preRet, validPerformanceDict, invalidInputList)
         return make_response(retBook, file_type='csv',
                              file_name=f'TargetFishing_PredictionResult')

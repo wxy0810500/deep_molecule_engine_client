@@ -10,14 +10,6 @@ class PredictionResultTable(tables.Table):
             "class": "model_td"
         }
     })
-    # category = tables.Column(orderable=False, verbose_name="Category", attrs={
-    #     "th": {
-    #         "class": "category_th"
-    #     },
-    #     "td": {
-    #         "class": "category_td"
-    #     }
-    # })
 
     score = tables.Column(orderable=False, verbose_name="Score", attrs={
         "th": {
@@ -27,14 +19,38 @@ class PredictionResultTable(tables.Table):
             "class": "score_td"
         }
     })
-    # scoreForAve = tables.Column(orderable=False, attrs={
-    #     "th": {
-    #         "class": "score_th"
-    #     },
-    #     "td": {
-    #         "class": "score_td"
-    #     }
-    # })
+    geneName = tables.Column(orderable=False, verbose_name="Gene Name", attrs={
+        "th": {
+            "class": "geneName_th"
+        },
+        "td": {
+            "class": "geneName_td"
+        }
+    })
+    geneSymbol = tables.Column(orderable=False, verbose_name="Gene Symbol", attrs={
+        "th": {
+            "class": "geneSymbol_th"
+        },
+        "td": {
+            "class": "geneSymbol_td"
+        }
+    })
+    performance = tables.Column(orderable=False, verbose_name="Performance", attrs={
+        "th": {
+            "class": "performance_th"
+        },
+        "td": {
+            "class": "performance_td"
+        }
+    })
+    diseaseClasses = tables.Column(orderable=False, verbose_name="Disease Classes", attrs={
+        "th": {
+            "class": "diseaseClasses_th"
+        },
+        "td": {
+            "class": "diseaseClasses_td"
+        }
+    })
 
     class Meta:
         attrs = {

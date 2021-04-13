@@ -90,10 +90,12 @@ div.category-content {
   color: #FFFFFF;
 }
 
-
+td.diseaseClasses_td {
+    white-space: pre-line;
+}
 table.score th, table.score td {
-    width: 33%;
     text-align: left;
+    min-width: 7vw;
 }
 
 table.smiles-info th, table.smiles-info td {

@@ -22,6 +22,9 @@ Each query can handle 100 compounds at most.</p>
             {% csrf_token %}
             {{ inputForm.inputType }}
             {{ inputForm.inputStr }}
+            <script>
+                initialInputElements()
+            </script>
             <div class="button-area">
                 {{ inputForm.uploadInputFile }}
                 <div class="upload" id="inputFileName">Select input file(*.csv,*.xls, *.xlsx)</div>
@@ -33,7 +36,9 @@ Each query can handle 100 compounds at most.</p>
             </div>
             <p class="statement">2. Select 1 or more human target category listed below.</p>
             {{ inputForm.categorys }}
-            <p class="statement">3. Select the output report type.</p>
+            <p class="statement">3. Select 1 or more disease class listed below.</p>
+            {{ inputForm.diseaseClasses }}
+            <p class="statement">4. Select the output report type.</p>
             {{ inputForm.outputType }}
             <input type="submit" value="submit"/>
         </form>
