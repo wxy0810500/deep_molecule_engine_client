@@ -3,7 +3,7 @@ from deep_engine_client.forms import CommonInputForm
 from .models import LBVSPerformanceRaw
 import sys
 
-if len(sys.argv) > 0 and sys.argv[1] != 'runserver':
+if len(sys.argv) > 1 and sys.argv[1] != 'runserver':
     class TFModelInputForm(CommonInputForm):
         pass
 else:

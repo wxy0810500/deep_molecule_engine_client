@@ -103,31 +103,6 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerfo
                     "performance": performance.performance,
                     "diseaseClasses": performance.diseaseClass,
                 })
-    # [
-    #     {
-    #         "smilesTable": smilesTable,
-    #         "cleanedSmiles": cleanedSmiles,
-    #         "result" : {
-    #               "category": tables,
-    #         }
-    #         "radarData": {
-    #           "category": average-score
-    #         }
-    #     }
-    # ]
-    # def getAverageScoreForEachCategory(resultsOfSingleSmiles):
-    #     averageScoreDict = {}
-    #     for category in PREDICTION_CATEGORYS_IN_RADAR:
-    #         resultsOfCategory = resultsOfSingleSmiles.get(category, None)
-    #         if resultsOfCategory is not None:
-    #             # 雷达图上数值，用1-score之后再求平均值
-    #             aveScore = np.mean(
-    #                 [ret.get('scoreForAve') for ret in resultsOfCategory if ret.get('scoreForAve') is not None]
-    #             )`````````````
-    #         else:
-    #             aveScore = 0
-    #         averageScoreDict[category] = float('%.4f' % aveScore)
-    #     return averageScoreDict
 
     ctx = []
     for index, results in retDict.items():
@@ -135,7 +110,8 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerfo
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
-                "result": dict((category, PredictionResultTable(sorted(retOfCategory, key=lambda x: x.get('performance'))))
+                "result": dict((category, PredictionResultTable(sorted(retOfCategory, key=lambda x: x.get('performance'),
+                                                                       reverse=True)))
                                for category, retOfCategory in results.items())
             }
         )
