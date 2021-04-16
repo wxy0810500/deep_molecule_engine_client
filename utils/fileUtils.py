@@ -24,7 +24,8 @@ def file_iterator(file, chunk_size=512):
                 break
 
 
-MAX_INPUT_SET_LENGTH_BY_FILE = 50
+# 比预计的50多一行，是因为首行可能带有field name
+MAX_INPUT_SET_LENGTH_BY_FILE = 51
 
 
 # 当前处理是读取数据的Set，有效值100个
