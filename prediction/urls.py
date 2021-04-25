@@ -21,5 +21,5 @@ from django.urls import path
 BASE_URL = r'covid19/'
 urlpatterns = [
     path(r"", views.predictionIndex, name="prediction_index"),
-    path(r"submit/", views.predict, name="prediction_submit"),
+    path(r"submit/", views.predict_retJson, name="prediction_submit"),
 ]

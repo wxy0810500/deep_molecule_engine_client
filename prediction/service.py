@@ -3,7 +3,6 @@ from typing import Tuple, List
 from prediction.forms import LigandModelInputForm, NetworkModelInputForm
 from prediction.predictionTask import predictLigand
 from smiles.searchService import searchDrugReferenceByInputRequest
-from utils.fileUtils import handleUploadedFile, handleUploadedExcelFile
 import pandas as pd
 import os
 import numpy as np

@@ -2,7 +2,7 @@ from django.shortcuts import render, reverse
 from configuration.sysConfig import *
 from .service import *
 from .tables import SearchResultTable
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from deep_engine_client.exception import return400ErrorPage
 from deep_engine_client.tables import InvalidInputsTable
 from django_excel import make_response
@@ -44,15 +44,12 @@ def advancedSearch(request):
 
         return make_response(Book(ret), file_type='xls', file_name="advancedSearchResult")
     else:
-        ret = {
-            "backURL": reverse('search_index'),
-            "pageTitle": "Search Result"
-        }
+        ret = {}
         if csRetDF is not None:
-            ret["exactMapTable"] = SearchResultTable(csRetDF.to_dict(orient='record'))
+            ret["exactMapValue"] = csRetDF.to_dict(orient='record')
         if scaffoldsRetDF is not None:
-            ret["scaffoldMapTable"] = SearchResultTable(scaffoldsRetDF.to_dict(orient='record'))
+            ret["scaffoldMapValue"] = scaffoldsRetDF.to_dict(orient='record')
         if invalidInputList and len(invalidInputList) > 0:
-            ret["invalidInputTable"] = InvalidInputsTable.getInvalidInputsTable(invalidInputList)
+            ret["invalidInputs"] = invalidInputList
 
-        return render(request, 'searchResult.html', ret)
+        return JsonResponse(ret)

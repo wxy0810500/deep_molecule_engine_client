@@ -76,11 +76,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
             else:
                 raise CommonException("both input string and file are empty")
         drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameSet)
-        validList = drugRefDF['input'].to_list()
+        validList = drugRefDF['input'].unique()
         if len(inputDrugNameSet) > len(validList):
             for validName in validList:
                 inputDrugNameSet.remove(validName)
-            invalidInputList = inputDrugNameSet
+            invalidInputList = list(inputDrugNameSet)
         else:
             invalidInputList = None
     else:
