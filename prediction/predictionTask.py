@@ -1,4 +1,4 @@
-from infectiousDisease.thrift.client import DMEClient
+from prediction.thrift.client import DMEClient
 import uuid
 from typing import Sequence, List, Dict
 from utils.timeUtils import sleepWithSwitchInterval
@@ -92,7 +92,7 @@ def processTasks(modelTypeAndPortDict: Dict, modelTypes: Sequence, metric: str,
     smilesDictList = []
     allSmilesDict = {}
     for i, smilesInfo in enumerate(smilesInfoList):
-        if i % 20 == 0:
+        if i % 50 == 0:
             smilesDict = {}
             smilesDictList.append(smilesDict)
         smilesDict[i] = smilesInfo

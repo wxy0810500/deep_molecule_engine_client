@@ -68,7 +68,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     else:
         fileInputSet = None
 
-    invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if fileInputSet is not None:
             inputDrugNameList = fileInputSet

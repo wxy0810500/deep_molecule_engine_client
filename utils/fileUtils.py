@@ -7,7 +7,7 @@ def handleUploadedFile(fs) -> str:
     return ','.join(ret)
 
 
-MAX_INPUT_SET_LENGTH_BY_FILE = 100
+MAX_INPUT_SET_LENGTH_BY_FILE = 1001
 
 
 # 当前处理是读取数据的Set，有效值100个

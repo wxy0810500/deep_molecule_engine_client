@@ -62,6 +62,7 @@ class DMEClient:
         # --- restore the order ---#
         predicted_results.sort(key=lambda retRecord: retRecord.sample_id)
         server_info = predicted_results[0].version
+        # print(predicted_results)
         # predicted_results: List[
         #       {string sample_id,
         #        string result,

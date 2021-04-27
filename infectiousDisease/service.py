@@ -20,6 +20,8 @@ def processInfectiousDisease(request, inputForm: InfectiousDiseaseInputForm):
         # inputMetric = inputForm.cleaned_data['metric']
         inputMetric = PREDICTION_METRIC_TYPE_AUPR
         preRetList, allSmilesDict = doPrediction(modelTypes, inputMetric, smilesInfoList)
+        smilesCount = len(smilesInfoList)
     else:
-        preRetList = None
-    return preRetList, invalidInputList
+        preRetList, invalidInputList = None, None
+        smilesCount = 0
+    return preRetList, invalidInputList, smilesCount

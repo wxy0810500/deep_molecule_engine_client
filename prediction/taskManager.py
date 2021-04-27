@@ -1,7 +1,7 @@
 import os
 from multiprocessing import Process, JoinableQueue as Queue, Manager
 from typing import Dict
-from infectiousDisease.thrift.client import DMEClient
+from prediction.thrift.client import DMEClient
 import traceback
 
 
