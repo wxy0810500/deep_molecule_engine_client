@@ -18,8 +18,9 @@ from django.contrib import admin
 from . import views
 from django.urls import path
 
-BASE_URL = r'covid19/'
 urlpatterns = [
-    path(r"", views.predictionIndex, name="prediction_index"),
-    path(r"submit/", views.predict_retJson, name="prediction_submit"),
+    path(r'ligand/submit/', views.predict_ligand),
+    path(r'ligand/cfg/', views.ligand_config),
+    path(r'network/submit/', views.predict_network),
+    path(r'network/cfg/', views.network_config),
 ]

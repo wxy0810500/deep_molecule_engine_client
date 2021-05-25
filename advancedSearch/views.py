@@ -1,10 +1,9 @@
 from django.shortcuts import render, reverse
 from configuration.sysConfig import *
 from .service import *
-from .tables import SearchResultTable
 from django.http import HttpResponse, JsonResponse
 from deep_engine_client.exception import return400ErrorPage
-from deep_engine_client.tables import InvalidInputsTable
+from django.views.decorators.csrf import csrf_exempt
 from django_excel import make_response
 from pyexcel import Book
 
@@ -20,6 +19,7 @@ def searchIndex(request):
     return render(request, 'searchInput.html', INPUT_TEMPLATE_FORMS.get(SERVICE_TYPE_SEARCH))
 
 
+@csrf_exempt
 def advancedSearch(request):
     if request.method != 'POST':
         return HttpResponse('invalid http method')

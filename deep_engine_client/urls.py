@@ -19,12 +19,10 @@ from deep_engine_client import views
 from django.urls import path, include
 
 BASE_URL = r'covid19/'
-PREDICTION_BASE_URL = r'service/prediction/<str:sType>/'
-SEARCH_BASE_URL = r'service/advancedSearch/'
+SEARCH_BASE_URL = r'advancedSearch/'
 urlpatterns = [
     path(BASE_URL, include([
-        path(r'', views.index, name="covid19_index"),
-        path(PREDICTION_BASE_URL, include('prediction.urls')),
+        path('', include('prediction.urls')),
         path(SEARCH_BASE_URL, include('advancedSearch.urls'))
         ])
     )
