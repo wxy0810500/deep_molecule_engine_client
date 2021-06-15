@@ -17,7 +17,7 @@ from .service import processTF
 from .tables import *
 
 
-def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], invalidInputList):
+def __formatRetExcelBook(preRetList: List[Dict[str, PredictionTaskRet]], validPerformanceDict: Dict, invalidInputList):
     sheets = {}
     if preRetList is not None:
         # headers
@@ -84,7 +84,7 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerfo
     # }
 
     # result filter: prediction-score>=0.5
-    # sort: performance 列
+    # sort: score 列倒序
     retDict = dict((smilesIndex, dict((category, []) for category in inputCategorys))
                    for smilesIndex in smilesDict.keys())
     for preRet in preRetList:
@@ -95,14 +95,16 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerfo
             category = performance.category
             for preRetUnit in preRetRecord.preResults:
                 smilesIndex: int = int(preRetUnit.sampleId)
-                retDict[smilesIndex][category].append({
-                    "score": "%.4f" % preRetUnit.score,
-                    "model": modelType,
-                    "geneName": performance.geneName,
-                    "geneSymbol": performance.geneSymbol,
-                    "performance": performance.performance,
-                    "diseaseClasses": performance.diseaseClass,
-                })
+                score = preRetUnit.score
+                if score > 0.5:
+                    retDict[smilesIndex][category].append({
+                        "score": "%.4f" % score,
+                        "model": modelType,
+                        "geneName": performance.geneName,
+                        "geneSymbol": performance.geneSymbol,
+                        "performance": performance.performance,
+                        "diseaseClasses": performance.diseaseClass,
+                    })
 
     ctx = []
     for index, results in retDict.items():
@@ -110,7 +112,7 @@ def __formatRetTables(preRetList: List[Dict[str, PredictionTaskRet]], validPerfo
             {
                 "smilesTable": PredictionResultSmilesInfoTable([smilesDict[index]]),
                 "cleanedSmiles": smilesDict[index]["cleaned_smiles"],
-                "result": dict((category, PredictionResultTable(sorted(retOfCategory, key=lambda x: x.get('performance'),
+                "result": dict((category, PredictionResultTable(sorted(retOfCategory, key=lambda x: x.get('score'),
                                                                        reverse=True)))
                                for category, retOfCategory in results.items())
             }

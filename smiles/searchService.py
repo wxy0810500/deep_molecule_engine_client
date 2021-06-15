@@ -15,12 +15,12 @@ DRUG_REFERENCE_WITH_NAME_AND_SMILES: pd.DataFrame = DRUG_REFERENCE_DB_DF[['drug_
 
 
 def searchDrugReferenceByCleanedSmiles(dfWithCleanedSmiles: pd.DataFrame) -> pd.DataFrame:
-    searchRet = pd.merge(dfWithCleanedSmiles, DRUG_REFERENCE_WITH_NAME_AND_SMILES, on='cleaned_smiles', how='left')
-    searchRet.fillna('', inplace=True)
-    ret = searchRet.groupby('input').agg({'drug_name': lambda x: ','.join(x),
-                                          'scaffolds': 'first',
-                                          'cleaned_smiles': 'first'}).reset_index()
-    return ret
+    searchRetDF = pd.merge(dfWithCleanedSmiles, DRUG_REFERENCE_WITH_NAME_AND_SMILES, on='cleaned_smiles', how='left')
+    searchRetDF.fillna('', inplace=True)
+    # 之前input已经做过拼接，这里直接用first的策略
+    return searchRetDF.groupby('cleaned_smiles').agg({'drug_name': lambda x: ','.join(x),
+                                                      'scaffolds': 'first',
+                                                      'input': 'first'}).reset_index()
 
 
 def searchDrugReferenceExactlyByName(nameList: List):
@@ -48,12 +48,15 @@ def searchDrugReferenceFuzzilyByName(nameList: List):
     # for queryName in nameList:
     #     ret = process.extractOne(queryName, DRUG_REFERENCE_DB_DRUG_NAME_LOWER_SERIES)
     #     retList.append(ret)
-    return pd.DataFrame(([queryName, drugName, cleanedSmiles, scaffolds]
-                         for drugName, cleanedSmiles, scaffolds in
-                         zip(DRUG_REFERENCE_DB_DF['drug_name'], DRUG_REFERENCE_DB_DF['cleaned_smiles'],
-                             DRUG_REFERENCE_DB_DF['scaffolds']) for queryName in nameList if
-                         queryName.lower() in drugName.lower()),
-                        columns=['input', 'drug_name', 'cleaned_smiles', 'scaffolds'])
+    searchRetDF = pd.DataFrame(([queryName, drugName, cleanedSmiles, scaffolds]
+                                for drugName, cleanedSmiles, scaffolds in
+                                zip(DRUG_REFERENCE_DB_DF['drug_name'], DRUG_REFERENCE_DB_DF['cleaned_smiles'],
+                                    DRUG_REFERENCE_DB_DF['scaffolds']) for queryName in nameList if
+                                queryName.lower() in drugName.lower()),
+                               columns=['input', 'drug_name', 'cleaned_smiles', 'scaffolds'])
+    return searchRetDF.groupby('cleaned_smiles').agg({'drug_name': lambda x: ','.join(set(x)),
+                                                       'scaffolds': 'first',
+                                                       'input': 'first'}).reset_index()
 
 
 def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tuple[pd.DataFrame, List[str]]:
@@ -68,7 +71,6 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
     else:
         fileInputSet = None
 
-    invalidInputList = None
     if CommonInputForm.INPUT_TYPE_DRUG_NAME == inputType:
         if fileInputSet is not None:
             inputDrugNameList = fileInputSet
@@ -78,8 +80,11 @@ def searchDrugReferenceByInputRequest(request, inputForm: CommonInputForm) -> Tu
             else:
                 raise CommonException("both input string and file are empty")
         drugRefDF: pd.DataFrame = searchDrugReferenceFuzzilyByName(inputDrugNameList)
-        validList = set(drugRefDF['input'].to_list())
-        for validName in validList:
+        validInputs = drugRefDF['input'].unique()
+        if drugRefDF.shape[0] > 100:
+            drugRefDF = drugRefDF.iloc[0:99]
+
+        for validName in validInputs:
             inputDrugNameList.remove(validName)
         invalidInputList = inputDrugNameList
     else:
