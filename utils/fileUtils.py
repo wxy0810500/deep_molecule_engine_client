@@ -10,7 +10,7 @@ def handleUploadedFile(fs) -> str:
 MAX_INPUT_SET_LENGTH_BY_FILE = 1001
 
 
-# 当前处理是读取数据的Set，有效值100个
+# 当前处理是读取数据的Set，有效值1000个
 def getInputDataSetFromUploadedExcel(fileHandler):
     if fileHandler is not None:
         smilesSet = set()

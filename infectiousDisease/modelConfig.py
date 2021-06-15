@@ -2,10 +2,13 @@ import os
 from deep_engine_client.settings.settings import BASE_DIR
 
 MODEL_TYPE_STATEMENT_DICT = {
-    "TB18K_10uM": "TB13K: Mtb model using 10uM as positive cutoff with 18886 training size",
-    "TB13K": "TB13K: Mtb model using 1uM as positive cutoff with 13475 training size",
-    "Malaria_16K_non-chiral": "Malaria 16K non-chiral: Malaria non-chiral model with 16932 training size",
-    "Malaria_93K_chiral": "Malaria 93K chiral: Malaria chiral model with 93156 training size"
+    "TB18K_10uM": "TB18K_10uM: Anti-mtb phenotypic activity AI model using 10uM as positive cutoff with 18886 "
+                  "training size",
+    "TB13K_1uM": "TB13K_1uM: Anti-mtb phenotypic activity AI model using 1uM as positive cutoff with 13475 training "
+                 "size",
+    "Malaria_16K_non-chiral": "Malaria16K_nonchiral: Anti-malaria non-chiral phenotypic activity AI model with 16932 "
+                              "training size",
+    "Malaria_93K_chiral": "Malaria93K_chiral: Anti-malaria chiral phenotypic activity AI model with 93155 training size"
 }
 
 

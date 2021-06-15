@@ -11,7 +11,7 @@
     <div class="input-area">
         <p class="statement"><strong>The following steps are to submit your job and profile your own compounds with anti-mtb phenotypic activity or anti-malaria phenotypic activity.</strong></p>
         <p class="statement">1.	Please paste your SMILES list, Drug Name list or upload a file here. <a href="{% static "file/example.csv" %}" target="_blank"><span>(example)</span></a>
-Each query can handle 100 compounds at most.</p>
+Each query can handle 1000 compounds at most.</p>
         <form  enctype="multipart/form-data" action="{% url 'infectiousDisease_submit' %}" method="post" name="dataForm"
             onsubmit="return checkAllInput()">
             {% csrf_token %}
@@ -38,14 +38,14 @@ Each query can handle 100 compounds at most.</p>
     </div>
 
     <div class="title">Model Documentation</div>
-    <p class="doc">GHDDI Internal Infectious Disease Service is open internal to GHDDIers. This service will continuously open the AI models involving global health, e.g. mtb and malaria.</p>
-    <p class="doc"> Currently, 3 models are online including TB18K_10uM, TB13K_1uM and Malaria16K_nochiral. Details about their training sets and 5-fold cross validation performance are illustrated below.
-        Other version of AI models for mtb and malaria will be updated and maintained regularly.
-    </p>
-    <img src="{% static "imgs/statement2.jpg" %}" width="100%">
-    <p class="doc">TB18K_10uM: The training set is obtained from Thomas’s work published in 2018 [1]. 10uM is used as cutoff for mtb activity.</p>
-    <p class="doc">TB13K_1uM: *This training set is prepared using <=1uM as positive and >10uM as negative. As the mtb phenotype activity has initial assay error range, data from 1uM to 10uM is removed from the training set, which improves the performance.</p>
-    <p class="doc">Malaria16K_nochiral: Malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active.</p>
+    <p class="doc">GHDDI Internal Infectious Disease Service is open internal to GHDDIers. This service will continuously online the AI models involving infectious disease, e.g. mtb and malaria.</p>
+    <p class="doc">Currently, 4 phenotype-based AI models are online including TB18K_10uM, TB13K_1uM, Malaria16K_nochiral and Malaria93K_chiral models. Other version of AI models for mtb and malaria will be updated and maintained regularly.</p>
+    <p class="doc">Training sets for anti-mtb and anti-malaria phenotype-based AI models:</p>
+    <img src="{% static "imgs/statement2.png" %}" width="100%">
+    <p class="doc">TB18K_10uM: The anti-mtb training set is obtained from Thomas’s work published in 2018 [1]. 10uM is used as cutoff for mtb activity.</p>
+    <p class="doc">TB13K_1uM: This anti-mtb training set is prepared using cutoff of <=1uM as positive and >10uM as negative. As the anti-mtb phenotype activity assay has initial error range, data from 1uM to 10uM is removed from the training set, which improves the performance.</p>
+    <p class="doc">Malaria16K_nonchiral: The anti-malaria training set is downloaded from http://portals.broadinstitute.org/mtrp/[2]. Chiral centers are further processed and merged. If one of the isomers is active, the compound is labeled as active. Inconclusive data is removed.</p>
+    <p class="doc">Malaria93K_chiral: This anti-malaria training set keeps chiral centers with inconclusive data removed. Chiral center features are contained besides those graph features of nonchiral AI model.</p>
     <p class="doc">The AI models were constructed using the most-up-to-date GHDDI’s internal HAG-Net method [3] with the best performance algorithm version 4v4 set with cfg2 hyper-parameter configuration. AuPR is the area under the precision and recall curve, which balances both measurements. Thus, AuPR is calculated to measure the AI model performance during 5-fold cross validation and used as the measurement to choose the best models in this service.</p>
     {% load static %}
     <img class="" src="{% static "imgs/statement1.png" %}" width="100%">
@@ -53,12 +53,11 @@ Each query can handle 100 compounds at most.</p>
     <br>[2] Diversity-oriented synthesis yields novel multistage antimalarial inhibitors. Nature, 2016, 538(7625):344-349.
     <br>[3] Enhance Information Propagation for Graph Neural Network by Heterogeneous Aggregations. arXiv:2102.04064,2021.</p>
 
-    <b>Other function:</b>
-    <p><a href="http://aidd.ghddi.org/covid19/">AI Virtual Screening Service for COVID19</a>
-        <br><a href="http://aidd.ghddi.org/covid19/service/prediction/network/">Anti-virus Spectrum Prediction</a>
+    <b>Other functions:</b>
+    <p><a href="http://aidd.ghddi.org/covid19/">Virtual Screening Service for COVID19 </a>
+        <br><a href="http://aidd.ghddi.org/covid19/service/prediction/network/">Anti-virus Spectrum Prediction Service</a>
         <br><a href="http://aidd.ghddi.org/sbvs/">Structure based Prediction Service</a>
         <br><a href="http://aidd.ghddi.org/admet/ ">ADMET Prediction Service</a>
-        <br>Human target fishing (under construction)
-        <br>Mtb target fishing (under construction)</p>
+        <br><a href="http://aidd.ghddi.org/target_fishing/">Human Target Fishing Service</a>
 </div>
 {% endblock %}
