@@ -15,6 +15,8 @@ DRUG_REFERENCE_WITH_NAME_AND_SMILES: pd.DataFrame = DRUG_REFERENCE_DB_DF[['drug_
 
 
 def searchDrugReferenceByCleanedSmiles(dfWithCleanedSmiles: pd.DataFrame) -> pd.DataFrame:
+    # 先给input根据cleaned_smiles进行分组，相同cleaned_smiles的input进行拼接
+    dfWithCleanedSmiles.groupby('cleaned_smiles').agg({'input': lambda x: ','.join(x)}).reset_index()
     searchRetDF = pd.merge(dfWithCleanedSmiles, DRUG_REFERENCE_WITH_NAME_AND_SMILES, on='cleaned_smiles', how='left')
     searchRetDF.fillna('', inplace=True)
     # 之前input已经做过拼接，这里直接用first的策略
